@@ -7,7 +7,7 @@ namespace Zodream\Module\Gzo;
  * Date: 2016/10/25
  * Time: 20:19
  */
-use Zodream\Infrastructure\ObjectExpand\StringExpand;
+use Zodream\Helpers\Str;
 
 class BlockGenerate implements \IteratorAggregate  {
 
@@ -110,7 +110,7 @@ class BlockGenerate implements \IteratorAggregate  {
         foreach ($args as $item) {
             $item = trim($item);
             foreach ($this->blockTag as $key => $tag) {
-                if (StringExpand::endWith($item, $key)) {
+                if (Str::endWith($item, $key)) {
                     $this->startBlock(trim($item, $key));
                     continue 2;
                 }

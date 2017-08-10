@@ -31,7 +31,6 @@ class ClassGenerator extends AbstractGenerator
         if (empty($inSourceFile)) {
             $inSourceFile = $inClassName . '.php';
         }
-
         if (!is_file($inSourceFile)) {
             throw new \RuntimeException(
                 sprintf(
@@ -64,13 +63,13 @@ class ClassGenerator extends AbstractGenerator
         $methods = '';
         foreach ($this->findTestedMethods() as $method) {
             $methods .= Factory::view()
-                ->render('Test.Method', array(
+                ->render('Test/Method', array(
                     'methodName' => $method
                 ));
         }
 
         return Factory::view()
-            ->render('Test.Class', array(
+            ->render('Test/Class', array(
                 'className' => $this->outClassName['fullyQualifiedClassName'],
                 'methods'   => $methods
             ));
@@ -98,6 +97,7 @@ class ClassGenerator extends AbstractGenerator
                 break;
             }
         }
+
 
         foreach ($testMethods as $name => $testMethod) {
             $argVariables = array();

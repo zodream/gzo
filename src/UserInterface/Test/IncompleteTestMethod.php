@@ -2,7 +2,7 @@
 defined('APP_DIR') or exit();
 ?>
     /**
-     * @covers <?=$className?>::<?=$origMethodName?>
+     * @covers \<?=$className?>::<?=$origMethodName?>
      * @todo   Implement test<?=$methodName?>().
      */
     public function test<?=$methodName?>() {

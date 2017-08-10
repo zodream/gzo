@@ -2,6 +2,7 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\ClassGenerator;
+use Zodream\Module\Gzo\Domain\Generator\TestGenerator;
 use Zodream\Service\Factory;
 
 class TestController extends Controller {
@@ -14,13 +15,11 @@ class TestController extends Controller {
      * 单个文件生成
      * @param $escapedClassName
      * @param $escapedSourcePath
-     * @param $escapedClassName
      * @param $generatedFilePath
      * @return \Zodream\Infrastructure\Http\Response
      */
     public function fileAction($escapedClassName,
                                $escapedSourcePath,
-                               $escapedClassName,
                                $generatedFilePath) {
         $generator = new ClassGenerator($escapedClassName,
             $escapedSourcePath,
@@ -71,9 +70,9 @@ class TestController extends Controller {
             if (!is_dir($targetDirPath)) {
                 mkdir($targetDirPath, 0777, true);
             }
-            $escapedClassName = escapeshellarg($fullClassName);
-            $escapedSourcePath = escapeshellarg($filePath);
-            $generator = new ClassGenerator($escapedClassName,
+            $escapedClassName = $fullClassName;
+            $escapedSourcePath = $filePath;
+            $generator = new TestGenerator($escapedClassName,
                 $escapedSourcePath,
                 $escapedClassName . 'Test', $generatedFilePath);
             $generator->write();
@@ -85,7 +84,7 @@ class TestController extends Controller {
             Factory::log()->info("Test file successfully created for '$fullClassName'");
         }
         // 完成
-        return $this->show();
+        return $this->showContent('Done!');
     }
 
     protected function extractFullClassNameFromFile($filePath) {

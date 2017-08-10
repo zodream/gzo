@@ -211,7 +211,7 @@ class TestGenerator extends AbstractGenerator {
                             }
 
                             $methods .= Factory::view()
-                                ->render('Test.'.$template, array(
+                                ->render('Test/'.$template, array(
                                     'annotation'     => trim($annotation),
                                     'arguments'      => $matches[1],
                                     'assertion'      => isset($assertion) ? $assertion : '',
@@ -229,7 +229,7 @@ class TestGenerator extends AbstractGenerator {
                 if (!$assertAnnotationFound) {
 
                     $incompleteMethods .= Factory::view()
-                        ->render('Test.IncompleteTestMethod', array(
+                        ->render('Test/IncompleteTestMethod', array(
                             'className'      => $this->inClassName['fullyQualifiedClassName'],
                             'methodName'     => ucfirst($method->getName()),
                             'origMethodName' => $method->getName()
@@ -246,7 +246,7 @@ class TestGenerator extends AbstractGenerator {
         }
 
         return Factory::view()
-            ->render('Test.TestClass', array(
+            ->render('Test/TestClass', array(
                 'namespace'          => $namespace,
                 'namespaceSeparator' => !empty($namespace) ? '\\' : '',
                 'className'          => $this->inClassName['className'],
