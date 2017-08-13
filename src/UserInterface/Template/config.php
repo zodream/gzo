@@ -16,7 +16,15 @@ return [
     <?php else:?>
     '<?=$key?>' => [
         <?php foreach ($item as $k => $it):?>
-        '<?=$k?>' => '<?=$it?>',
+        <?php if (!is_array($it)):?>
+            '<?=$k?>' => '<?=$it?>',
+        <?php else:?>
+            '<?=$k?>' => [
+            <?php foreach ($it as $k1 => $it1):?>
+                '<?=$k1?>' => '<?=$it1?>',
+            <?php endforeach;?>
+            ],
+        <?php endif;?>
         <?php endforeach;?>
     ],
     <?php endif;?>
