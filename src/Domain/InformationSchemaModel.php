@@ -1,7 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain;
 
-use Zodream\Infrastructure\Database\Query\Query;
+use Zodream\Database\Query\Query;
 
 class InformationSchemaModel extends Query {
     protected function addPrefix($table) {

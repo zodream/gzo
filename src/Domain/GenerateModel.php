@@ -22,7 +22,7 @@ SHOW PROCESSLIST                             //列出执行命令。
 SHOW GRANTS FOR user                         //列出某用户权限
  */
 use Zodream\Database\Model\Model;
-use Zodream\Infrastructure\Database\Schema\Schema;
+use Zodream\Database\Schema\Schema;
 
 class GenerateModel extends Model {
 

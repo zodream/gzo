@@ -1,7 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Database;
 
-use Zodream\Infrastructure\Database\Schema\Column as BaseColumn;
+use Zodream\Database\Schema\Column as BaseColumn;
 
 class Column extends BaseColumn {
     private $_data = [];

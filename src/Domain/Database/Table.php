@@ -1,7 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Database;
 
-use Zodream\Infrastructure\Database\Schema\Table as BaseTable;
+use Zodream\Database\Schema\Table as BaseTable;
 use Zodream\Infrastructure\Support\Collection;
 use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 

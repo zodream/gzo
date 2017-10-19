@@ -1,10 +1,10 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
-use Zodream\Infrastructure\Database\Schema\Schema;
-use Zodream\Infrastructure\Disk\Directory;
+use Zodream\Database\Schema\Schema;
+use Zodream\Disk\Directory;
 use Zodream\Infrastructure\Http\Request;
-use Zodream\Infrastructure\ObjectExpand\StringExpand;
+use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Service\Factory;
 
@@ -17,7 +17,7 @@ class TemplateController extends Controller {
                                 $hasView = true,
                                 $hasModel = true) {
         if (empty($name)) {
-            $name = StringExpand::studly($name);
+            $name = Str::studly($name);
         }
         $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
         if ($hasController) {
@@ -33,21 +33,21 @@ class TemplateController extends Controller {
                 ->addDirectory('UserInterface')
                 ->addDirectory($module), $name, $columns);
         }
-        return $this->ajaxSuccess();
+        return $this->jsonSuccess();
     }
 
     public function confAction($name, $data) {
         Factory::root()->addDirectory('Service')
             ->addDirectory('config')
             ->addFile($name.'.php', $this->makeConfig($data));
-        return $this->ajaxSuccess();
+        return $this->jsonSuccess();
     }
 
     public function modelAction($module, $table) {
         $root = Factory::root()->addDirectory('Domain')
             ->addDirectory('Model')->addDirectory($module);
         $this->createModel($root, $table, $module);
-        return $this->ajaxSuccess();
+        return $this->jsonSuccess();
     }
 
     public function controllerAction($module, $name = 'Home') {
@@ -57,7 +57,7 @@ class TemplateController extends Controller {
             $root->addFile('Controller.php', $this->baseController($module));
         }
         $this->createController($root, $name, $module);
-        return $this->ajaxSuccess();
+        return $this->jsonSuccess();
     }
 
     public function moduleAction($module, $table) {
@@ -72,12 +72,12 @@ class TemplateController extends Controller {
         $viewRoot = $root->addDirectory('UserInterface');
         foreach ((array)$table as $item) {
             $columns = GenerateModel::schema()->table($item)->getAllColumn(true);
-            $name = StringExpand::studly($item);
+            $name = Str::studly($item);
             $this->createController($controllerRoot, $name, $module, true);
             $this->createModel($modelRoot, $item, $module, $name, $columns, true);
             $this->createView($viewRoot, $name, $columns);
         }
-        return $this->ajaxSuccess();
+        return $this->jsonSuccess();
     }
 
     protected function createController(Directory $root, $name, $module, $is_module = false) {
@@ -94,7 +94,7 @@ class TemplateController extends Controller {
             $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
         }
         if (empty($name)) {
-            $name = StringExpand::studly($table);
+            $name = Str::studly($table);
         }
         $root->addFile($name.APP_MODEL.'.php', $this->makeModel($name, $table, $columns, $module, $is_module));
     }
@@ -150,7 +150,7 @@ class TemplateController extends Controller {
         $data = GenerateModel::getFill($columns);
         $foreignKeys = (new Schema())->table($table)->getForeignKeys();
         foreach ($foreignKeys as &$item) {
-            $item['table'] = StringExpand::firstReplace('zd_', '', $item['REFERENCED_TABLE_NAME']);
+            $item['table'] = Str::firstReplace('zd_', '', $item['REFERENCED_TABLE_NAME']);
             $item['column'] = $item['COLUMN_NAME'];
             $item['key'] = $item['REFERENCED_COLUMN_NAME'];
         }

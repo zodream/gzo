@@ -1,7 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Database;
 
-use Zodream\Infrastructure\Database\Schema\Schema as BaseSchema;
+use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Infrastructure\Support\Collection;
 
 class Schema extends BaseSchema {

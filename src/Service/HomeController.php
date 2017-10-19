@@ -15,7 +15,7 @@ class HomeController extends Controller {
 
     public function tableAction() {
         $tables = GenerateModel::schema()->getAllTable();
-        return $this->ajax([
+        return $this->json([
             'status' => 1,
             'tables' => $tables
         ]);
