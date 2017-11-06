@@ -43,7 +43,7 @@ class TemplateController extends Controller {
         return $this->jsonSuccess();
     }
 
-    public function modelAction($module, $table) {
+    public function modelAction($table, $module = null) {
         $root = Factory::root()->addDirectory('Domain')
             ->addDirectory('Model')->addDirectory($module);
         $this->createModel($root, $table, $module);
