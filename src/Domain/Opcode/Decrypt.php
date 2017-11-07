@@ -40,6 +40,7 @@ class Decrypt {
      * @return string
      */
     public function decode() {
+        echo $this->content;
         $parts = explode('branch:', $this->content);
         foreach ($parts as $part) {
             $this->addLines((new DecryptBlock($part))->decode());

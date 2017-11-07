@@ -1,6 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
+
 class DecryptLine {
 
     /**
@@ -14,6 +15,11 @@ class DecryptLine {
     protected $block;
 
     protected $content = '';
+
+    /**
+     * @var int 当前id
+     */
+    protected $i = 0;
 
     public function __construct(array $lines, DecryptBlock $block) {
         $this->setLines($lines);
@@ -35,12 +41,53 @@ class DecryptLine {
     }
 
     public function decode() {
-        foreach ($this->lines as $i => $line) {
-            $method = 'de'.$line->op;
-            $this->{$method}($line, $i);
-            $this->setValue($line);
+        $this->i = -1;
+        while ($this->i < $this->count() - 1) {
+            $this->i ++;
+            $line = $this->lines[$this->i];
+            $this->deLine($line, $this->i);
         }
         return $this->content;
+    }
+
+    public function deLine(Line $line, $i) {
+        $method = 'de'.$line->op;
+        $this->{$method}($line, $i);
+        $this->setValue($line);
+    }
+
+    public function count() {
+        return count($this->lines);
+    }
+
+    public function next() {
+        $i = $this->i + 1;
+        if ($this->count() > $i) {
+            return $this->lines[$i];
+        }
+        return false;
+    }
+
+    public function last() {
+        return $this->lines[$this->count() - 1];
+    }
+
+    public function map(callable $callback, $ops = null) {
+        $i = 0;
+        if (is_integer($ops)) {
+            $i = $ops;
+        }
+        for (; $i < $this->count(); $i ++) {
+            $line = $this->lines[$i];
+            if (is_null($ops)
+                || (is_string($ops) && $line->op == $ops)
+                || (is_array($ops) && in_array($line->op, $ops))
+                || (is_callable($ops) && $ops($line))) {
+                if (false === $callback($line, $i)) {
+                    break;
+                }
+            }
+        }
     }
 
     public function setValue(Line $line) {
@@ -72,20 +119,24 @@ class DecryptLine {
     }
 
     public function deADD_CHAR (Line $line) {
-		$this->content .= chr($line->operands) .'"';
-		//die(var_dump($this->content));
+        $args = explode(',', $line->operands);
+        $args[count($args) - 1] = "'".chr($args[count($args) - 1])."'";
+        $this->content = $line->code = implode(' . ', $args);
     }
 
     public function deADD_INTERFACE (Line $line) {
-         //$this->content = $line->code = 
+
     }
 
     public function deADD_STRING (Line $line) {
-
+        $args = explode(',', $line->operands);
+        $this->content = $line->code = implode(' . ', $args);
     }
 
     public function deADD_VAR (Line $line) {
-		$this->content = $line->code = '"'.$this->getValue($line->operands);
+        $args = explode(',', $line->operands);
+        $args[count($args) - 1] = $this->getValue($args[count($args) - 1]);
+		$this->content = $line->code = implode(' . ', $args);
     }
 
     public function deASSIGN (Line $line) {
@@ -95,7 +146,7 @@ class DecryptLine {
 
     public function deASSIGN_ADD (Line $line) {
 		list($a, $b) = explode(',',$line->operands);
-        $this->content = $line->code = $this->getValue($a).'+='.$this->getValue($b);
+        $this->content = $line->code = $this->getValue($a).' += '.$this->getValue($b);
     }
 
     public function deASSIGN_BW_AND (Line $line) {
@@ -104,17 +155,18 @@ class DecryptLine {
     }
 
     public function deASSIGN_BW_OR (Line $line) {
-          list($e, $f) = explode(',',$line->operands);
-		$this->content = $line->code = $this->getValue($e).' |= '.$this->getValue($f);
+        list($e, $f) = explode(',',$line->operands);
+        $this->content = $line->code = $this->getValue($e).' |= '.$this->getValue($f);
     }
 
     public function deASSIGN_BW_XOR (Line $line) {
 		 list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).' ^= '. $this->getValue($v);
+        $this->content = $line->code = $this->getValue($k).' ^= '. $this->getValue($v);
     }
 
     public function deASSIGN_CONCAT (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' .= '. $this->getValue($v);
     }
 
     public function deASSIGN_DIM (Line $line) {
@@ -122,22 +174,25 @@ class DecryptLine {
     }
 
     public function deASSIGN_DIV (Line $line) {
-       list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).'/='. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' /= '. $this->getValue($v);
     }
 
     public function deASSIGN_MOD (Line $line) {
-       list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).' %= '. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' %= '. $this->getValue($v);
     }
 
     public function deASSIGN_MUL (Line $line) {
-         list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).'*='. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' *= '. $this->getValue($v);
     }
 
     public function deASSIGN_OBJ (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $line->code = $this->getValue($k).'->'. trim($v, '\'');
+        $this->content =  $line->code.' = '.$this->deLine($this->next());
+        $this->i ++;
     }
 
     public function deASSIGN_REF (Line $line) {
@@ -145,17 +200,18 @@ class DecryptLine {
     }
 
     public function deASSIGN_SL (Line $line) {
-       list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).' <<= '. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' <<= '. $this->getValue($v);
     }
 
     public function deASSIGN_SR (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' >>= '. $this->getValue($v);
     }
 
     public function deASSIGN_SUB (Line $line) {
-       list($k, $v) = explode(',', $line->operands);
-     $this->content = $line->code = $this->getValue($k).'-='. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' -= '. $this->getValue($v);
     }
 
     public function deBEGIN_SILENCE (Line $line) {
@@ -163,35 +219,39 @@ class DecryptLine {
     }
 
     public function deBOOL (Line $line) {
-
+        $this->content = $line->code = $this->getValue($line->operands);
     }
 
     public function deBOOL_NOT (Line $line) {
-
+        $this->content = $line->code = '!'.$this->getValue($line->operands);
     }
 
     public function deBOOL_XOR (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' xor '. $this->getValue($v);
     }
 
     public function deBRK (Line $line) {
-
+        $this->content = $line->code = 'break';
     }
 
     public function deBW_AND (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' & '. $this->getValue($v);
     }
 
     public function deBW_NOT (Line $line) {
-
+        $this->content = $line->code = '~'.$this->getValue($line->operands);
     }
 
     public function deBW_OR (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' | '. $this->getValue($v);
     }
 
     public function deBW_XOR (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' ^ '. $this->getValue($v);
     }
 
     public function deCASE (Line $line) {
@@ -199,7 +259,7 @@ class DecryptLine {
     }
 
     public function deCAST (Line $line) {
-
+        $this->content = $line->code = '(int)'.$this->getValue($line->operands);
     }
 
     public function deCATCH (Line $line) {
@@ -207,11 +267,12 @@ class DecryptLine {
     }
 
     public function deCLONE (Line $line) {
-
+        $this->content = $line->code = 'clone '.$this->getValue($line->operands);
     }
 
     public function deCONCAT (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' . '. $this->getValue($v);
     }
 
     public function deCONT (Line $line) {
@@ -219,7 +280,7 @@ class DecryptLine {
     }
 
     public function deDECLARE_CLASS (Line $line) {
-      $this->content = $line->code = "class ". $this->getValue($line->operands);
+        $this->content = $line->code = "class ". $this->getValue($line->operands);
     }
 
     public function deDECLARE_CONST (Line $line) {
@@ -239,7 +300,8 @@ class DecryptLine {
     }
 
     public function deDIV (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = $this->getValue($k).' / '. $this->getValue($v);
     }
 
     public function deDO_FCALL (Line $line) {
@@ -259,7 +321,7 @@ class DecryptLine {
     }
 
     public function deEXIT (Line $line) {
-
+        $this->content = $line->code = sprintf('die(%s)', $this->getValue($line->operands));
     }
 
     public function deEXT_FCALL_BEGIN (Line $line) {
@@ -389,7 +451,6 @@ class DecryptLine {
     /**
      * @param Line $line
      * @param $i
-     * @param Line[] $lines
      */
     public function deINIT_ARRAY (Line $line, $i) {
         if (empty($line->operands)) {
@@ -409,7 +470,7 @@ class DecryptLine {
                 if ($l->op != 'INIT_ARRAY') {
                     continue;
                 }
-                $this->deINIT_ARRAY($l, $k, $lines);
+                $this->deINIT_ARRAY($l, $k);
                 $args[] = $l->operands;
                 continue;
             }
@@ -515,7 +576,7 @@ class DecryptLine {
     }
 
     public function deNOP (Line $line) {
-    $this->content =$line->code =$line->operands;
+        $this->content =$line->code = $line->operands;
 	
     }
 
@@ -552,7 +613,7 @@ class DecryptLine {
     }
 
     public function dePRINT (Line $line) {
-
+        $this->content = $line->code = 'print '.$this->getValue($line->operands);
     }
 
     public function deQM_ASSIGN (Line $line) {
@@ -572,7 +633,7 @@ class DecryptLine {
     }
 
     public function deRETURN (Line $line) {
-
+        $this->content = $line->code = sprintf('return %s', $this->getValue($line->operands));
     }
 
     public function deRETURN_BY_REF (Line $line) {
@@ -580,31 +641,54 @@ class DecryptLine {
     }
 
     public function deSEND_REF (Line $line) {
-
+        $this->deSEND_VAR($line);
     }
 
     public function deSEND_VAL (Line $line) {
-
+        $this->deSEND_VAR($line);
     }
 
     public function deSEND_VAR (Line $line) {
-
+        $args = [$this->deSendFunc($line)];
+        while ($line = $this->next()) {
+            $arg = $this->deSendFunc($line);
+            $this->i ++;
+            if ($line->op == 'DO_FCALL') {
+                break;
+            }
+            $args[] = $arg;
+        }
+        $this->content = $line->code = sprintf('%s(%s)',
+            trim($line->operands, '\''),
+            implode(', ', $args));
     }
 
     public function deSEND_VAR_NO_REF (Line $line) {
 
     }
 
-    public function deSL (Line $line) {
+    protected function deSendFunc(Line $line) {
+        if ($line->op == 'SEND_VAL') {
+            return $line->operands;
+        }
+        if (in_array($line->op, ['SEND_REF', 'SEND_VAR', 'SEND_VAR_NO_REF'])) {
+            return $this->getValue($line->operands);
+        }
+    }
 
+    public function deSL (Line $line) {
+        list($a, $b) = explode(',', $line->operands);
+        $this->content = $line->code = sprintf('%s << %s', $this->getValue($a), $this->getValue($b));
     }
 
     public function deSR (Line $line) {
-
+        list($a, $b) = explode(',', $line->operands);
+        $this->content = $line->code = sprintf('%s >> %s', $this->getValue($a), $this->getValue($b));
     }
 
     public function deSUB (Line $line) {
-
+        list($a, $b) = explode(',', $line->operands);
+        $this->content = $line->code = sprintf('%s - %s', $this->getValue($a), $this->getValue($b));
     }
 
     public function deSWITCH_FREE (Line $line) {
@@ -620,15 +704,38 @@ class DecryptLine {
     }
 
     public function deUNSET_DIM (Line $line) {
-
+        $this->deUNSET_VAR($line);
     }
 
     public function deUNSET_OBJ (Line $line) {
-
+        $this->deUNSET_VAR($line);
     }
 
     public function deUNSET_VAR (Line $line) {
+        $args = [$this->deUnset($line)];
+        while ($line = $this->next()) {
+            $arg = $this->deUnset($line);
+            if (empty($arg)) {
+                break;
+            }
+            $args[] = $arg;
+            $this->i ++;
+        }
+        $this->content = $line->code = sprintf('unset(%s)', implode(', ', $args));
+    }
 
+    protected function deUnset(Line $line) {
+        if ($line->op == 'UNSET_VAR') {
+            return $this->getValue($line->operands);
+        }
+        if ($line->op == 'UNSET_OBJ') {
+            list($a, $b) = explode(',', $line->operands);
+            return $this->getValue($a).'->'. trim($b, '\'');
+        }
+        if ($line->op == 'UNSET_DIM') {
+            list($a, $b) = explode(',', $line->operands);
+            return sprintf('%s[%s]', $this->getValue($a), $b);
+        }
     }
 
     public function deUSER_OPCODE (Line $line) {
