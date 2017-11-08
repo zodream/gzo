@@ -7,6 +7,12 @@ class Line {
 
     public $line = 0;
 
+    public $e;
+
+    public $i;
+
+    public $o;
+
     public $op;
 
     public $fetch;

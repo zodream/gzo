@@ -5,7 +5,19 @@ class DecryptBlock {
 
     protected $content;
 
-    protected $data = [];
+    protected $data = [
+        'EVAL' => 'eval',
+        'INCLUDE' => 'include',
+        'INCLUDE_ONCE' => 'include_once',
+        'REQUIRE' => 'require',
+        'REQUIRE_ONCE' => 'require_once'
+    ];
+
+    protected $indexLines = [];
+
+    protected $className;
+
+    protected $funcName;
 
     public function __construct($content) {
         $this->setContent($content);
@@ -16,6 +28,18 @@ class DecryptBlock {
      */
     public function setContent($content) {
         $this->content = $content;
+    }
+
+    public function addLine(Line $line) {
+        $this->indexLines[$line->index] = $line;
+    }
+
+    /**
+     * @param $index
+     * @return Line
+     */
+    public function getLine($index) {
+        return $this->indexLines[$index];
     }
 
     public function def($key, $value) {
@@ -38,20 +62,45 @@ class DecryptBlock {
         }
         $args = explode(',', substr($line, 14));
         foreach ($args as $arg) {
-            if (empty($arg)) {
+            if (empty($arg) || strpos($arg, '=') === false) {
                 continue;
             }
             list($k, $v) = explode('=', $arg);
             $this->def($k, $v);
         }
+    }
 
+    /**
+     * @param mixed $funcName
+     */
+    public function setFuncName($funcName) {
+        $this->funcName = trim($funcName);
+    }
+
+    /**
+     * @param mixed $className
+     */
+    public function setClassName($className) {
+        $this->className = trim($className);
+    }
+
+    protected function setName(array $lines) {
+        if (strpos($lines[0], 'Function') === 0) {
+            $this->setFuncName(substr($lines[0], 8, strpos($lines[0], ':') - 8));
+            return;
+        }
+        if (strpos($lines[0], 'Class') === 0) {
+            $this->setFuncName(substr($lines[0], 5, strpos($lines[0], ':') - 5));
+            return;
+        }
     }
 
     /**
      * @return string[]
      */
     public function decode() {
-        $lines = explode("\n", $this->content);
+        $lines = is_array($this->content) ? $this->content : explode("\n", $this->content);
+        $this->setName($lines);
         $this->setDefault($lines);
         $lines = $this->getLines($lines);
         ksort($lines);
@@ -92,13 +141,14 @@ class DecryptBlock {
                 break;
             }
             $arg = new Line();
-            list($arg->line, $arg->index, $a, $b, $c, $arg->op, $arg->fetch, $arg->ext, $arg->return, $arg->operands)
+            list($arg->line, $arg->index, $arg->e, $arg->i, $arg->o, $arg->op, $arg->fetch, $arg->ext, $arg->return, $arg->operands)
                 = $this->splitLine($line, $index);
             if (empty($arg->line)) {
                 $arg->line = $i;
             } else {
                 $i = $arg->line;
             }
+            $this->addLine($arg);
             $args[$i][] = $arg;
         }
         return $args;

@@ -47,7 +47,7 @@ class DecryptLine {
             $line = $this->lines[$this->i];
             $this->deLine($line, $this->i);
         }
-        return $this->content;
+        return $this->content.';';
     }
 
     public function deLine(Line $line, $i) {
@@ -72,10 +72,24 @@ class DecryptLine {
         return $this->lines[$this->count() - 1];
     }
 
-    public function map(callable $callback, $ops = null) {
-        $i = 0;
+    public function map(callable $callback, $ops = null, $is_forward = false) {
+        $i = $is_forward ? $this->count() - 1 : 0;
         if (is_integer($ops)) {
             $i = $ops;
+        }
+        if ($is_forward) {
+            for (; $i >= 0; $i --) {
+                $line = $this->lines[$i];
+                if (is_null($ops)
+                    || (is_string($ops) && $line->op == $ops)
+                    || (is_array($ops) && in_array($line->op, $ops))
+                    || (is_callable($ops) && $ops($line))) {
+                    if (false === $callback($line, $i)) {
+                        break;
+                    }
+                }
+            }
+            return;
         }
         for (; $i < $this->count(); $i ++) {
             $line = $this->lines[$i];
@@ -97,6 +111,10 @@ class DecryptLine {
         return $this;
     }
 
+    protected function getTag($value) {
+        return trim(trim($value), "'");
+    }
+
     public function getValue($key) {
         $key = trim($key);
         if (is_numeric($key)) {
@@ -106,6 +124,17 @@ class DecryptLine {
             return $key;
         }
         return $this->block->get($key);
+    }
+
+    protected function getForwardOp($ops) {
+        if (!is_array($ops)) {
+            $ops = [$ops];
+        }
+        for ($i = $this->i; $i >= 0; $i --) {
+            if (in_array($this->lines[$i]->op, $ops)) {
+                return $this->lines[$i];
+            }
+        }
     }
 
 
@@ -191,7 +220,7 @@ class DecryptLine {
     public function deASSIGN_OBJ (Line $line) {
         list($k, $v) = explode(',', $line->operands);
         $line->code = $this->getValue($k).'->'. trim($v, '\'');
-        $this->content =  $line->code.' = '.$this->deLine($this->next());
+        $this->content =  $line->code.' = '.$this->deLine($this->next(), $this->i + 1);
         $this->i ++;
     }
 
@@ -446,12 +475,8 @@ class DecryptLine {
     }
 
     public function deINCLUDE_OR_EVAL (Line $line) {
-		
-		
 		list($k, $v) = explode(',', $line->operands);
-       
-		
-           $this->content = $line->code = "$this->getValue($v)"."$this->getValue($k)";
+        $this->content = $line->code = sprintf('%s(%s)', $this->getValue($v), $this->getValue($k));
     }
 
     /**
@@ -486,11 +511,16 @@ class DecryptLine {
     }
 
     public function deINIT_FCALL_BY_NAME (Line $line) {
-
+        $next = $this->next();
+        if (!empty($next) && $next->op == 'EXT_FCALL_BEGIN') {
+            return;
+        }
+        $this->content = $line->code = sprintf('%s()', $this->getTag($line->operands));
     }
 
     public function deINIT_METHOD_CALL (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code = sprintf('%s->%s', $this->getValue($k), $this->getTag($v));
     }
 
     public function deINIT_NS_FCALL_BY_NAME (Line $line) {
@@ -647,6 +677,9 @@ class DecryptLine {
     }
 
     public function deRETURN (Line $line) {
+        if ($line->operands == 'null') {
+            return;
+        }
 		if ($this->content) {
 			return;
 		}
@@ -670,13 +703,15 @@ class DecryptLine {
         while ($line = $this->next()) {
             $arg = $this->deSendFunc($line);
             $this->i ++;
-            if ($line->op == 'DO_FCALL') {
+            if (in_array($line->op, ['DO_FCALL', 'DO_FCALL_BY_NAME'])) {
                 break;
             }
             $args[] = $arg;
         }
-        $this->content = $line->code = sprintf('%s(%s)',
-            trim($line->operands, '\''),
+        $this->content = sprintf('%s(%s)',
+            $this->getTag($line->op == 'DO_FCALL'
+                ? $line->operands
+                : $this->getForwardOp(['INIT_METHOD_CALL', 'INIT_FCALL_BY_NAME'])->code),
             implode(', ', $args));
     }
 
@@ -686,7 +721,7 @@ class DecryptLine {
 
     protected function deSendFunc(Line $line) {
         if ($line->op == 'SEND_VAL') {
-            return $line->operands;
+            return strpos($line->operands, '~') === 0 ? $this->getValue($line->operands) : $line->operands;
         }
         if (in_array($line->op, ['SEND_REF', 'SEND_VAR', 'SEND_VAR_NO_REF'])) {
             return $this->getValue($line->operands);

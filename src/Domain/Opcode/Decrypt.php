@@ -2,13 +2,15 @@
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 
+use Zodream\Helpers\Str;
+
 class Decrypt {
 
     /**
      * @var array
      */
     protected $lines = [
-        0 => '<?php'
+        1 => '<?php'
     ];
 
     protected $content;
@@ -40,19 +42,36 @@ class Decrypt {
      * @return string
      */
     public function decode() {
-        echo $this->content;
-        $parts = explode('branch:', $this->content);
+        $parts = $this->splitParts();
         foreach ($parts as $part) {
+            echo "\n", implode("\n", (array)$part), " END\n";
             $this->addLines((new DecryptBlock($part))->decode());
         }
         return $this->getContent();
+    }
+
+    protected function splitParts() {
+        $lines = explode("\n", $this->content);
+        $parts = [];
+        $part = [];
+        foreach ($lines as $line) {
+            $line = trim($line, "\r");
+            if (!Str::startsWith($line, ['Function', 'Class'])) {
+                $part[] = $line;
+                continue;
+            }
+            $parts[] = $part;
+            $part = [$line];
+        }
+        $parts[] = $part;
+        return $parts;
     }
 
     protected function getContent() {
         ksort($this->lines);
         $max = max(array_keys($this->lines));
         $lines = [];
-        for ($i = 0; $i <= $max; $i ++) {
+        for ($i = 1; $i <= $max; $i ++) {
             $lines[$i] = array_key_exists($i, $this->lines) ? $this->lines[$i] : '';
         }
         return implode(PHP_EOL, $lines);
