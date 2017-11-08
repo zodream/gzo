@@ -223,7 +223,7 @@ class DecryptLine {
     }
 
     public function deBOOL_NOT (Line $line) {
-        $this->content = $line->code = '!'.$this->getValue($line->operands);
+        $this->content = $line->code = ' !'.$this->getValue($line->operands);
     }
 
     public function deBOOL_XOR (Line $line) {
@@ -237,7 +237,7 @@ class DecryptLine {
 
     public function deBW_AND (Line $line) {
         list($k, $v) = explode(',', $line->operands);
-        $this->content = $line->code = $this->getValue($k).' & '. $this->getValue($v);
+        $this->content = $line->code = $this->getValue($k).'&'.$this->getValue($v);
     }
 
     public function deBW_NOT (Line $line) {
@@ -246,7 +246,7 @@ class DecryptLine {
 
     public function deBW_OR (Line $line) {
         list($k, $v) = explode(',', $line->operands);
-        $this->content = $line->code = $this->getValue($k).' | '. $this->getValue($v);
+        $this->content = $line->code = $this->getValue($k).'|'.$this->getValue($v);
     }
 
     public function deBW_XOR (Line $line) {
@@ -301,19 +301,20 @@ class DecryptLine {
 
     public function deDIV (Line $line) {
         list($k, $v) = explode(',', $line->operands);
-        $this->content = $line->code = $this->getValue($k).' / '. $this->getValue($v);
+        $this->content = $line->code = $this->getValue($k).'/'.$this->getValue($v);
     }
 
     public function deDO_FCALL (Line $line) {
-
-    }
-
+        $this->content = $line->code = $this->getValue($line->operands)."()";
+		
+	}
+		
     public function deDO_FCALL_BY_NAME (Line $line) {
 
     }
 
     public function deECHO (Line $line) {
-        $this->content = $line->code = 'echo '.$this->getValue($line->operands);
+        $this->content = $line->code = "echo ".$this->getValue($line->operands);
     }
 
     public function deEND_SILENCE (Line $line) {
@@ -433,7 +434,7 @@ class DecryptLine {
     }
 
     public function deFREE (Line $line) {
-
+                  $this->content = $line->code = $this->getValue($line->operands);
     }
 
     public function deGOTO (Line $line) {
@@ -445,7 +446,12 @@ class DecryptLine {
     }
 
     public function deINCLUDE_OR_EVAL (Line $line) {
-
+		
+		
+		list($k, $v) = explode(',', $line->operands);
+       
+		
+           $this->content = $line->code = "$this->getValue($v)"."$this->getValue($k)";
     }
 
     /**
@@ -504,7 +510,8 @@ class DecryptLine {
     }
 
     public function deIS_EQUAL (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+       $this->content = $line->code = sprintf('(%s == %s)', $this->getValue($k), $this->getValue($v));
     }
 
     public function deIS_IDENTICAL (Line $line) {
@@ -512,19 +519,23 @@ class DecryptLine {
     }
 
     public function deIS_NOT_EQUAL (Line $line) {
-
+         list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code = sprintf('(%s != %s)', $this->getValue($k), $this->getValue($v));
     }
 
     public function deIS_NOT_IDENTICAL (Line $line) {
-
+         list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code = sprintf('(%s !== %s)', $this->getValue($k), $this->getValue($v));
     }
 
     public function deIS_SMALLER (Line $line) {
-
+     list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code = sprintf('(%s < %s)', $this->getValue($k), $this->getValue($v));
     }
 
     public function deIS_SMALLER_OR_EQUAL (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code = sprintf('(%s <= %s)', $this->getValue($k), $this->getValue($v));
     }
 
     public function deISSET_ISEMPTY_DIM_OBJ (Line $line) {
@@ -564,11 +575,13 @@ class DecryptLine {
     }
 
     public function deMOD (Line $line) {
-
+         list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code =  $this->getValue($k).' * '. $this->getValue($v);
     }
 
     public function deMUL (Line $line) {
-
+     list($k, $v) = explode(',', $line->operands);
+      $this->content = $line->code =  $this->getValue($k).'*'. $this->getValue($v);
     }
 
     public function deNEW (Line $line) {
@@ -576,12 +589,12 @@ class DecryptLine {
     }
 
     public function deNOP (Line $line) {
-        $this->content =$line->code = $line->operands;
+       
 	
     }
 
     public function dePOST_DEC (Line $line) {
-
+         $line->code = $this->getValue($line->operands).'--';
     }
 
     public function dePOST_DEC_OBJ (Line $line) {
@@ -589,7 +602,7 @@ class DecryptLine {
     }
 
     public function dePOST_INC (Line $line) {
-        $line->code = $this->getValue($line->operands). '++';
+        $line->code = $this->getValue($line->operands).'++';
     }
 
     public function dePOST_INC_OBJ (Line $line) {
@@ -597,15 +610,16 @@ class DecryptLine {
     }
 
     public function dePRE_DEC (Line $line) {
-
+    $this->content = $line->code = "--".$this->getValue($line->operands);
     }
+    
 
     public function dePRE_DEC_OBJ (Line $line) {
 
     }
 
     public function dePRE_INC (Line $line) {
-
+         $this->content = $line->code = "++".$this->getValue($line->operands);
     }
 
     public function dePRE_INC_OBJ (Line $line) {
@@ -633,6 +647,9 @@ class DecryptLine {
     }
 
     public function deRETURN (Line $line) {
+		if ($this->content) {
+			return;
+		}
         $this->content = $line->code = sprintf('return %s', $this->getValue($line->operands));
     }
 
