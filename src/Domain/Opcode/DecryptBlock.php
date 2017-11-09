@@ -15,9 +15,15 @@ class DecryptBlock {
 
     protected $indexLines = [];
 
+    protected $deLines = [];
+
+    protected $lineMax;
+
     protected $className;
 
     protected $funcName;
+
+    private $_switch_list = [];
 
     public function __construct($content) {
         $this->setContent($content);
@@ -34,12 +40,20 @@ class DecryptBlock {
         $this->indexLines[$line->index] = $line;
     }
 
+    public function addDeLine($i, $code) {
+        $this->deLines[$i] = $code;
+    }
+
     /**
      * @param $index
      * @return Line
      */
     public function getLine($index) {
         return $this->indexLines[$index];
+    }
+
+    public function isLast($i) {
+        return $this->lineMax == $i;
     }
 
     public function def($key, $value) {
@@ -53,6 +67,19 @@ class DecryptBlock {
         }
         return null;
     }
+
+    public function beginSwitchBlock($key) {
+        $this->_switch_list[$key] = true;
+    }
+
+    public function endSwitchBlock($key) {
+        $this->_switch_list[$key] = false;
+    }
+
+    public function isSwitchBlock($key) {
+        return array_key_exists($key, $this->_switch_list) && $this->_switch_list[$key];
+    }
+
 
     protected function setDefault(array $lines) {
         foreach ($lines as $line) {
@@ -104,11 +131,11 @@ class DecryptBlock {
         $this->setDefault($lines);
         $lines = $this->getLines($lines);
         ksort($lines);
-        $data = [];
+        $this->deLines = [];
         foreach ($lines as $key => $line) {
-            $data[$key] = (new DecryptLine($line, $this))->decode();
+            $this->deLines[$key] = (new DecryptLine($line, $this))->decode();
         }
-        return $data;
+        return $this->deLines;
     }
 
     public function getLines(array $lines) {
@@ -151,6 +178,7 @@ class DecryptBlock {
             $this->addLine($arg);
             $args[$i][] = $arg;
         }
+        $this->lineMax = $i;
         return $args;
     }
 

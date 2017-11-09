@@ -2,6 +2,8 @@
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 
+use Zodream\Helpers\Str;
+
 class DecryptLine {
 
     /**
@@ -40,12 +42,25 @@ class DecryptLine {
         $this->block = $block;
     }
 
+    protected function isDeDefault() {
+        return $this->isOps(['JMP', 'EXT_STMT', 'JMP']);
+    }
+
     public function decode() {
+        if ($this->isDeDefault()) {
+            return 'default:';
+        }
         $this->i = -1;
         while ($this->i < $this->count() - 1) {
             $this->i ++;
             $line = $this->lines[$this->i];
             $this->deLine($line, $this->i);
+        }
+        if (empty($this->content)) {
+            return;
+        }
+        if (Str::endWith($this->content, ['{', '}'])) {
+            return $this->content;
         }
         return $this->content.';';
     }
@@ -70,6 +85,22 @@ class DecryptLine {
 
     public function last() {
         return $this->lines[$this->count() - 1];
+    }
+
+    public function isLast() {
+        return $this->i == $this->count() - 1;
+    }
+
+    public function isOps(array $ops) {
+        if ($this->count() != count($ops)) {
+            return false;
+        }
+        foreach ($ops as $i => $op) {
+            if ($op != $this->lines[$i]->op) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function map(callable $callback, $ops = null, $is_forward = false) {
@@ -284,7 +315,13 @@ class DecryptLine {
     }
 
     public function deCASE (Line $line) {
-
+        list($k, $v) = explode(',', $line->operands);
+        if (!$this->block->isSwitchBlock($k)) {
+            $this->block->addDeLine($line->line - 1, sprintf('switch(%s) {', $this->getValue($k)));
+            $this->block->beginSwitchBlock($k);
+        }
+        $this->content = $line->code = sprintf('case %s:', $this->getValue($v));
+        $this->i ++;
     }
 
     public function deCAST (Line $line) {
@@ -581,7 +618,7 @@ class DecryptLine {
     }
 
     public function deJMP (Line $line) {
-
+        $this->content = $line->code = $this->_if == $line->operands ? '}' : '} else {';
     }
 
     public function deJMPNZ (Line $line) {
@@ -592,8 +629,12 @@ class DecryptLine {
 
     }
 
-    public function deJMPZ (Line $line) {
+    private $_if;
 
+    public function deJMPZ (Line $line) {
+        list($k, $v) = explode(',', $line->operands);
+        $this->_if = $v;
+        $this->content = $line->code =  sprintf('if %s {', $this->getValue($k));
     }
 
     public function deJMPZ_EX (Line $line) {
@@ -601,17 +642,18 @@ class DecryptLine {
     }
 
     public function deJMPZNZ (Line $line) {
-
+//        list($k, $v) = explode(',', $line->operands);
+//        $this->content = $line->code =  sprintf('if %s {', $this->getValue($k));
     }
 
     public function deMOD (Line $line) {
-         list($k, $v) = explode(',', $line->operands);
-      $this->content = $line->code =  $this->getValue($k).' * '. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code =  $this->getValue($k).' * '. $this->getValue($v);
     }
 
     public function deMUL (Line $line) {
-     list($k, $v) = explode(',', $line->operands);
-      $this->content = $line->code =  $this->getValue($k).'*'. $this->getValue($v);
+        list($k, $v) = explode(',', $line->operands);
+        $this->content = $line->code =  $this->getValue($k).'*'. $this->getValue($v);
     }
 
     public function deNEW (Line $line) {
@@ -683,6 +725,11 @@ class DecryptLine {
 		if ($this->content) {
 			return;
 		}
+		if ($line->operands == '1'
+            && $this->block->isLast($line->line)
+            && $this->isLast()) {
+            return;
+        }
         $this->content = $line->code = sprintf('return %s', $this->getValue($line->operands));
     }
 
