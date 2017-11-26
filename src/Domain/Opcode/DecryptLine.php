@@ -711,11 +711,11 @@ class DecryptLine {
     }
 
     public function deRECV (Line $line) {
-
+        $this->block->addArgument($this->getValue($line->return));
     }
 
     public function deRECV_INIT (Line $line) {
-
+        $this->block->addArgument($this->getValue($line->return), $this->getValue($line->operands));
     }
 
     public function deRETURN (Line $line) {

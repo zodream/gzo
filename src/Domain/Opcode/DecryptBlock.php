@@ -10,7 +10,10 @@ class DecryptBlock {
         'INCLUDE' => 'include',
         'INCLUDE_ONCE' => 'include_once',
         'REQUIRE' => 'require',
-        'REQUIRE_ONCE' => 'require_once'
+        'REQUIRE_ONCE' => 'require_once',
+        '<bool>' => 'true',
+        '<array>' => '[]',
+        'null' => 'null'
     ];
 
     protected $indexLines = [];
@@ -23,6 +26,12 @@ class DecryptBlock {
 
     protected $funcName;
 
+    /**
+     * 方法参数
+     * @var array
+     */
+    protected $funcArguments = [];
+
     private $_switch_list = [];
 
     public function __construct($content) {
@@ -34,6 +43,13 @@ class DecryptBlock {
      */
     public function setContent($content) {
         $this->content = $content;
+    }
+
+    public function addArgument($key, $value = null) {
+        if (!is_null($value)) {
+            $key .= ' = '.$value;
+        }
+        $this->funcArguments[] = $key;
     }
 
     public function addLine(Line $line) {
@@ -135,6 +151,26 @@ class DecryptBlock {
         foreach ($lines as $key => $line) {
             $this->deLines[$key] = (new DecryptLine($line, $this))->decode();
         }
+        return $this->createLines();
+    }
+
+    public function createLines() {
+        if (empty($this->deLines)) {
+            return [];
+        }
+        if (empty($this->className) && empty($this->funcName)) {
+            return $this->deLines;
+        }
+        $lineNo = array_keys($this->deLines);
+        $min = min($lineNo);
+        $max = max($lineNo);
+        if (!empty($this->funcName)) {
+            $this->deLines[$min] = sprintf('function %s (%s) {', $this->funcName, implode(', ', $this->funcArguments));
+        }
+        if (!empty($this->className)) {
+            $this->deLines[$min] = sprintf('class %s {', $this->className);
+        }
+        $this->deLines[$max] = '}';
         return $this->deLines;
     }
 
