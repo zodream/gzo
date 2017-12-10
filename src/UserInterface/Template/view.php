@@ -13,7 +13,7 @@ echo '<?php';
 ?>
 
 defined('APP_DIR') or exit();
-use Zodream\Domain\Html\Bootstrap\DetailWidget;
+use Zodream\Html\Bootstrap\DetailWidget;
 /** @var $this \Zodream\Domain\View\View */
 $this->title = '';
 $this->extend('layout/header');
