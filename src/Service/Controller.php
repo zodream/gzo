@@ -2,7 +2,7 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Infrastructure\Http\Request;
-use Zodream\Service\Controller\ModuleController as BaseController;
+use Zodream\Route\Controller\ModuleController as BaseController;
 
 abstract class Controller extends BaseController {
     protected function getActionArguments($action, $vars = array()) {

@@ -6,7 +6,7 @@ namespace Zodream\Module\Gzo;
  * Date: 2017/1/1
  * Time: 19:22
  */
-use Zodream\Service\Controller\Module as BaseModule;
+use Zodream\Route\Controller\Module as BaseModule;
 
 class Module extends BaseModule {
 
