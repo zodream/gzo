@@ -115,6 +115,8 @@ class TemplateController extends Controller {
      * 生成基控制器
      * @param $module
      * @return string
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function baseController($module) {
         return $this->renderHtml('BaseController', array(
@@ -128,6 +130,8 @@ class TemplateController extends Controller {
      * @param string $module
      * @param bool $is_module
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function makeController($name, $module, $is_module = false) {
         return $this->renderHtml('Controller', [
@@ -145,6 +149,8 @@ class TemplateController extends Controller {
      * @param $module
      * @param bool $is_module
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function makeModel($name, $table, array $columns, $module, $is_module = false) {
         $data = GenerateModel::getFill($columns);
@@ -171,6 +177,8 @@ class TemplateController extends Controller {
      * 生成配置文件
      * @param array $configs
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     public function makeConfig(array $configs) {
         return $this->renderHtml('config', array('data' => $configs));
@@ -182,6 +190,8 @@ class TemplateController extends Controller {
      * @param string $name
      * @param array $columns
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function viewIndex($name, array $columns) {
         $data = [];
@@ -199,6 +209,8 @@ class TemplateController extends Controller {
      * @param string $name
      * @param array $columns
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function viewEdit($name, array $columns) {
         $data = [];
@@ -216,6 +228,8 @@ class TemplateController extends Controller {
      * @param string $name
      * @param array $columns
      * @return bool
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     protected function viewDetail($name, array $columns) {
         $data = [];
