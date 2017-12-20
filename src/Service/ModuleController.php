@@ -10,6 +10,12 @@ class ModuleController extends Controller {
         return $this->show('index');
     }
 
+    /**
+     * php artisan gzo/module/install --name= --module=
+     * @param $name
+     * @param $module
+     * @return \Zodream\Infrastructure\Http\Response
+     */
     public function installAction($name, $module) {
         $configs = $this->getConfigs();
         $configs['modules'][$name] = $module;
