@@ -4,7 +4,7 @@ echo '<?php';
 ?>
 
 defined('APP_DIR') or exit();
-/** @var $this \Zodream\Domain\View\View */
+/** @var $this \Zodream\Template\View */
 ?>
 <?='<?='?>$this->footer();?>
 </body>
