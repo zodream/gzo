@@ -6,7 +6,7 @@ echo '<?php';
 <?php if (isset($is_module) && $is_module):?>
 namespace Module\<?=$module?>\Domain\Model;
 <?php else:?>
-namespace Domain\Model\<?=$module?>;
+namespace Domain\Model<?= empty($module) ? '' : ('\\'. $module) ?>;
 <?php endif;?>
 
 use Domain\Model\Model;
