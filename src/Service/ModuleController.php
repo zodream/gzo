@@ -19,7 +19,7 @@ class ModuleController extends Controller {
     public function installAction($name, $module) {
         $configs = $this->getConfigs();
         $configs['modules'][$name] = $module;
-        $this->invokeModuleMethod($module, 'install');
+        $this->invokeModuleMethod($module, ['install', 'seeder']);
         $this->saveConfigs($configs);
         return $this->showContent('true');
     }
