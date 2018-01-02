@@ -16,7 +16,7 @@ class TemplateController extends Controller {
                                 $hasController = true,
                                 $hasView = true,
                                 $hasModel = true) {
-        if (empty($name)) {
+        if (!empty($name)) {
             $name = Str::studly($name);
         }
         $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
@@ -56,11 +56,13 @@ class TemplateController extends Controller {
         if (!$root->hasFile('Controller.php')) {
             $root->addFile('Controller.php', $this->baseController($module));
         }
+        $name = Str::lastReplace($name, APP_CONTROLLER);
         $this->createController($root, $name, $module);
         return $this->jsonSuccess();
     }
 
     public function moduleAction($module, $table) {
+        $module = Str::firstReplace($module, 'Module\\');
         $root = Factory::root()->addDirectory('Module')
             ->addDirectory($module);
         $root->addFile('Module.php', $this->renderHtml('Module', [

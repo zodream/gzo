@@ -1,8 +1,10 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Disk\File;
 use Zodream\Helpers\Str;
 use Zodream\Service\Factory;
+use ReflectionClass;
 
 class ModuleController extends Controller {
 
@@ -21,7 +23,7 @@ class ModuleController extends Controller {
         $configs['modules'][$name] = $module;
         $this->invokeModuleMethod($module, ['install', 'seeder']);
         $this->saveConfigs($configs);
-        return $this->showContent('true');
+        return $this->jsonSuccess();
     }
 
     public function uninstallAction($name) {
@@ -31,7 +33,7 @@ class ModuleController extends Controller {
             unset($configs['modules'][$name]);
             $this->saveConfigs($configs);
         }
-        return $this->showContent('true');
+        return $this->jsonSuccess();
     }
 
     protected function getModule($module) {
@@ -53,6 +55,7 @@ class ModuleController extends Controller {
             }
             call_user_func([$instance, $method]);
         }
+        $this->moveAssets($module);
     }
 
     protected function getConfigs() {
@@ -64,6 +67,20 @@ class ModuleController extends Controller {
             ->render('Template/config', array(
                 'data' => $configs
             )));
+    }
+
+    /**
+     * 复制资源文件到公共目录
+     * @param $module
+     */
+    protected function moveAssets($module) {
+        $func = new ReflectionClass($module);
+        $file = new File($func->getFileName());
+        $assetDir = $file->getDirectory()->directory('UserInterface/assets');
+        if (!$assetDir->exist()) {
+            return;
+        }
+        $assetDir->copy(Factory::public_path()->directory('assets'));
     }
 
 }

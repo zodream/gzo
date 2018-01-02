@@ -1,0 +1,27 @@
+<?php
+use Zodream\Template\View;
+/** @var $this View */
+?>
+
+<ul>
+    <li><a href="<?=$this->url('gzo')?>"><i class="fa fa-home"></i><span>首页</span></a></li>
+    <li class="expand"><a href="javascript:;">
+            <i class="fa fa-briefcase"></i><span>模板管理</span></a>
+        <ul>
+            <li><a href="<?=$this->url('gzo/home/controller')?>">
+                    <i class="fa fa-list"></i><span>生成控制器</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/model')?>">
+                    <i class="fa fa-list"></i><span>生成数据模型</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/crud')?>">
+                    <i class="fa fa-edit"></i><span>生成CRUD</span></a></li>
+        </ul>
+    </li>
+    <li class="expand"><a href="javascript:;">
+            <i class="fa fa-briefcase"></i><span>模块管理</span></a>
+        <ul>
+            <li><a href="<?=$this->url('gzo/home/module')?>"><i class="fa fa-list"></i><span>安装模块</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/module', ['status' => 1])?>"><i class="fa fa-list"></i><span>卸载模块</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/module', ['status' => 2])?>"><i class="fa fa-list"></i><span>生成模块</span></a></li>
+        </ul>
+    </li>
+</ul>

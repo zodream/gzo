@@ -16,4 +16,18 @@ abstract class Controller extends BaseController {
         array_shift($args);
         return $args;
     }
+
+    public function jsonFailure($message = '', $code = 400) {
+        if (!Request::isCli()) {
+            return parent::jsonFailure($message, $code);
+        }
+        return $this->showContent($message);
+    }
+
+    public function jsonSuccess($data = null, $message = null) {
+        if (!Request::isCli()) {
+            return parent::jsonSuccess($data, $message);
+        }
+        return $this->showContent(is_null($message) ? 'true' : $message);
+    }
 }

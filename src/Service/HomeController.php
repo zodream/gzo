@@ -6,27 +6,27 @@ use Zodream\Module\Gzo\Domain\GenerateModel;
 class HomeController extends Controller {
 
     public function indexAction() {
-        return $this->show('index');
+        return $this->show();
     }
 
     public function modelAction() {
-        return $this->show('model');
+        return $this->show();
     }
 
     public function tableAction() {
         $tables = GenerateModel::schema()->getAllTable();
-        return $this->json([
-            'status' => 1,
-            'tables' => $tables
-        ]);
+        return $this->jsonSuccess($tables);
     }
 
     public function crudAction() {
-        return $this->show('crud');
+        return $this->show();
     }
 
     public function controllerAction() {
-        return $this->show('controller');
+        return $this->show();
     }
 
+    public function moduleAction($status = 0) {
+        return $this->show(compact('status'));
+    }
 }
