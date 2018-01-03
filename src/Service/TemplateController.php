@@ -3,7 +3,6 @@ namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Database\Schema\Schema;
 use Zodream\Disk\Directory;
-use Zodream\Infrastructure\Http\Request;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Service\Factory;
@@ -266,10 +265,6 @@ class TemplateController extends Controller {
             default:
                 return "text('{$value['Field']}', ['label' => '{$value['Field']}'{$required}])";
         }
-    }
-
-    protected function setActionArguments($name) {
-        return Request::request($name);
     }
 
 }

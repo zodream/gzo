@@ -2,6 +2,10 @@ body {
   background: #333;
 }
 
+a {
+  text-decoration: none;
+}
+
 footer,
 header {
   background: #000;
@@ -50,7 +54,7 @@ footer {
   flex-grow: unset;
   display: inline-block;
   top: 0;
-  padding: 8px;
+  padding: 8px 8px 50px;
   min-height: 300px;
 }
 
@@ -97,6 +101,25 @@ footer {
       &::before {
         content: "\f067";
       }
+    }
+  }
+}
+
+.breadcrumb {
+  padding: 8px 15px;
+  margin-bottom: 20px;
+  list-style: none;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  >li {
+    display: inline-block;
+    &.active {
+      color: #777;
+    }
+    + li::before {
+      padding: 0 5px;
+      color: #ccc;
+      content: "/\00a0";
     }
   }
 }

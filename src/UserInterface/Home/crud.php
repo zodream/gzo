@@ -58,7 +58,7 @@ $this->extend('layouts/header')
     </div>
     <div class="input-group">
         <input id="hasView1" type="checkbox" checked name="hasView" value="1">
-        <label for="hasView1">生成视图</label>
+        <label for="hasView1"></label>
     </div>
     <button class="btn">生成</button>
 </form>

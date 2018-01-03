@@ -22,13 +22,15 @@ SHOW PROCESSLIST                             //列出执行命令。
 SHOW GRANTS FOR user                         //列出某用户权限
  */
 use Zodream\Database\Model\Model;
-use Zodream\Database\Schema\Schema;
+use Zodream\Module\Gzo\Domain\Database\Schema;
 
 class GenerateModel extends Model {
 
     public static function schema($name = null) {
         return new Schema($name);
     }
+
+
 
     public static function getValidate($value) {
         $result = '';

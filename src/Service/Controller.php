@@ -17,6 +17,10 @@ abstract class Controller extends BaseController {
         return $args;
     }
 
+    protected function setActionArguments($name) {
+        return Request::request($name);
+    }
+
     public function jsonFailure($message = '', $code = 400) {
         if (!Request::isCli()) {
             return parent::jsonFailure($message, $code);

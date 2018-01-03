@@ -24,4 +24,12 @@ use Zodream\Template\View;
             <li><a href="<?=$this->url('gzo/home/module', ['status' => 2])?>"><i class="fa fa-list"></i><span>生成模块</span></a></li>
         </ul>
     </li>
+    <li class="expand"><a href="javascript:;">
+            <i class="fa fa-briefcase"></i><span>数据库管理</span></a>
+        <ul>
+            <li><a href="<?=$this->url('gzo/home/sql')?>"><i class="fa fa-list"></i><span>数据库查询</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/export')?>"><i class="fa fa-list"></i><span>导出数据</span></a></li>
+            <li><a href="<?=$this->url('gzo/home/import')?>"><i class="fa fa-list"></i><span>导入数据</span></a></li>
+        </ul>
+    </li>
 </ul>
