@@ -15,14 +15,15 @@ class SqlController extends Controller {
     }
 
     public function exportAction($schema = null,
-                                 $sql_structure = true,
-                                 $sql_data = true,
-                                 $has_drop = true) {
+                                 $sql_structure = false,
+                                 $sql_data = false,
+                                 $has_drop = false,
+                                 $has_schema = false) {
         $root = Factory::root()->directory('data/sql');
         $root->create();
         $file = $root->file($schema.date('Y-m-d').'.sql');
         if (!GenerateModel::schema($schema)
-            ->export($file, $sql_structure, $sql_data, $has_drop)) {
+            ->export($file, $has_schema, $sql_structure, $sql_data, $has_drop)) {
             return $this->jsonFailure('导出失败！');
         }
         return Factory::response()->file($file);

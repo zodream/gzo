@@ -38,22 +38,36 @@ class Schema extends BaseSchema {
             return false;
         }
         $content = '';
+        $count = 0;
         while ($line = $stream->readLine(4096)) {
             $line = preg_replace('/--[\s\S]+/', '', $line);
             if (empty($line)) {
                 continue;
             }
             $content .= $line;
-            if (strpos($line, ';') !== false) {
-                $this->command()->execute($content);
-                $content = '';
+            $lastIndex = strrpos($line, "'");
+            if ($lastIndex !== false) {
+                $count += substr_count($line, "'") - substr_count($line, "\'");
             }
+            if ($count % 2 == 1) {
+                continue;
+            }
+            $lastI = strrpos($line, ';');
+            if ($lastI === false) {
+                continue;
+            }
+            if ($lastIndex !== false && $lastI < $lastIndex) {
+                continue;
+            }
+            $this->command()->execute($content);
+            $content = '';
+            $count = 0;
         }
         $stream->close();
         return true;
     }
 
-    public function export($file, $hasStructure = true, $hasData = true, $hasDrop = true) {
+    public function export($file, $hasSchema = true, $hasStructure = true, $hasData = true, $hasDrop = true) {
         $stream = new Stream($file);
         if (!$stream->open('w')
             ->isResource()) {
@@ -61,10 +75,15 @@ class Schema extends BaseSchema {
         }
         $stream->writeLines([
             '--备份开始',
-            '--创建数据库开始',
-            'CREATE SCHEMA IF NOT EXISTS `'.$this->schema.'` DEFAULT CHARACTER SET utf8 ;',
-            'USE `'.$this->schema.'` ;',
+            '--创建数据库开始'
         ]);
+
+        if ($hasSchema) {
+            $stream->writeLines([
+                'CREATE SCHEMA IF NOT EXISTS `'.$this->schema.'` DEFAULT CHARACTER SET utf8 ;',
+                'USE `'.$this->schema.'` ;',
+            ]);
+        }
 
         $this->map(function (Table $table) use ($stream, $hasStructure, $hasData, $hasDrop) {
             $stream->writeLine('--创建表 '.$table->getName().' 开始');
@@ -88,7 +107,7 @@ class Schema extends BaseSchema {
                     $length = count($data);
                     for ($j = 0; $j < $length; $j ++) {
                         $sql = sprintf('(\'%s\')%s',
-                            implode("', '", array_values($data[$j])), $j >= $length - 1 ? ';' : ',');
+                            implode("', '", array_map('addslashes', array_values($data[$j])) ), $j >= $length - 1 ? ';' : ',');
                         $stream->writeLine($sql);
                     }
                 }

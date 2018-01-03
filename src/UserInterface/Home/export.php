@@ -47,6 +47,10 @@ $this->extend('layouts/header')
         <label for="data1">生成数据</label>
     </div>
     <div class="input-group">
+        <input id="hasDrop1" type="checkbox" checked name="has_schema" value="1">
+        <label for="hasDrop1">生成数据库</label>
+    </div>
+    <div class="input-group">
         <input id="hasDrop1" type="checkbox" checked name="has_drop" value="1">
         <label for="hasDrop1">添加 DROP </label>
     </div>
