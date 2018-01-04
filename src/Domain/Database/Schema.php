@@ -2,10 +2,13 @@
 namespace Zodream\Module\Gzo\Domain\Database;
 
 use Zodream\Database\Schema\Schema as BaseSchema;
+use Zodream\Disk\File;
 use Zodream\Disk\Stream;
 use Zodream\Infrastructure\Support\Collection;
 
 class Schema extends BaseSchema {
+
+    const LINE_MAX_LENGTH = 1048576;  // 一行读取的最大长度 1M
 
     public static function getAllDatabaseName() {
         $data = static::getAllDatabase();
@@ -32,41 +35,41 @@ class Schema extends BaseSchema {
         return $this->command()->getArray($sql);
     }
 
+    /**
+     * 导入文件，导入一行的文件过大可能会报错
+     * @param File|string $file
+     * @return bool
+     */
     public function import($file) {
         $stream = new Stream($file);
         if (!$stream->openRead()->isResource()) {
             return false;
         }
         $content = '';
-        $count = 0;
-        while ($line = $stream->readLine(4096)) {
-            $line = preg_replace('/--[\s\S]+/', '', $line);
-            if (empty($line)) {
+        while ($line = $stream->readLine(self::LINE_MAX_LENGTH)) {
+            if (substr($line, 0, 2) == '--' || $line == '') {
                 continue;
             }
             $content .= $line;
-            $lastIndex = strrpos($line, "'");
-            if ($lastIndex !== false) {
-                $count += substr_count($line, "'") - substr_count($line, "\'");
-            }
-            if ($count % 2 == 1) {
-                continue;
-            }
-            $lastI = strrpos($line, ';');
-            if ($lastI === false) {
-                continue;
-            }
-            if ($lastIndex !== false && $lastI < $lastIndex) {
+            if (substr(trim($line), -1, 1) !== ';') {
                 continue;
             }
             $this->command()->execute($content);
             $content = '';
-            $count = 0;
         }
         $stream->close();
         return true;
     }
 
+    /**
+     * 导出
+     * @param $file
+     * @param bool $hasSchema
+     * @param bool $hasStructure
+     * @param bool $hasData
+     * @param bool $hasDrop
+     * @return bool
+     */
     public function export($file, $hasSchema = true, $hasStructure = true, $hasData = true, $hasDrop = true) {
         $stream = new Stream($file);
         if (!$stream->open('w')
@@ -74,43 +77,59 @@ class Schema extends BaseSchema {
             return false;
         }
         $stream->writeLines([
-            '--备份开始',
-            '--创建数据库开始'
+            '-- 备份开始',
+            '-- 创建数据库开始'
         ]);
 
         if ($hasSchema) {
             $stream->writeLines([
-                'CREATE SCHEMA IF NOT EXISTS `'.$this->schema.'` DEFAULT CHARACTER SET utf8 ;',
-                'USE `'.$this->schema.'` ;',
+                'CREATE SCHEMA IF NOT EXISTS `'.$this->schema.'` DEFAULT CHARACTER SET utf8;',
+                'USE `'.$this->schema.'`;',
             ]);
         }
 
         $this->map(function (Table $table) use ($stream, $hasStructure, $hasData, $hasDrop) {
-            $stream->writeLine('--创建表 '.$table->getName().' 开始');
+            $stream->writeLine('-- 创建表 '.$table->getName().' 开始');
             if ($hasDrop) {
                 $stream->writeLine($table->getDropSql());
             }
             if ($hasStructure) {
                 $stream->writeLine($table->getCreateTableSql());
             }
-            if ($hasData) {
-                $count = $table->rows();
+            $count = $table->rows();
+            if ($hasData && $count > 0) {
+                $columnFields = $table->getFieldsType();
+                $stream->writeLine($table->getLockSql());
                 for ($i = 0; $i < $count; $i += 20) {
-                    $data = $table->query('')->limit($i, $i + 20)->all();
+                    $data = $table->query()->limit($i, $i + 20)->all();
                     if (empty($data)) {
                         continue;
                     }
-                    $sql = sprintf('INSERT INTO `%s` (`%s`) VALUES ',
+                    $column_sql = sprintf('INSERT INTO `%s` (`%s`) VALUES ',
                         $table->getName(),
-                        implode('`, `', array_keys($data[0])));
-                    $stream->writeLine($sql);
+                        implode('`,`', array_keys($data[0])));
+                    $stream->write($column_sql);
                     $length = count($data);
+                    $size = 0;
                     for ($j = 0; $j < $length; $j ++) {
-                        $sql = sprintf('(\'%s\')%s',
-                            implode("', '", array_map('addslashes', array_values($data[$j])) ), $j >= $length - 1 ? ';' : ',');
-                        $stream->writeLine($sql);
+                        $sql = sprintf('(%s)', $this->getRowSql($data[$j], $columnFields));
+                        $size += strlen($size);
+                        // 计算字符长度， 进行再分行
+                        if ($size < self::LINE_MAX_LENGTH && $j < $length - 1) {
+                            $stream->write($sql.',');
+                            continue;
+                        }
+                        $size = 0;
+                        if ($j >= $length - 1) {
+                            $stream->writeLine($sql.';');
+                            break;
+                        }
+                        $stream->writeLines([
+                            $sql.';'
+                        ])->write($column_sql);
                     }
                 }
+                $stream->writeLine($table->getUnLockSql());
             }
             $stream->writeLines([
                 '',
@@ -119,9 +138,34 @@ class Schema extends BaseSchema {
         });
 
         $stream->writeLines([
-            '--创建数据库结束',
-            '--备份结束'
+            '-- 创建数据库结束',
+            '-- 备份结束'
         ])->close();
         return true;
+    }
+
+    /**
+     * 获取插入数据
+     * @param $data
+     * @param $columnFields
+     * @return string
+     */
+    protected function getRowSql($data, $columnFields) {
+        $args = [];
+        foreach ($data as $key => $item) {
+            if (is_null($item)) {
+                $args[] = 'null';
+                continue;
+            }
+            if (array_key_exists($key, $columnFields) && $columnFields[$key]) {
+                $args[] = $item;
+                continue;
+            }
+            $args[] = sprintf('\'%s\'',
+                str_replace(
+                    ["\r\n", "\r", "\n", '\\\'', '\''],
+                    ["\n", '\r\n', '\r\n', '\'', '\\\''], $item));
+        }
+        return implode(',',$args);
     }
 }

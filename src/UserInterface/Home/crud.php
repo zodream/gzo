@@ -48,7 +48,6 @@ $this->extend('layouts/header')
         <input id="name1" type="text" name="name" placeholder="示例：Home" size="100">
     </div>
     <div class="input-group">
-
         <input id="hasController1" type="checkbox" checked name="hasController" value="1">
         <label for="hasController1">生成控制器</label>
     </div>

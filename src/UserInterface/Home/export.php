@@ -54,6 +54,10 @@ $this->extend('layouts/header')
         <input id="hasDrop1" type="checkbox" checked name="has_drop" value="1">
         <label for="hasDrop1">添加 DROP </label>
     </div>
+    <div class="input-group">
+        <label for="expire1">有效期（分钟）</label>
+        <input id="expire1" type="number" name="expire" placeholder="示例：10" value="10" size="10">
+    </div>
     <button class="btn">执行</button>
 </form>
 

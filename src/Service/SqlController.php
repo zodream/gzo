@@ -10,6 +10,7 @@ use ReflectionClass;
 class SqlController extends Controller {
 
     public function importAction($schema = null) {
+        set_time_limit(0);
         GenerateModel::schema($schema)->import($_FILES['file']['tmp_name']);
         return $this->jsonSuccess();
     }
@@ -18,11 +19,13 @@ class SqlController extends Controller {
                                  $sql_structure = false,
                                  $sql_data = false,
                                  $has_drop = false,
-                                 $has_schema = false) {
+                                 $has_schema = false,
+                                 $expire = 10) {
         $root = Factory::root()->directory('data/sql');
         $root->create();
         $file = $root->file($schema.date('Y-m-d').'.sql');
-        if (!GenerateModel::schema($schema)
+        set_time_limit(0);
+        if ($file->modifyTime() < (time() - $expire * 60) && !GenerateModel::schema($schema)
             ->export($file, $has_schema, $sql_structure, $sql_data, $has_drop)) {
             return $this->jsonFailure('导出失败！');
         }

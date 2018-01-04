@@ -34,7 +34,7 @@ $this->extend('layouts/header')
 <form class="form-inline" action="<?=$this->url('gzo/sql/import')?>" enctype="multipart/form-data" method="post">
     <div class="input-group">
         <label for="schema1">数据库</label>
-        <select name="schema" id="schema1" required>
+        <select name="schema" id="schema1">
             <option value="">请选择</option>
         </select>
     </div>

@@ -2,6 +2,7 @@
 namespace Zodream\Module\Gzo\Domain\Database;
 
 use Zodream\Database\Schema\Table as BaseTable;
+use Zodream\Disk\File;
 use Zodream\Infrastructure\Support\Collection;
 use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 
@@ -34,5 +35,38 @@ class Table extends BaseTable {
             $func((new Column($this, $item['COLUMN_NAME']))
                 ->setData($item));
         });
+    }
+
+    /**
+     * 导入csv数据
+     * @param File|string $file
+     */
+    public function importCsv($file) {
+        $this->command()->execute('
+            LOAD DATA LOCAL INFILE "'.(string)$file.'"
+            INTO TABLE '.$this->getName().'
+            FIELDS TERMINATED by \',\'
+            LINES TERMINATED BY \'\n\'
+        ');
+    }
+
+    /**
+     * 获取列是不是数值
+     * @return array
+     */
+    public function getFieldsType() {
+        $data = $this->getAllColumn();
+        $args = [];
+        foreach ($data as $field) {
+            $args[$field['Field']] = $this->isNumeric($field['Type']);
+        }
+        return $args;
+    }
+
+    protected function isNumeric($type) {
+        $type = strtoupper(trim(explode('(', $type)[0]));
+        return in_array($type, [
+            'SMALLINT', 'BIGINT', 'FLOAT',
+            'DOUBLE', 'DECIMAL', 'INT', 'TINYINT']);
     }
 }
