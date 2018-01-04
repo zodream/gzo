@@ -100,8 +100,9 @@ class Schema extends BaseSchema {
             if ($hasData && $count > 0) {
                 $columnFields = $table->getFieldsType();
                 $stream->writeLine($table->getLockSql());
-                for ($i = 0; $i < $count; $i += 20) {
-                    $data = $table->query()->limit($i, $i + 20)->all();
+                $onlyMaxSize = max(20, floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
+                for ($i = 0; $i < $count; $i += $onlyMaxSize) {
+                    $data = $table->query()->limit($i, $onlyMaxSize)->all();
                     if (empty($data)) {
                         continue;
                     }
@@ -113,7 +114,7 @@ class Schema extends BaseSchema {
                     $size = 0;
                     for ($j = 0; $j < $length; $j ++) {
                         $sql = sprintf('(%s)', $this->getRowSql($data[$j], $columnFields));
-                        $size += strlen($size);
+                        $size += strlen($sql);
                         // 计算字符长度， 进行再分行
                         if ($size < self::LINE_MAX_LENGTH && $j < $length - 1) {
                             $stream->write($sql.',');
@@ -154,7 +155,7 @@ class Schema extends BaseSchema {
         $args = [];
         foreach ($data as $key => $item) {
             if (is_null($item)) {
-                $args[] = 'null';
+                $args[] = 'NULL';
                 continue;
             }
             if (array_key_exists($key, $columnFields) && $columnFields[$key]) {

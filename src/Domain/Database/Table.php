@@ -8,14 +8,38 @@ use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 
 class Table extends BaseTable {
 
+    /**
+     * 总长度
+     * @return integer
+     */
     public function length() {
         return $this->_data['Data_length'];
+    }
+
+    /**
+     * 平均每行的长度
+     * @return integer
+     */
+    public function avgRowLength() {
+        return $this->_data['Avg_row_length'];
     }
 
     public function maxLength() {
         return $this->_data['Max_data_length'];
     }
 
+    /**
+     * 空间碎片大小，可以进行碎片整理优化
+     * @return integer
+     */
+    public function dataFree() {
+        return $this->_data['Data_free'];
+    }
+
+    /**
+     * 行数
+     * @return integer
+     */
     public function rows() {
         return $this->_data['Rows'];
     }
@@ -24,6 +48,10 @@ class Table extends BaseTable {
         return $this->_data['Version'];
     }
 
+    /**
+     * 编码
+     * @return string
+     */
     public function collation() {
         return $this->_data['Collation'];
     }
