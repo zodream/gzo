@@ -5,6 +5,7 @@ use Zodream\Template\View;
 $this->title = '生成数据模型模型';
 
 $url = $this->url('gzo/home/schema');
+$table_url = $this->url('gzo/home/table');
 $js = <<<JS
 $.getJSON('{$url}', function (data) { 
     if (data.code != 200) {
@@ -15,6 +16,19 @@ $.getJSON('{$url}', function (data) {
         html += '<option value="'+item+'">'+item+'</option>';
     });
     $('#schema1').html(html);
+});
+$('#schema1').change(function() {
+    $("#table-box").hide();
+    $.getJSON('{$table_url}?schema='+ $(this).val(), function (data) {
+        var html = '';
+        if (data.code == 200) {
+            $.each(data.data, function(i, item) {
+                html += '<option value="'+item+'">'+item+'</option>';
+            });
+        }
+        $('#table1').html(html);
+        $("#table-box").toggle(html != '');
+    });
 });
 JS;
 
@@ -36,6 +50,11 @@ $this->extend('layouts/header')
         <label for="schema1">数据库</label>
         <select name="schema" id="schema1" required>
             <option value="">请选择</option>
+        </select>
+    </div>
+    <div id="table-box" class="input-group" style="display: none">
+        <label for="table1">数据表</label>
+        <select name="table[]" id="table1" multiple size="10">
         </select>
     </div>
     <div class="input-group">

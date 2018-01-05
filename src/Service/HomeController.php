@@ -16,8 +16,8 @@ class HomeController extends Controller {
         return $this->show();
     }
 
-    public function tableAction() {
-        $tables = GenerateModel::schema()->getAllTable();
+    public function tableAction($schema = null) {
+        $tables = GenerateModel::schema($schema)->getAllTable();
         return $this->jsonSuccess($tables);
     }
 

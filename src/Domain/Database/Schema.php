@@ -64,13 +64,14 @@ class Schema extends BaseSchema {
     /**
      * 导出
      * @param $file
+     * @param array $table
      * @param bool $hasSchema
      * @param bool $hasStructure
      * @param bool $hasData
      * @param bool $hasDrop
      * @return bool
      */
-    public function export($file, $hasSchema = true, $hasStructure = true, $hasData = true, $hasDrop = true) {
+    public function export($file, $tables = null, $hasSchema = true, $hasStructure = true, $hasData = true, $hasDrop = true) {
         $stream = new Stream($file);
         if (!$stream->open('w')
             ->isResource()) {
@@ -88,7 +89,15 @@ class Schema extends BaseSchema {
             ]);
         }
 
-        $this->map(function (Table $table) use ($stream, $hasStructure, $hasData, $hasDrop) {
+        $this->map(function (Table $table) use ($stream, $tables, $hasStructure, $hasData, $hasDrop) {
+            if (!empty($tables) && in_array($table->getName(), (array)$tables)) {
+                $stream->writeLines([
+                    '-- 跳过表 '.$table->getName(),
+                    '',
+                    ''
+                ]);
+                return;
+            }
             $stream->writeLine('-- 创建表 '.$table->getName().' 开始');
             if ($hasDrop) {
                 $stream->writeLine($table->getDropSql());
