@@ -90,7 +90,7 @@ class Schema extends BaseSchema {
         }
 
         $this->map(function (Table $table) use ($stream, $tables, $hasStructure, $hasData, $hasDrop) {
-            if (!empty($tables) && in_array($table->getName(), (array)$tables)) {
+            if (!empty($tables) && !in_array($table->getName(), (array)$tables)) {
                 $stream->writeLines([
                     '-- 跳过表 '.$table->getName(),
                     '',
