@@ -3,11 +3,16 @@ namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Disk\File;
 use Zodream\Helpers\Str;
+use Zodream\Infrastructure\Http\Response;
 use Zodream\Service\Factory;
 use ReflectionClass;
 
 class ModuleController extends Controller {
 
+    /**
+     * @return Response
+     * @throws \Exception
+     */
     public function indexAction() {
         return $this->show('index');
     }
@@ -16,12 +21,15 @@ class ModuleController extends Controller {
      * php artisan gzo/module/install --name= --module=
      * @param $name
      * @param $module
-     * @return \Zodream\Infrastructure\Http\Response
+     * @param bool $hasTable
+     * @param bool $hasSeed
+     * @param bool $hasAssets
+     * @return Response
      */
-    public function installAction($name, $module) {
+    public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true) {
         $configs = $this->getConfigs();
         $configs['modules'][$name] = $module;
-        $this->invokeModuleMethod($module, ['install', 'seeder']);
+        $this->invokeModuleMethod($module, $hasTable, $hasSeed, $hasAssets);
         $this->saveConfigs($configs);
         return $this->jsonSuccess();
     }
@@ -43,25 +51,39 @@ class ModuleController extends Controller {
         return $module.'\\Module';
     }
 
-    protected function invokeModuleMethod($module, $methods) {
+    protected function invokeModuleMethod($module, $hasTable = true, $hasSeed = true, $hasAssets = true) {
         $module = $this->getModule($module);
         if (!class_exists($module)) {
             return;
         }
+        $methods = [];
+        if ($hasTable) {
+            $methods[] = 'install';
+        }
+        if ($hasSeed) {
+            $methods[] = 'seeder';
+        }
         $instance = new $module;
-        foreach ((array)$methods as $method) {
+        foreach ($methods as $method) {
             if (empty($method) || !method_exists($instance, $method)) {
                 continue;
             }
             call_user_func([$instance, $method]);
         }
-        $this->moveAssets($module);
+        if ($hasAssets) {
+            $this->moveAssets($module);
+        }
     }
 
     protected function getConfigs() {
         return include Factory::config()->getCurrentFile()->getFullName();
     }
 
+    /**
+     * @param $configs
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
+     */
     protected function saveConfigs($configs) {
         Factory::config()->getCurrentFile()->write(Factory::view()
             ->render('Template/config', array(

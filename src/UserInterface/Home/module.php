@@ -56,6 +56,18 @@ $this->extend('layouts/header')
                     <label for="module1">命名空间</label>
                     <input type="text" id="module1" name="module" placeholder="示例：Module\Blog" required size="100">
                 </div>
+                <div class="input-group">
+                    <input id="installTable1" type="checkbox" checked name="hasTable" value="1">
+                    <label for="installTable1">创建数据结构</label>
+                </div>
+                <div class="input-group">
+                    <input id="hasSeed1" type="checkbox" checked name="hasSeed" value="1">
+                    <label for="hasSeed1">生成测试数据</label>
+                </div>
+                <div class="input-group">
+                    <input id="hasAssets1" type="checkbox" checked name="hasAssets" value="1">
+                    <label for="hasAssets1">复制资源文件</label>
+                </div>
                 <button class="btn">安装</button>
             </form>
         </div>

@@ -8,10 +8,10 @@ $(document).ready(function() {
         let $this = $(this);
         $.getJSON($this.attr('action'), $this.serialize(), function(data) {
             if (data.code == 200) {
-                Dialog.tip(data.message);
+                Dialog.tip(data.messages || '操作执行完成！');
                 return;
             }
-            Dialog.tip(data.errors);
+            Dialog.tip(data.errors || '操作执行失败！');
         });
         return false;
     });
