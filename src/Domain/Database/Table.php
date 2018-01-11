@@ -57,8 +57,11 @@ class Table extends BaseTable {
     }
 
     public function map(callable $func) {
+        if (empty($this->schema)) {
+            $this->schema = new Schema();
+        }
         $data = InformationSchemaModel::column()->where(['TABLE_SCHEMA' => $this->schema->getSchema()])
-        ->andWhere(['TABLE_NAME' => $this->getTableName()])->all();
+        ->where(['TABLE_NAME' => $this->getTableName()])->all();
         (new Collection($data))->each(function($item) use ($func) {
             $func((new Column($this, $item['COLUMN_NAME']))
                 ->setData($item));

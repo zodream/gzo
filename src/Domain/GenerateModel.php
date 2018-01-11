@@ -30,8 +30,6 @@ class GenerateModel extends Model {
         return new Schema($name);
     }
 
-
-
     public static function getValidate($value) {
         $result = '';
         if ($value['Null'] == 'NO') {

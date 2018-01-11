@@ -19,12 +19,14 @@ class ModuleController extends Controller {
 
     /**
      * php artisan gzo/module/install --name= --module=
-     * @param $name
-     * @param $module
+     * @param string $name
+     * @param string $module
      * @param bool $hasTable
      * @param bool $hasSeed
      * @param bool $hasAssets
      * @return Response
+     * @throws \Exception
+     * @throws \Zodream\Disk\FileException
      */
     public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true) {
         $configs = $this->getConfigs();
