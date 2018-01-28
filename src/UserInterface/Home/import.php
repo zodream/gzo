@@ -31,7 +31,7 @@ $this->extend('layouts/header')
     <span class="toggle"></span>
 </div>
 
-<form class="form-inline" action="<?=$this->url('gzo/sql/import')?>" enctype="multipart/form-data" method="post">
+<form class="form-inline" action="<?=$this->url('./sql/import')?>" enctype="multipart/form-data" method="post">
     <div class="input-group">
         <label for="schema1">数据库</label>
         <select name="schema" id="schema1">

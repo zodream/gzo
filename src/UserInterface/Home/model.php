@@ -31,7 +31,7 @@ $this->extend('layouts/header')
     <span class="toggle"></span>
 </div>
 
-<form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/template/model')?>" method="get">
+<form class="form-inline" data-type="ajax" action="<?=$this->url('./template/model')?>" method="get">
     <div class="input-group">
         <label for="table1">数据表</label>
         <select name="table" id="table1" required>

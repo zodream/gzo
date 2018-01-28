@@ -16,7 +16,7 @@ $this->extend('layouts/header');
 </div>
 
 
-<form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/template/controller')?>" method="get">
+<form class="form-inline" data-type="ajax" action="<?=$this->url('./template/controller')?>" method="get">
 
     <div class="input-group">
         <label for="module1">模块名</label>

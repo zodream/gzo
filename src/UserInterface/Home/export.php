@@ -45,7 +45,7 @@ $this->extend('layouts/header')
     <span class="toggle"></span>
 </div>
 
-<form class="form-inline" action="<?=$this->url('gzo/sql/export')?>" target="_blank" method="get">
+<form class="form-inline" action="<?=$this->url('./sql/export')?>" target="_blank" method="get">
     <div class="input-group">
         <label for="schema1">数据库</label>
         <select name="schema" id="schema1" required>

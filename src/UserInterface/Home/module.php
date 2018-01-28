@@ -47,7 +47,7 @@ $this->extend('layouts/header')
                 <span class="toggle"></span>
             </div>
 
-            <form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/module/install')?>" method="get">
+            <form class="form-inline" data-type="ajax" action="<?=$this->url('./module/install')?>" method="get">
                 <div class="input-group">
                     <label for="name1">路&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由</label>
                     <input id="name1" type="text" name="name" placeholder="示例：blog" required size="20">

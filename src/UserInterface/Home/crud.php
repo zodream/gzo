@@ -32,7 +32,7 @@ $this->extend('layouts/header')
     <span class="toggle"></span>
 </div>
 
-<form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/template')?>" method="get">
+<form class="form-inline" data-type="ajax" action="<?=$this->url('./template')?>" method="get">
     <div class="input-group">
         <label for="module1">模块名</label>
         <input type="text" id="module1" name="module" placeholder="示例：Blog" required size="100">

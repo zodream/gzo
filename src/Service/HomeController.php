@@ -41,24 +41,24 @@ class HomeController extends Controller {
     public function sqlAction($query = null, $schema = null, $table = null, $action = null) {
         if ($action == 'optimize' && !empty($table)) {
             $crumbs = [
-                '服务器：localhost' => Url::to('gzo/home/sql'),
-                '数据库：'.$schema => Url::to('gzo/home/sql', compact('schema')),
-                '表：'.$table => Url::to('gzo/home/sql', compact('schema', 'table')),
+                '服务器：localhost' => Url::to('./home/sql'),
+                '数据库：'.$schema => Url::to('./home/sql', compact('schema')),
+                '表：'.$table => Url::to('./home/sql', compact('schema', 'table')),
                 '优化'
             ];
             GenerateModel::schema($schema)->table($table)->optimize();
             $data = [['提示' => '优化成功！']];
         } elseif (!empty($query)) {
             $crumbs = [
-                '服务器：localhost' => Url::to('gzo/home/sql'),
-                '数据库：'.$schema => Url::to('gzo/home/sql', compact('schema')),
+                '服务器：localhost' => Url::to('./home/sql'),
+                '数据库：'.$schema => Url::to('./home/sql', compact('schema')),
                 '执行Sql结果'
             ];
             $data = GenerateModel::schema($schema)->getRows($query);
         } elseif (!empty($table)) {
             $crumbs = [
-                '服务器：localhost' => Url::to('gzo/home/sql'),
-                '数据库：'.$schema => Url::to('gzo/home/sql', compact('schema')),
+                '服务器：localhost' => Url::to('./home/sql'),
+                '数据库：'.$schema => Url::to('./home/sql', compact('schema')),
                 '表：'.$table
             ];
             $data = GenerateModel::schema($schema)->table($table)->getAllColumn(true);
@@ -71,7 +71,7 @@ class HomeController extends Controller {
             }, $data);
         } elseif (!empty($schema)) {
             $crumbs = [
-                '服务器：localhost' => Url::to('gzo/home/sql'),
+                '服务器：localhost' => Url::to('./home/sql'),
                 '数据库：'.$schema
             ];
             $data = GenerateModel::schema($schema)->getAllTable(true);
@@ -89,7 +89,7 @@ class HomeController extends Controller {
             }, $data);
         } else {
             $crumbs = [
-                '服务器：localhost' => Url::to('gzo/home/sql')
+                '服务器：localhost' => Url::to('./home/sql')
             ];
             $data = Schema::getAllDatabase();
             $data = array_map(function ($item) {
