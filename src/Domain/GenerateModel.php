@@ -42,17 +42,18 @@ class GenerateModel extends Model {
         if(!preg_match('#(.+?)\(([0-9]+)\)#', $value['Type'], $match)) {
             return $result;
         }
+        $ext = !empty($match[2]) ? ':0,'.$match[2] : '';
         switch ($match[1]) {
             case 'int':
                 $result .= '|int';
                 break;
             case 'tinyint':
-                $result .= '|int:0-'.$match[2];
+                $result .= '|int'.$ext;
                 break;
             case 'char':
             case 'varchar':
             default:
-                $result .= '|string:3-'.$match[2];
+                $result .= '|string'.$ext;
                 break;
         }
         return trim($result, '|');
