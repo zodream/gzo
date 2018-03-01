@@ -43,6 +43,7 @@ $this->extend('layouts/header')
         <input type="text" id="module1" name="module" placeholder="示例：Home" size="100">
     </div>
     <button class="btn">生成</button>
+    <button type="button" data-type="preview" class="btn">预览</button>
 </form>
 
 <?php

@@ -42,14 +42,24 @@ class TemplateController extends Controller {
         return $this->jsonSuccess();
     }
 
-    public function modelAction($table, $module = null) {
+    public function modelAction($table, $module = null, $preview = null) {
+        if (!empty($preview)) {
+            return $this->jsonSuccess([
+                'code' => $this->createModel(null, $table, $module)
+            ]);
+        }
         $root = Factory::root()->addDirectory('Domain')
             ->addDirectory('Model')->addDirectory($module);
         $this->createModel($root, $table, $module);
         return $this->jsonSuccess();
     }
 
-    public function controllerAction($module, $name = 'Home') {
+    public function controllerAction($module, $name = 'Home', $preview = null) {
+        if (!empty($preview)) {
+            return $this->jsonSuccess([
+                'code' => $this->createController(null, $name, $module)
+            ]);
+        }
         $root = Factory::root()->addDirectory('Service')
             ->addDirectory($module);
         if (!$root->hasFile('Controller.php')) {
@@ -81,11 +91,15 @@ class TemplateController extends Controller {
         return $this->jsonSuccess();
     }
 
-    protected function createController(Directory $root, $name, $module, $is_module = false) {
-        $root->addFile($name.APP_CONTROLLER.'.php', $this->makeController($name, $module, $is_module));
+    protected function createController($root, $name, $module, $is_module = false) {
+        $template = $this->makeController($name, $module, $is_module);
+        if (!$root instanceof Directory) {
+            return $template;
+        }
+        $root->addFile($name.APP_CONTROLLER.'.php', $template);
     }
 
-    protected function createModel(Directory $root,
+    protected function createModel($root,
                                    $table,
                                    $module,
                                    $name = null,
@@ -97,7 +111,11 @@ class TemplateController extends Controller {
         if (empty($name)) {
             $name = Str::studly($table);
         }
-        $root->addFile($name.APP_MODEL.'.php', $this->makeModel($name, $table, $columns, $module, $is_module));
+        $template = $this->makeModel($name, $table, $columns, $module, $is_module);
+        if (!$root instanceof Directory) {
+            return $template;
+        }
+        $root->addFile($name.APP_MODEL.'.php', $template);
     }
 
     protected function createView(Directory $root, $name, array $columns) {

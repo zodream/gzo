@@ -27,6 +27,7 @@ $this->extend('layouts/header');
         <input id="name1" type="text" name="name" value="Home" placeholder="示例：Home" size="100">
     </div>
     <button class="btn">生成</button>
+    <button type="button" data-type="preview" class="btn">预览</button>
 </form>
 
 <?php
