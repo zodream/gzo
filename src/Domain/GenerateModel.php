@@ -32,7 +32,7 @@ class GenerateModel extends Model {
 
     public static function getValidate($value) {
         $result = '';
-        if ($value['Null'] == 'NO') {
+        if ($value['Null'] == 'NO' && is_null($value['Default'])) {
             $result = 'required';
         }
         if ($value['Type'] == 'text') {
