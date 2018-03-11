@@ -19,7 +19,7 @@ use Zodream\Template\View;
     <li class="expand"><a href="javascript:;">
             <i class="fa fa-briefcase"></i><span>模块管理</span></a>
         <ul>
-            <li><a href="<?=$this->url('./home/module')?>"><i class="fa fa-chain-broken"></i><span>安装模块</span></a></li>
+            <li><a href="<?=$this->url('./home/module')?>"><i class="fa fa-link"></i><span>安装模块</span></a></li>
             <li><a href="<?=$this->url('./home/module', ['status' => 1])?>"><i class="fa fa-unlink"></i><span>卸载模块</span></a></li>
             <li><a href="<?=$this->url('./home/module', ['status' => 2])?>"><i class="fa fa-terminal"></i><span>生成模块</span></a></li>
         </ul>
