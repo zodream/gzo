@@ -2,6 +2,8 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Disk\File;
+use Zodream\Disk\FileException;
+use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
 use Zodream\Infrastructure\Http\Response;
 use Zodream\Service\Factory;
@@ -24,24 +26,30 @@ class ModuleController extends Controller {
      * @param bool $hasTable
      * @param bool $hasSeed
      * @param bool $hasAssets
+     * @param bool $isGlobal
      * @return Response
      * @throws \Exception
      * @throws \Zodream\Disk\FileException
      */
-    public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true) {
-        $configs = $this->getConfigs();
-        $configs['modules'][$name] = $module;
+    public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true, $isGlobal = true) {
         $this->invokeModuleMethod($module, $hasTable, $hasSeed, $hasAssets);
-        $this->saveConfigs($configs);
+        $this->saveModuleConfigs([
+            'modules' => [
+                $name => $module
+            ]
+        ], $isGlobal);
         return $this->jsonSuccess();
     }
 
     public function uninstallAction($name) {
-        $configs = $this->getConfigs();
-        if (isset($configs['modules'][$name])) {
-            $this->invokeModuleMethod($configs['modules'][$name], 'uninstall');
-            unset($configs['modules'][$name]);
-            $this->saveConfigs($configs);
+        $files = [Factory::config()->getCurrentFile(), Factory::config()->getDirectory()->file('config.php')];
+        foreach ($files as $file) {
+            $configs = Factory::config()->getConfigByFile($file);
+            if (isset($configs['modules'][$name])) {
+                $this->invokeModuleMethod($configs['modules'][$name], 'uninstall');
+                unset($configs['modules'][$name]);
+                $this->saveConfig($file, $configs);
+            }
         }
         return $this->jsonSuccess();
     }
@@ -77,20 +85,23 @@ class ModuleController extends Controller {
         }
     }
 
-    protected function getConfigs() {
-        return include Factory::config()->getCurrentFile()->getFullName();
-    }
-
     /**
      * @param $configs
+     * @param bool $isGlobal
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
+     * @throws FileException
      */
-    protected function saveConfigs($configs) {
-        Factory::config()->getCurrentFile()->write(Factory::view()
-            ->render('Template/config', array(
-                'data' => $configs
-            )));
+    protected function saveModuleConfigs($configs, $isGlobal = true) {
+        $file = $isGlobal ? Factory::config()->getDirectory()->file('config.php') : Factory::config()->getCurrentFile();
+        $data = Factory::config()->getConfigByFile($file);
+        $data = Arr::merge2D($data, $configs);
+        $this->saveConfig($file, $data);
+    }
+
+    protected function removeConfigs(File $file, $configs) {
+        $data = Factory::config()->getConfigByFile($file);
+        $data = Arr::unset2D($data, $configs);
+        $this->saveConfig($file, $data);
     }
 
     /**
@@ -105,6 +116,20 @@ class ModuleController extends Controller {
             return;
         }
         $assetDir->copy(Factory::public_path()->directory('assets'));
+    }
+
+    /**
+     * @param $file
+     * @param $configs
+     * @throws FileException
+     * @throws \Exception
+     */
+    protected function saveConfig(File $file, array $configs) {
+        $content = Factory::view()
+            ->render('Template/config', array(
+                'data' => $configs
+            ));
+        $file->write($content);
     }
 
 }
