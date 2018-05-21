@@ -2,6 +2,7 @@
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 use Zodream\Disk\File;
+use Zodream\Infrastructure\Support\Process;
 use Zodream\Service\Factory;
 
 class DecryptFile {
@@ -41,22 +42,10 @@ class DecryptFile {
      * @return bool|string
      */
     public function getContent() {
-        $deScriptSpec = array(
-            0 => array("pipe", "r"),    // stdin
-            1 => array("pipe", "w"),    // stdout
-            2 => array("pipe", "w")     // stderr
-        );
         $cmd = Factory::config('php_path', 'php').' -dvld.active=1 '.$this->srcFile;  // 替换为你要执行的shell脚本
-        $pro = proc_open($cmd, $deScriptSpec, $pipes, null, null);
-        // $pro为false，表明命令执行失败
-        if ($pro == false) {
-            return false;
-        }
-        $stdout = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-        $status = proc_close($pro);  // 释放proc
+        $process = Process::factory($cmd);
+        $status = $process->start()->join()->stop();
+        extract($process->getOutput());
         return $stderr;
     }
 
