@@ -32,12 +32,22 @@ class ModuleController extends Controller {
      * @throws \Zodream\Disk\FileException
      */
     public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true, $isGlobal = true) {
-        $this->invokeModuleMethod($module, $hasTable, $hasSeed, $hasAssets);
+        $methods = [];
+        if ($hasTable) {
+            $methods[] = 'install';
+        }
+        if ($hasSeed) {
+            $methods[] = 'seeder';
+        }
+        $this->invokeModuleMethod($module, $methods);
         $this->saveModuleConfigs([
             'modules' => [
                 $name => $module
             ]
         ], $isGlobal);
+        if ($hasAssets) {
+            $this->moveAssets($module);
+        }
         return $this->jsonSuccess();
     }
 
@@ -61,27 +71,18 @@ class ModuleController extends Controller {
         return $module.'\\Module';
     }
 
-    protected function invokeModuleMethod($module, $hasTable = true, $hasSeed = true, $hasAssets = true) {
+    protected function invokeModuleMethod($module, $methods) {
         $module = $this->getModule($module);
         if (!class_exists($module)) {
             return;
         }
-        $methods = [];
-        if ($hasTable) {
-            $methods[] = 'install';
-        }
-        if ($hasSeed) {
-            $methods[] = 'seeder';
-        }
+
         $instance = new $module;
-        foreach ($methods as $method) {
+        foreach ((array)$methods as $method) {
             if (empty($method) || !method_exists($instance, $method)) {
                 continue;
             }
             call_user_func([$instance, $method]);
-        }
-        if ($hasAssets) {
-            $this->moveAssets($module);
         }
     }
 
