@@ -31,7 +31,7 @@ class ModuleController extends Controller {
      * @throws \Exception
      * @throws \Zodream\Disk\FileException
      */
-    public function installAction($name, $module, $hasTable = true, $hasSeed = true, $hasAssets = true, $isGlobal = true) {
+    public function installAction($name, $module, $hasTable = false, $hasSeed = false, $hasAssets = false, $isGlobal = false) {
         $methods = [];
         if ($hasTable) {
             $methods[] = 'install';
@@ -110,6 +110,10 @@ class ModuleController extends Controller {
      * @param $module
      */
     protected function moveAssets($module) {
+        $module = $this->getModule($module);
+        if (!class_exists($module)) {
+            return;
+        }
         $func = new ReflectionClass($module);
         $file = new File($func->getFileName());
         $assetDir = $file->getDirectory()->directory('UserInterface/assets');
