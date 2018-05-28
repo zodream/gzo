@@ -8,6 +8,8 @@ use Zodream\Service\Routing\Url;
 
 class HomeController extends Controller {
 
+    public $layout = 'main';
+
     public function indexAction() {
         return $this->show();
     }

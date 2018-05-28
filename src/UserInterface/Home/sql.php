@@ -5,8 +5,6 @@ use Zodream\Html\Bootstrap\BreadcrumbWidget;
 /** @var $this View */
 
 $this->title = '执行sql语句';
-
-$this->extend('layouts/header');
 ?>
 
 <?=BreadcrumbWidget::show([
@@ -38,7 +36,3 @@ $this->extend('layouts/header');
             'data' => $data
     ])?>
 </div>
-
-<?php
-$this->extend('layouts/footer');
-?>

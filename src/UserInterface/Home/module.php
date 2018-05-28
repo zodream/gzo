@@ -19,8 +19,7 @@ $.getJSON('{$url}', function (data) {
 JS;
 
 
-$this->extend('layouts/header')
-    ->registerJs($js, View::JQUERY_READY);
+$this->registerJs($js, View::JQUERY_READY);
 ?>
 
 <div class="zd-tab">
@@ -65,11 +64,11 @@ $this->extend('layouts/header')
                     <label for="hasSeed1">生成测试数据</label>
                 </div>
                 <div class="input-group">
-                    <input id="hasAssets1" type="checkbox" checked name="hasAssets" value="1">
+                    <input id="hasAssets1" type="checkbox" name="hasAssets" value="1">
                     <label for="hasAssets1">复制资源文件</label>
                 </div>
                 <div class="input-group">
-                    <input id="isGlobal" type="checkbox" checked name="isGlobal" value="1">
+                    <input id="isGlobal" type="checkbox" name="isGlobal" value="1">
                     <label for="isGlobal">作为全局模块</label>
                 </div>
                 <button class="btn">安装</button>
@@ -115,7 +114,3 @@ $this->extend('layouts/header')
         </div>
     </div>
 </div>
-
-<?php
-$this->extend('layouts/footer');
-?>

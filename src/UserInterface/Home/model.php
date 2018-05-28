@@ -19,8 +19,7 @@ $.getJSON('{$url}', function (data) {
 JS;
 
 
-$this->extend('layouts/header')
-    ->registerJs($js, View::JQUERY_READY);
+$this->registerJs($js, View::JQUERY_READY);
 ?>
 
 <div class="page-tip">
@@ -45,7 +44,3 @@ $this->extend('layouts/header')
     <button class="btn">生成</button>
     <button type="button" data-type="preview" class="btn">预览</button>
 </form>
-
-<?php
-$this->extend('layouts/footer');
-?>

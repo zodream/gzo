@@ -3,8 +3,6 @@ use Zodream\Template\View;
 /** @var $this View */
 
 $this->title = '生成控制器';
-
-$this->extend('layouts/header');
 ?>
 
 <div class="page-tip">
@@ -29,7 +27,3 @@ $this->extend('layouts/header');
     <button class="btn">生成</button>
     <button type="button" data-type="preview" class="btn">预览</button>
 </form>
-
-<?php
-$this->extend('layouts/footer');
-?>

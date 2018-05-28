@@ -33,8 +33,7 @@ $('#schema1').change(function() {
 JS;
 
 
-$this->extend('layouts/header')
-    ->registerJs($js, View::JQUERY_READY);
+$this->registerJs($js, View::JQUERY_READY);
 ?>
 
 <div class="page-tip">
@@ -79,7 +78,3 @@ $this->extend('layouts/header')
     </div>
     <button class="btn">执行</button>
 </form>
-
-<?php
-$this->extend('layouts/footer');
-?>
