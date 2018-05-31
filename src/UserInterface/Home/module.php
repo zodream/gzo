@@ -53,7 +53,7 @@ $this->registerJs($js, View::JQUERY_READY);
                 </div>
                 <div class="input-group">
                     <label for="module1">命名空间</label>
-                    <input type="text" id="module1" name="module" placeholder="示例：Module\Blog" required size="100">
+                    <input type="text" id="module1" name="module" placeholder="示例：Module\Blog" required size="30">
                 </div>
                 <div class="input-group">
                     <input id="installTable1" type="checkbox" checked name="hasTable" value="1">

@@ -34,7 +34,7 @@ $this->registerJs($js, View::JQUERY_READY);
 <form class="form-inline" data-type="ajax" action="<?=$this->url('./template')?>" method="get">
     <div class="input-group">
         <label for="module1">模块名</label>
-        <input type="text" id="module1" name="module" placeholder="示例：Blog" required size="100">
+        <input type="text" id="module1" name="module" placeholder="示例：Blog" required>
     </div>
     <div class="input-group">
         <label for="table1">数&nbsp;&nbsp;据&nbsp;&nbsp;表</label>
@@ -44,7 +44,7 @@ $this->registerJs($js, View::JQUERY_READY);
     </div>
     <div class="input-group">
         <label for="name1">文件名</label>
-        <input id="name1" type="text" name="name" placeholder="示例：Home" size="100">
+        <input id="name1" type="text" name="name" placeholder="示例：Home">
     </div>
     <div class="input-group">
         <input id="hasController1" type="checkbox" checked name="hasController" value="1">

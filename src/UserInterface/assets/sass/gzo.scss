@@ -5,3 +5,14 @@
     min-width: 200px;
   }
 }
+
+
+@media (max-width: 767px){
+  .zd-tab {
+    .zd-tab-head {
+      .zd-tab-item {
+        width: 32%;
+      }
+    }
+  }
+}

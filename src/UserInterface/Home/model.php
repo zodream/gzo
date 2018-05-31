@@ -39,7 +39,7 @@ $this->registerJs($js, View::JQUERY_READY);
     </div>
     <div class="input-group">
         <label for="module1">模块名</label>
-        <input type="text" id="module1" name="module" placeholder="示例：Home" size="100">
+        <input type="text" id="module1" name="module" placeholder="示例：Home">
     </div>
     <button class="btn">生成</button>
     <button type="button" data-type="preview" class="btn">预览</button>
