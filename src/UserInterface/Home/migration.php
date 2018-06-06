@@ -33,7 +33,7 @@ $this->registerJs($js, View::JQUERY_READY);
 <form class="form-inline" data-type="ajax" action="<?=$this->url('./template/migration')?>" method="get">
     <div class="input-group">
         <label for="table1">数据表</label>
-        <select name="table" id="table1" required>
+        <select name="table[]" class="height-auto" id="table1" required multiple size="10">
             <option value="">请选择</option>
         </select>
     </div>
