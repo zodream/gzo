@@ -46,6 +46,8 @@ $this->registerCssFile([
                             <i class="fa fa-gears"></i><span>生成控制器</span></a></li>
                     <li><a href="<?=$this->url('./home/model')?>">
                             <i class="fa fa-cubes"></i><span>生成数据模型</span></a></li>
+                    <li><a href="<?=$this->url('./home/migration')?>">
+                            <i class="fa fa-cubes"></i><span>生成生成器</span></a></li>
                     <li><a href="<?=$this->url('./home/crud')?>">
                             <i class="fa fa-circle-o"></i><span>生成CRUD</span></a></li>
                 </ul>

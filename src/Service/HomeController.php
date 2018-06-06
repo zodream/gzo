@@ -18,6 +18,10 @@ class HomeController extends Controller {
         return $this->show();
     }
 
+    public function migrationAction() {
+        return $this->show();
+    }
+
     public function tableAction($schema = null) {
         $tables = GenerateModel::schema($schema)->getAllTable();
         return $this->jsonSuccess($tables);

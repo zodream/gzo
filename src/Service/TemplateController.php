@@ -54,6 +54,19 @@ class TemplateController extends Controller {
         return $this->jsonSuccess();
     }
 
+    public function migrationAction($table, $module, $preview = null) {
+        if (!empty($preview)) {
+            return $this->jsonSuccess([
+                'code' => $this->createMigration(null, $table, $module)
+            ]);
+        }
+        $root = Factory::root()->addDirectory('Module')
+            ->addDirectory($module)->addDirectory('Domain')
+            ->addDirectory('Migrations');
+        $this->createMigration($root, $table, $module);
+        return $this->jsonSuccess();
+    }
+
     public function controllerAction($module, $name = 'Home', $preview = null) {
         if (!empty($preview)) {
             return $this->jsonSuccess([
@@ -116,6 +129,17 @@ class TemplateController extends Controller {
             return $template;
         }
         $root->addFile($name.APP_MODEL.'.php', $template);
+    }
+
+    protected function createMigration($root,
+                                       $table,
+                                       $module,
+                                       array $columns = []) {
+        $template = $this->makeMigration($table, $module);
+        if (!$root instanceof Directory) {
+            return $template;
+        }
+        $root->addFile(sprintf('Create%sTables.php', $module), $template);
     }
 
     protected function createView(Directory $root, $name, array $columns) {
@@ -189,6 +213,24 @@ class TemplateController extends Controller {
             'module' => $module,
             'foreignKeys' => $foreignKeys,
             'is_module' => $is_module
+        ]);
+    }
+
+    protected function makeMigration($tables, $module) {
+        $data = [];
+        foreach ((array)$tables as $table) {
+            $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
+            $fields = GenerateModel::getFields($columns);
+            $data[] = [
+                'name' => Str::studly($table),
+                'table' => $table,
+                'fields' => $fields
+            ];
+        }
+
+        return $this->renderHtml('Migration', [
+            'data' => $data,
+            'module' => $module,
         ]);
     }
 

@@ -89,6 +89,37 @@ class GenerateModel extends Model {
         ];
     }
 
+    public static function getFields(array $columns) {
+        $data = [];
+        foreach ($columns as $value) {
+            $item = self::parseFieldType($value);
+            if (is_null($value['Default'])) {
+                $item .= sprintf('->defaultVal(\'%s\')', $value['Default']);
+            } elseif ($value['Null'] == 'NO') {
+                $item .= '->notNull()';
+            }
+            if (!empty($value['COLUMN_COMMENT']) && $value['COLUMN_COMMENT'] != '') {
+                $item .= sprintf('->comment(\'%s\')', $value['COLUMN_COMMENT']);
+            }
+            $data[] = $item;
+        }
+        return $data;
+    }
+
+    protected static function parseFieldType($field) {
+        if ($field['Field'] == 'id') {
+            return '$table->set(\'id\')->pk()->ai()';
+        }
+        if (in_array($field['Field'], ['updated_at', 'created_at', 'deleted_at'])) {
+            return sprintf('$table->timestamp(\'%s\')', $field['Field']);
+        }
+        $type = strtolower($field['Type']);
+        if (strpos($type, '(') === false) {
+            $type .= '()';
+        }
+        return sprintf('$table->set(\'%s\')->%s', $field['Field'], $type);
+    }
+
     protected static function converterType($type) {
         $type = explode('(', $type)[0];
         switch (strtoupper(trim($type))) {
