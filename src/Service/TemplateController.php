@@ -159,7 +159,6 @@ class TemplateController extends Controller {
      * @param $module
      * @return string
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function baseController($module) {
         return $this->renderHtml('BaseController', array(
@@ -174,7 +173,6 @@ class TemplateController extends Controller {
      * @param bool $is_module
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function makeController($name, $module, $is_module = false) {
         return $this->renderHtml('Controller', [
@@ -193,7 +191,6 @@ class TemplateController extends Controller {
      * @param bool $is_module
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function makeModel($name, $table, array $columns, $module, $is_module = false) {
         $data = GenerateModel::getFill($columns);
@@ -219,12 +216,14 @@ class TemplateController extends Controller {
     protected function makeMigration($tables, $module) {
         $data = [];
         foreach ((array)$tables as $table) {
-            $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
+            $model = GenerateModel::schema()->table($table);
+            $columns = $model->getAllColumn(true);
             $fields = GenerateModel::getFields($columns);
             $data[] = [
                 'name' => Str::studly($table),
                 'table' => $table,
-                'fields' => $fields
+                'fields' => $fields,
+                'status' => $model->getStatus()
             ];
         }
 
@@ -239,7 +238,6 @@ class TemplateController extends Controller {
      * @param array $configs
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     public function makeConfig(array $configs) {
         return $this->renderHtml('config', array('data' => $configs));
@@ -252,7 +250,6 @@ class TemplateController extends Controller {
      * @param array $columns
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function viewIndex($name, array $columns) {
         $data = [];
@@ -271,7 +268,6 @@ class TemplateController extends Controller {
      * @param array $columns
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function viewEdit($name, array $columns) {
         $data = [];
@@ -290,7 +286,6 @@ class TemplateController extends Controller {
      * @param array $columns
      * @return bool
      * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
     protected function viewDetail($name, array $columns) {
         $data = [];

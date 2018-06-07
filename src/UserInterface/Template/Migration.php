@@ -18,6 +18,11 @@ class Create<?=$module?>Tables extends Migration {
     public function up() {
 <?php foreach ($data as $item):?>
         Schema::createTable(<?=$item['name'].APP_MODEL?>::tableName(), function(Table $table) {
+<?php if ($item['status']):?>
+            $table->setEngine('<?=$item['status']['Engine']?>')
+                  ->setCharset('<?=$item['status']['Collation']?>')
+                  ->setComment('<?=$item['status']['Comment']?>');
+<?php endif;?>
 <?php foreach ($item['fields'] as $val):?>
             <?=$val?>;
 <?php endforeach;?>

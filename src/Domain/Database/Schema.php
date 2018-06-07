@@ -31,6 +31,15 @@ class Schema extends BaseSchema {
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return Table
+     */
+    public function table($name) {
+        return (new Table($name))
+            ->setSchema($this);
+    }
+
     public function getRows($sql) {
         return $this->command()->getArray($sql);
     }

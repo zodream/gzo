@@ -100,4 +100,19 @@ class Table extends BaseTable {
             'SMALLINT', 'BIGINT', 'FLOAT',
             'DOUBLE', 'DECIMAL', 'INT', 'TINYINT']);
     }
+
+    /**
+     * 获取表的完整信息
+     * @return array|mixed
+     * @throws \Exception
+     */
+    public function getStatus() {
+        $sql = sprintf('SHOW TABLE STATUS WHERE `Name` = \'%s\'', $this->getTableName());
+        $data = $this->command()
+            ->getArray($sql);
+        if (empty($data)) {
+            return $data;
+        }
+        return reset($data);
+    }
 }
