@@ -39,6 +39,7 @@ class ModuleController extends Controller {
         if ($hasSeed) {
             $methods[] = 'seeder';
         }
+        $module = trim($module);
         $this->invokeModuleMethod($module, $methods);
         $this->saveModuleConfigs([
             'modules' => [
