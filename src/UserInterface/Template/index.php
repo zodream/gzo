@@ -5,11 +5,11 @@ echo '<?php';
 
 defined('APP_DIR') or exit();
 use Zodream\Infrastructure\Html;
+use Zodream\Template\View;
 use Zodream\Html\Bootstrap\TableWidget;
-/** @var $this \Zodream\Template\View */
+/** @var $this View */
 /** @var $page \Zodream\Html\Page */
 $this->title = '';
-$this->extend('layout/header');
 ?>
 <div class="row">
 	<div class="col-md-3 col-md-offset-2">
@@ -34,9 +34,3 @@ $this->extend('layout/header');
         ]
     ]
 ])?>
-
-<?php
-echo '<?php';
-?>
-$this->extend('layout/footer');
-?>

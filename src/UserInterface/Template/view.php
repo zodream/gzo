@@ -16,7 +16,6 @@ defined('APP_DIR') or exit();
 use Zodream\Html\Bootstrap\DetailWidget;
 /** @var $this \Zodream\Template\View */
 $this->title = '';
-$this->extend('layout/header');
 ?>
 
 
@@ -35,10 +34,3 @@ $this->extend('layout/header');
 		])?>
 	</div>
 </div>
-
-
-<?php
-echo '<?php';
-?>
-$this->extend('layout/footer');
-?>

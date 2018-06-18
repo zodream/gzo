@@ -7,7 +7,6 @@ defined('APP_DIR') or exit();
 use Zodream\Html\Bootstrap\FormWidget;
 /** @var $this \Zodream\Template\View */
 $this->title = '';
-$this->extend('layout/header');
 ?>
 
 
@@ -28,10 +27,3 @@ $this->extend('layout/header');
 		<p><?='<?='?>$model->getFirstError()?></p>
 	</div>
 </div>
-
-
-<?php
-echo '<?php';
-?>
-$this->extend('layout/footer');
-?>

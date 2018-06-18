@@ -4,19 +4,43 @@ namespace Zodream\Module\Gzo\Service;
 use Zodream\Disk\File;
 use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
+use Zodream\Helpers\Json;
 use Zodream\Helpers\Str;
 use Zodream\Infrastructure\Http\Response;
+use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Service\Factory;
 use ReflectionClass;
 
 class ModuleController extends Controller {
 
     /**
-     * @return Response
-     * @throws \Exception
+     *
+     * @param null $name
+     * @param null $input
+     * @param null $output
+     * @param string $configs
+     * @return void
      */
-    public function indexAction() {
-        return $this->show('index');
+    public function indexAction($name = null, $input = null, $output = null, $configs = 'module.json') {
+        $generator = new ModuleGenerator();
+        if (!empty($input)) {
+            $input = Factory::root()->directory($input);
+            $configs = $input->file($configs);
+        } else {
+            $configs =  Factory::root()->file($configs);
+        }
+        $configs = Json::decode($configs->read());
+        if (!empty($name)) {
+            $configs['name'] = $name;
+        }
+        if (!empty($input)) {
+            $configs['input'] = $input;
+        }
+        if (!empty($output)) {
+            $configs['output'] = $output;
+        }
+        $generator->setConfigs($configs);
+        $generator->create();
     }
 
     /**

@@ -9,4 +9,6 @@ use Zodream\Domain\Controller\Controller as BaseController;
 
 abstract class Controller extends BaseController {
 
+    public $layout = 'main';
+
 }

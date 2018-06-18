@@ -5,6 +5,7 @@ use Zodream\Database\Schema\Schema;
 use Zodream\Disk\Directory;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\GenerateModel;
+use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Service\Factory;
 
 class TemplateController extends Controller {
@@ -87,7 +88,7 @@ class TemplateController extends Controller {
         $module = Str::firstReplace($module, 'Module\\');
         $root = Factory::root()->addDirectory('Module')
             ->addDirectory($module);
-        $root->addFile('Module.php', $this->renderHtml('Module', [
+        $root->addFile('Module.php', ModuleGenerator::renderTemplate('Module', [
             'module' => $module
         ]));
         $modelRoot = $root->addDirectory('Domain')
@@ -144,9 +145,8 @@ class TemplateController extends Controller {
 
     protected function createView(Directory $root, $name, array $columns) {
         if (!$root->hasDirectory('layout')) {
-            $root->addDirectory('layout')
-                ->addFile('header.php', $this->renderHtml('header'))
-                ->getDirectory()->addFile('footer.php', $this->renderHtml('footer'));
+            $root->addDirectory('layouts')
+                ->addFile('main.php', ModuleGenerator::renderTemplate('layout'));
         }
         $root = $root->addDirectory($name);
         $root->addFile('index.php', $this->viewIndex($name, $columns));
@@ -161,7 +161,7 @@ class TemplateController extends Controller {
      * @throws \Exception
      */
     protected function baseController($module) {
-        return $this->renderHtml('BaseController', array(
+        return ModuleGenerator::renderTemplate('BaseController', array(
             'module' => $module
         ));
     }
@@ -175,7 +175,7 @@ class TemplateController extends Controller {
      * @throws \Exception
      */
     protected function makeController($name, $module, $is_module = false) {
-        return $this->renderHtml('Controller', [
+        return ModuleGenerator::renderTemplate('Controller', [
             'module' => $module,
             'name' => $name,
             'is_module' => $is_module
@@ -200,7 +200,7 @@ class TemplateController extends Controller {
             $item['column'] = $item['COLUMN_NAME'];
             $item['key'] = $item['REFERENCED_COLUMN_NAME'];
         }
-        return $this->renderHtml('Model', [
+        return ModuleGenerator::renderTemplate('Model', [
             'name' => $name,
             'table' => $table,
             'rules' => $data[1],
@@ -227,7 +227,7 @@ class TemplateController extends Controller {
             ];
         }
 
-        return $this->renderHtml('Migration', [
+        return ModuleGenerator::renderTemplate('Migration', [
             'data' => $data,
             'module' => $module,
         ]);
@@ -240,7 +240,7 @@ class TemplateController extends Controller {
      * @throws \Exception
      */
     public function makeConfig(array $configs) {
-        return $this->renderHtml('config', array('data' => $configs));
+        return ModuleGenerator::renderTemplate('config', array('data' => $configs));
     }
 
 
@@ -256,7 +256,7 @@ class TemplateController extends Controller {
         foreach ($columns as $value) {
             $data[$value['Field']] = $value['Field'];
         }
-        return $this->renderHtml('index', array(
+        return ModuleGenerator::renderTemplate('index', array(
             'data'   => $data,
             'name'   => $name
         ));
@@ -274,7 +274,7 @@ class TemplateController extends Controller {
         foreach ($columns as $value) {
             $data[] = $this->_viewForm($value);
         }
-        return $this->renderHtml('add', array(
+        return ModuleGenerator::renderTemplate('add', array(
             'data'   => $data,
             'name'   => $name
         ));
@@ -292,7 +292,7 @@ class TemplateController extends Controller {
         foreach ($columns as $key => $value) {
             $data[] = $value['Field'];
         }
-        return $this->renderHtml('view', array(
+        return ModuleGenerator::renderTemplate('view', array(
             'data'   => $data,
             'name'   => $name
         ));
