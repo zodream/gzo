@@ -20,6 +20,7 @@ class <?=$name.APP_CONTROLLER?> extends Controller {
 <?php foreach ($func as $key => $item):?>
     public function <?=$key.APP_ACTION?>() {
         <?=$item?>
+
     }
 
 <?php endforeach;?>
