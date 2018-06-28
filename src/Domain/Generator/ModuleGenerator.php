@@ -4,9 +4,9 @@ namespace Zodream\Module\Gzo\Domain\Generator;
 use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Disk\FileObject;
+use Zodream\Domain\Debug\Log;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
-use Zodream\Infrastructure\Http\Request;
 use Zodream\Service\Factory;
 
 /**
@@ -80,7 +80,7 @@ class ModuleGenerator {
     }
 
     public function create() {
-        $this->debug('start ...');
+        Log::info('start ...');
         $module = Str::studly($this->name);
         $this->createFolder();
         $this->createModule();
@@ -102,7 +102,7 @@ class ModuleGenerator {
             )));
             $this->createController($root, null, $this->getControllerConfigs());
         }
-        $this->debug('end ...');
+        Log::info('end ...');
     }
 
     protected function getControllerConfigs() {
@@ -168,7 +168,7 @@ class ModuleGenerator {
         ];
         foreach ($data as $name) {
             $this->output->addDirectory($name);
-            $this->debug('mdir '.$name);
+            Log::info('mdir '.$name);
         }
     }
 
@@ -181,7 +181,7 @@ class ModuleGenerator {
             $data['migration'] = sprintf('Create%sTables', $name);
         }
         $this->output->addFile('Module.php', self::renderTemplate('Module', $data));
-        $this->debug('new file Module.php');
+        Log::info('new file Module.php');
     }
 
     public function createAssets() {
@@ -189,7 +189,7 @@ class ModuleGenerator {
             $dist = $this->output->directory('UserInterface/assets/'.$key);
             $dist->create();
             $this->getFolder($item)->copy($dist);
-            $this->debug('cp '.$item);
+            Log::info('cp '.$item);
         }
     }
 
@@ -246,14 +246,14 @@ class ModuleGenerator {
             ]);
             $file = sprintf('Domain/Model/%s%s.php', $name, APP_MODEL);
             $this->output->addFile($file, $tpl);
-            $this->debug('new file '.$file);
+            Log::info('new file '.$file);
         }
         $file = sprintf('Domain/Migrations/Create%sTables.php', $module);
         $this->output->addFile($file, self::renderTemplate('Migration', [
             'data' => $data,
             'module' => $module,
         ]));
-        $this->debug('new file '.$file);
+        Log::info('new file '.$file);
     }
 
 
@@ -269,7 +269,7 @@ class ModuleGenerator {
             $name = strtolower(Str::studly($key));
             $file = $root->file($name.'.php');
             $file->write( self::renderTemplate('emptyIndex', $this->getViewContent($item)));
-            $this->debug('new file '.$file);
+            Log::info('new file '.$file);
         }
     }
 
@@ -375,7 +375,7 @@ class ModuleGenerator {
             'is_module' => true,
             'func' => $func
         ]));
-        $this->debug('new file '.$file);
+        Log::info('new file '.$file);
     }
 
     protected function formatFields($fields) {
@@ -403,13 +403,6 @@ class ModuleGenerator {
     public static function renderTemplate($name, $data = []) {
         return Factory::view()
             ->render('Template/'.$name, $data);
-    }
-
-    protected function debug($content) {
-        if (!Request::isCli()) {
-            return;
-        }
-        echo $content,PHP_EOL;
     }
 
 }
