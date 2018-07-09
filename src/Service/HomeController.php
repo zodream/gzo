@@ -1,9 +1,11 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Disk\Directory;
 use Zodream\Html\Bootstrap\Html;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
+use Zodream\Service\Factory;
 use Zodream\Service\Routing\Url;
 
 class HomeController extends Controller {
@@ -41,7 +43,19 @@ class HomeController extends Controller {
     }
 
     public function moduleAction($status = 0) {
-        return $this->show(compact('status'));
+        $modules = $this->getModuleList();
+        return $this->show(compact('status', 'modules'));
+    }
+
+    protected function getModuleList() {
+        $data = [];
+        Factory::root()->directory('Module')
+            ->map(function ($file) use (&$data) {
+                if ($file instanceof Directory && $file->hasFile('Module.php')) {
+                    $data[] = $file->getName();
+                }
+            });
+        return $data;
     }
 
     public function sqlAction($query = null, $schema = null, $table = null, $action = null) {

@@ -5,6 +5,12 @@ use Zodream\Template\View;
 $this->title = '模块管理';
 
 $url = $this->url('gzo/home/table');
+$modules = json_encode(array_map(function ($item) {
+    return [
+        'value' => 'Module\\'.$item,
+        'label' => $item,
+    ];
+}, $modules));
 $js = <<<JS
 $.getJSON('{$url}', function (data) { 
     if (data.code != 200) {
@@ -16,6 +22,15 @@ $.getJSON('{$url}', function (data) {
     });
     $('#table1').html(html);
 });
+var nameEle = $("#name1");
+$("#module1").autocompleter({
+    source: {$modules},
+    callback: function(value, index, item) {
+        if (!nameEle.val()) {
+            nameEle.val(item.label.toLowerCase());
+        }
+    }
+})
 JS;
 
 
@@ -53,7 +68,9 @@ $this->registerJs($js, View::JQUERY_READY);
                 </div>
                 <div class="input-group">
                     <label for="module1">命名空间</label>
-                    <input type="text" id="module1" name="module" placeholder="示例：Module\Blog" required size="30">
+                    <div class="auto-input">
+                        <input type="text" id="module1" name="module" placeholder="示例：Module\Blog" required size="30">
+                    </div>
                 </div>
                 <div class="input-group">
                     <input id="installTable1" type="checkbox" checked name="hasTable" value="1">

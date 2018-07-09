@@ -4,6 +4,7 @@ use Zodream\Template\View;
 /** @var $this View */
 $this->registerCssFile([
     '@font-awesome.min.css',
+    '@jquery.autocompleter.css',
     '@prism.css',
     '@zodream.css',
     '@zodream-admin.css',
@@ -12,6 +13,7 @@ $this->registerCssFile([
 ])->registerJsFile([
     '@jquery.min.js',
     '@prism.js',
+    '@jquery.autocompleter.min.js',
     '@jquery.dialog.min.js',
     '@jquery.upload.min.js',
     '@main.min.js',
