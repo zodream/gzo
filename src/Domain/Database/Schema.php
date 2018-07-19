@@ -73,7 +73,7 @@ class Schema extends BaseSchema {
     /**
      * 导出
      * @param $file
-     * @param array $table
+     * @param null $tables
      * @param bool $hasSchema
      * @param bool $hasStructure
      * @param bool $hasData
