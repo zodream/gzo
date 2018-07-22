@@ -368,7 +368,7 @@ class ModuleGenerator {
             }
             $func[$key] = $item;
         }
-        $file = $name.APP_CONTROLLER.'.php';
+        $file = $name.config('app.controller').'.php';
         $root->addFile($file, self::renderTemplate('EmptyController', [
             'module' => Str::studly($this->name),
             'name' => $name,

@@ -9,19 +9,19 @@ namespace Module\<?=$module?>\Service;
 use Module\<?=$module?>\Domain\Model\<?=$name.APP_MODEL?>;
 use Module\ModuleController;
 
-class <?=$name.APP_CONTROLLER?> extends ModuleController {
+class <?=$name.config('app.controller')?> extends ModuleController {
 <?php else:?>
 namespace Service\<?=$module?>;
 
 use Domain\Model\<?=$name.APP_MODEL?>;
 
-class <?=$name.APP_CONTROLLER?> extends Controller {
+class <?=$name.config('app.controller')?> extends Controller {
 <?php endif;?>
 	protected $rules = array(
 		'*' => '@'
 	);
 	
-	public function index<?=APP_ACTION?>() {
+	public function index<?=config('app.action')?>() {
 		$page = <?=$name.APP_MODEL?>::findPage();
 		return $this->show(array(
 			'title' => '',
@@ -29,7 +29,7 @@ class <?=$name.APP_CONTROLLER?> extends Controller {
 		));
 	}
 
-    public function add<?=APP_ACTION?>($id = null) {
+    public function add<?=config('app.action')?>($id = null) {
         $model = <?=$name.APP_MODEL?>::findOrNew($id);
         if ($model->load() && $model->save()) {
             return $this->redirect(['<?=$name?>']);
@@ -39,12 +39,12 @@ class <?=$name.APP_CONTROLLER?> extends Controller {
         ]);
 	}
 
-    public function delete<?=APP_ACTION?>($id) {
+    public function delete<?=config('app.action')?>($id) {
         <?=$name.APP_MODEL?>::where(['id' => $id])->delete();
         return $this->redirect(['<?=$name?>']);
 	}
 
-    public function view<?=APP_ACTION?>($id) {
+    public function view<?=config('app.action')?>($id) {
 		$model = <?=$name.APP_MODEL?>::find($id);
         return $this->show([
             'model' => $model

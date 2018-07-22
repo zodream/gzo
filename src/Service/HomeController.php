@@ -6,7 +6,7 @@ use Zodream\Html\Bootstrap\Html;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Service\Factory;
-use Zodream\Service\Routing\Url;
+use Zodream\Infrastructure\Http\URL;
 
 class HomeController extends Controller {
 

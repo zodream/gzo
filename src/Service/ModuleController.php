@@ -77,9 +77,9 @@ class ModuleController extends Controller {
     }
 
     public function uninstallAction($name) {
-        $files = [Factory::config()->getCurrentFile(), Factory::config()->getDirectory()->file('config.php')];
+        $files = [config()->getCurrentFile(), config()->getDirectory()->file('config.php')];
         foreach ($files as $file) {
-            $configs = Factory::config()->getConfigByFile($file);
+            $configs = config()->getConfigByFile($file);
             if (isset($configs['modules'][$name])) {
                 $this->invokeModuleMethod($configs['modules'][$name], 'uninstall');
                 unset($configs['modules'][$name]);
@@ -101,7 +101,6 @@ class ModuleController extends Controller {
         if (!class_exists($module)) {
             return;
         }
-
         $instance = new $module;
         foreach ((array)$methods as $method) {
             if (empty($method) || !method_exists($instance, $method)) {

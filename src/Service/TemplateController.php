@@ -79,7 +79,7 @@ class TemplateController extends Controller {
         if (!$root->hasFile('Controller.php')) {
             $root->addFile('Controller.php', $this->baseController($module));
         }
-        $name = Str::lastReplace($name, APP_CONTROLLER);
+        $name = Str::lastReplace($name, config('app.controller'));
         $this->createController($root, $name, $module);
         return $this->jsonSuccess();
     }
@@ -110,7 +110,7 @@ class TemplateController extends Controller {
         if (!$root instanceof Directory) {
             return $template;
         }
-        $root->addFile($name.APP_CONTROLLER.'.php', $template);
+        $root->addFile($name.config('app.controller').'.php', $template);
     }
 
     protected function createModel($root,
