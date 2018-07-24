@@ -6,14 +6,14 @@ echo '<?php';
 <?php if (isset($is_module) && $is_module):?>
 namespace Module\<?=$module?>\Service;
 
-use Module\<?=$module?>\Domain\Model\<?=$name.APP_MODEL?>;
+use Module\<?=$module?>\Domain\Model\<?=$name.config('app.model')?>;
 use Module\ModuleController;
 
 class <?=$name.config('app.controller')?> extends ModuleController {
 <?php else:?>
 namespace Service\<?=$module?>;
 
-use Domain\Model\<?=$name.APP_MODEL?>;
+use Domain\Model\<?=$name.config('app.model')?>;
 
 class <?=$name.config('app.controller')?> extends Controller {
 <?php endif;?>
@@ -22,7 +22,7 @@ class <?=$name.config('app.controller')?> extends Controller {
 	);
 	
 	public function index<?=config('app.action')?>() {
-		$page = <?=$name.APP_MODEL?>::findPage();
+		$page = <?=$name.config('app.model')?>::findPage();
 		return $this->show(array(
 			'title' => '',
 			'page' => $page
@@ -30,7 +30,7 @@ class <?=$name.config('app.controller')?> extends Controller {
 	}
 
     public function add<?=config('app.action')?>($id = null) {
-        $model = <?=$name.APP_MODEL?>::findOrNew($id);
+        $model = <?=$name.config('app.model')?>::findOrNew($id);
         if ($model->load() && $model->save()) {
             return $this->redirect(['<?=$name?>']);
         }
@@ -40,12 +40,12 @@ class <?=$name.config('app.controller')?> extends Controller {
 	}
 
     public function delete<?=config('app.action')?>($id) {
-        <?=$name.APP_MODEL?>::where(['id' => $id])->delete();
+        <?=$name.config('app.model')?>::where(['id' => $id])->delete();
         return $this->redirect(['<?=$name?>']);
 	}
 
     public function view<?=config('app.action')?>($id) {
-		$model = <?=$name.APP_MODEL?>::find($id);
+		$model = <?=$name.config('app.model')?>::find($id);
         return $this->show([
             'model' => $model
         ]);

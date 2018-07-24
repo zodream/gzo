@@ -12,7 +12,7 @@ class <?=$name.config('app.controller')?> extends ModuleController {
 <?php else:?>
 namespace Service\<?=$module?>;
 
-use Domain\Model\<?=$name.APP_MODEL?>;
+use Domain\Model\<?=$name.config('app.model')?>;
 
 class <?=$name.config('app.controller')?> extends Controller {
 <?php endif;?>

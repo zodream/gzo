@@ -129,7 +129,7 @@ class TemplateController extends Controller {
         if (!$root instanceof Directory) {
             return $template;
         }
-        $root->addFile($name.APP_MODEL.'.php', $template);
+        $root->addFile($name.config('app.model').'.php', $template);
     }
 
     protected function createMigration($root,

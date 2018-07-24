@@ -11,14 +11,14 @@ namespace Domain\Model<?= empty($module) ? '' : ('\\'. $module) ?>;
 
 use Domain\Model\Model;
 /**
- * Class <?=$name.APP_MODEL?>
+ * Class <?=$name.config('app.model')?>
 
 <?php foreach ($property as $key => $item):?>
  * @property <?=$item?> $<?=$key?>
 
 <?php endforeach;?>
  */
-class <?=$name.APP_MODEL?> extends Model {
+class <?=$name.config('app.model')?> extends Model {
 	public static function tableName() {
         return '<?=$table?>';
     }

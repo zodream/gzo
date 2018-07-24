@@ -9,7 +9,7 @@ use Zodream\Database\Migrations\Migration;
 use Zodream\Database\Schema\Schema;
 use Zodream\Database\Schema\Table;
 <?php foreach ($data as $item):?>
-use Module\<?=$module?>\Domain\Model\<?=$item['name'].APP_MODEL?>;
+use Module\<?=$module?>\Domain\Model\<?=$item['name'].config('app.model')?>;
 <?php endforeach;?>
 
 
@@ -17,7 +17,7 @@ class Create<?=$module?>Tables extends Migration {
 
     public function up() {
 <?php foreach ($data as $item):?>
-        Schema::createTable(<?=$item['name'].APP_MODEL?>::tableName(), function(Table $table) {
+        Schema::createTable(<?=$item['name'].config('app.model')?>::tableName(), function(Table $table) {
 <?php if (isset($item['status']) && $item['status']):?>
             $table->setEngine('<?=$item['status']['Engine']?>')
                   ->setCharset('<?=$item['status']['Collation']?>')
@@ -32,7 +32,7 @@ class Create<?=$module?>Tables extends Migration {
 
     public function down() {
 <?php foreach ($data as $item):?>
-        Schema::dropTable(<?=$item['name'].APP_MODEL?>::tableName());
+        Schema::dropTable(<?=$item['name'].config('app.model')?>::tableName());
 <?php endforeach;?>
     }
 }

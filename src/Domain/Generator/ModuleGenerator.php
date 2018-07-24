@@ -244,7 +244,7 @@ class ModuleGenerator {
                 'foreignKeys' => [],
                 'is_module' => true
             ]);
-            $file = sprintf('Domain/Model/%s%s.php', $name, APP_MODEL);
+            $file = sprintf('Domain/Model/%s%s.php', $name, config('app.model'));
             $this->output->addFile($file, $tpl);
             Log::info('new file '.$file);
         }
