@@ -68,13 +68,15 @@ class GenerateModel extends Model {
      * @return string
      */
     public static function getFill(array $columns) {
-        $pk = $rules = $labels = $property = [];
+        $pk = false;
+        $rules = $labels = $property = [];
         foreach ($columns as $key => $value) {
             $labels[$value['Field']] = ucwords(str_replace('_', ' ', $value['Field']));
             $property[$value['Field']] = static::converterType($value['Type']);
             if ($value['Key'] == 'PRI'
-                || $value['Key'] == 'UNI') {
-                $pk[] = $value['Field'];
+//                || $value['Key'] == 'UNI'
+            ) {
+                $pk = $value['Field'];
             }
             if ($value['Extra'] === 'auto_increment') {
                 continue;

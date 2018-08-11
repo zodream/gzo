@@ -19,17 +19,14 @@ use Domain\Model\Model;
 <?php endforeach;?>
  */
 class <?=$name.config('app.model')?> extends Model {
+
+<?php if (isset($pk) && $pk != 'id'):?>
+    protected $primaryKey = '<?=$pk?>';
+<?php endif;?>
+
 	public static function tableName() {
         return '<?=$table?>';
     }
-
-<?php if (isset($pk) && !empty($pk) && !(count($pk) == 1 && $pk[0] == 'id')):?>
-	protected $primaryKey = [
-<?php foreach ($pk as $item):?>
-        '<?=$item?>',
-<?php endforeach;?>
-    ];
-<?php endif;?>
 
 	protected function rules() {
 		return [
