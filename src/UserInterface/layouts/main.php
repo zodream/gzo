@@ -30,7 +30,7 @@ $this->registerCssFile([
     ],
     [
         '模板管理',
-        null,
+        false,
         'fa fa-file-text',
         [
             [
@@ -53,11 +53,12 @@ $this->registerCssFile([
                 './home/crud',
                 'fa fa-circle-o'
             ]
-        ]
+        ],
+        true
     ],
     [
         '模块管理',
-        null,
+        false,
         'fa fa-briefcase',
         [
             [
@@ -75,11 +76,12 @@ $this->registerCssFile([
                 ['./home/module', 'status' => 2],
                 'fa fa-terminal'
             ]
-        ]
+        ],
+        true
     ],
     [
         '数据库管理',
-        null,
+        false,
         'fa fa-database',
         [
             [
