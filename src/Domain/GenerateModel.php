@@ -65,7 +65,7 @@ class GenerateModel extends Model {
     /**
      * 数据模型中的列生成
      * @param array $columns
-     * @return string
+     * @return array
      */
     public static function getFill(array $columns) {
         $pk = false;

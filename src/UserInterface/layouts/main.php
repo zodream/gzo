@@ -13,6 +13,7 @@ $this->registerCssFile([
     '@gzo.css'
 ])->registerJsFile([
     '@jquery.min.js',
+    '@jquery.pjax.min.js',
     '@prism.js',
     '@jquery.autocompleter.min.js',
     '@jquery.dialog.min.js',

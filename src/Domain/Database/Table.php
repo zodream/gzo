@@ -56,11 +56,16 @@ class Table extends BaseTable {
         return $this->_data['Collation'];
     }
 
+    /**
+     * @param callable $func
+     * @throws \Exception
+     */
     public function map(callable $func) {
         if (empty($this->schema)) {
             $this->schema = new Schema();
         }
-        $data = InformationSchemaModel::column()->where(['TABLE_SCHEMA' => $this->schema->getSchema()])
+        $data = InformationSchemaModel::column()
+            ->where(['TABLE_SCHEMA' => $this->schema->getSchema()])
         ->where(['TABLE_NAME' => $this->getTableName()])->all();
         (new Collection($data))->each(function($item) use ($func) {
             $func((new Column($this, $item['COLUMN_NAME']))
@@ -71,6 +76,7 @@ class Table extends BaseTable {
     /**
      * 导入csv数据
      * @param File|string $file
+     * @throws \Exception
      */
     public function importCsv($file) {
         $this->command()->execute('

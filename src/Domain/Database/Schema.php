@@ -41,7 +41,7 @@ class Schema extends BaseSchema {
     }
 
     public function getRows($sql) {
-        return $this->command()->getArray($sql);
+        return $this->command()->select($sql);
     }
 
     /**
