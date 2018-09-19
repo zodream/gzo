@@ -26,7 +26,7 @@ $this->registerCssFile([
 <?= Layout::mainIfPjax($this, [
     [
         '首页',
-        './admin',
+        './',
         'fa fa-home',
     ],
     [

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("button[data-type=preview]").click(function() {
+    $(document).on('click', "button[data-type=preview]", function() {
         let $this = $(this).parents('form');
         postJson($this.attr('action')+ '?preview=true', $this.serialize(), function(data) {
             if (data.code != 200) {
