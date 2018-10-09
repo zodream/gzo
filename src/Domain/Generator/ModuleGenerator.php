@@ -4,7 +4,7 @@ namespace Zodream\Module\Gzo\Domain\Generator;
 use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Disk\FileObject;
-use Zodream\Domain\Debug\Log;
+use Zodream\Debugger\Domain\Log;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
 use Zodream\Service\Factory;
@@ -34,6 +34,7 @@ class ModuleGenerator {
 
     /**
      * @param mixed $name
+     * @return ModuleGenerator
      */
     public function setName($name) {
         $this->name = $name;
@@ -42,6 +43,7 @@ class ModuleGenerator {
 
     /**
      * @param Directory $input
+     * @return ModuleGenerator
      */
     public function setInput($input) {
         if (empty($this->name)) {
@@ -56,6 +58,7 @@ class ModuleGenerator {
 
     /**
      * @param Directory $output
+     * @return ModuleGenerator
      */
     public function setOutput($output) {
         $this->output = $output;
@@ -64,6 +67,7 @@ class ModuleGenerator {
 
     /**
      * @param array $configs
+     * @return ModuleGenerator
      */
     public function setConfigs($configs) {
         if (isset($configs['name']) && !empty($configs['name'])) {
