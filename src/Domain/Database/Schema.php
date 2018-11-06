@@ -5,6 +5,7 @@ use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Disk\File;
 use Zodream\Disk\Stream;
 use Zodream\Infrastructure\Support\Collection;
+use Exception;
 
 class Schema extends BaseSchema {
 
@@ -15,13 +16,19 @@ class Schema extends BaseSchema {
         return array_column($data, 'Database');
     }
 
-    public function map(callable $func) {
+    public function map(callable $func, callable $failure = null) {
         $data = static::getAllTable(true);
-        (new Collection($data))->each(function($item) use ($func) {
-            $func((new Table($item['Name'], $item))
+        (new Collection($data))->each(function($item) use ($func, $failure) {
+            $table = (new Table($item['Name'], $item))
                 ->setComment($item['Comment'])
                 ->setEngine($item['Engine'])
-                ->setSchema($this));
+                ->setSchema($this);
+            try {
+                $func($table);
+            } catch (Exception $ex) {
+                logger($ex->getMessage());
+                if ($failure) return $failure($table, $ex);
+            }
         });
     }
 
@@ -48,6 +55,7 @@ class Schema extends BaseSchema {
      * 导入文件，导入一行的文件过大可能会报错
      * @param File|string $file
      * @return bool
+     * @throws Exception
      */
     public function import($file) {
         $stream = new Stream($file);
@@ -151,6 +159,13 @@ class Schema extends BaseSchema {
                 $stream->writeLine($table->getUnLockSql());
             }
             $stream->writeLines([
+                '',
+                ''
+            ]);
+        }, function (Table $table, Exception $ex) use ($stream) {
+            $stream->writeLines([
+                '-- 跳过表 '.$table->getName(),
+                '-- 导出数据出现错误 '.$ex->getMessage(),
                 '',
                 ''
             ]);

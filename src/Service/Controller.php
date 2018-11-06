@@ -30,4 +30,14 @@ abstract class Controller extends BaseController {
         }
         return $this->showContent(is_null($message) ? 'true' : $message);
     }
+
+    /**
+     * 重置默认数据库
+     */
+    protected function renewDB() {
+        $configs = config('db');
+        $configs['database'] = 'information_schema';
+        config()->set('db', $configs);
+        unset($configs);
+    }
 }

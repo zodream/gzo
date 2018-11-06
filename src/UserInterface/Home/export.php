@@ -73,8 +73,16 @@ $this->registerJs($js, View::JQUERY_READY);
         <label for="hasDrop1">添加 DROP </label>
     </div>
     <div class="input-group">
+        <label for="schema1">导出格式</label>
+        <select name="format" id="format">
+            <option value="sql">SQL 文件</option>
+            <option value="zip">ZIP 文件</option>
+        </select>
+    </div>
+    <div class="input-group">
         <label for="expire1">有效期（分钟）</label>
         <input id="expire1" type="number" name="expire" placeholder="示例：10" value="10" size="10">
     </div>
+
     <button class="btn">执行</button>
 </form>

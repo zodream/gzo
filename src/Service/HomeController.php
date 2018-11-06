@@ -24,11 +24,15 @@ class HomeController extends Controller {
     }
 
     public function tableAction($schema = null) {
+        if (!empty($schema)) {
+            $this->renewDB();
+        }
         $tables = GenerateModel::schema($schema)->getAllTable();
         return $this->jsonSuccess($tables);
     }
 
     public function schemaAction() {
+        $this->renewDB();
         $data = Schema::getAllDatabaseName();
         return $this->jsonSuccess($data);
     }
