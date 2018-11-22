@@ -32,12 +32,12 @@ $this->registerCssFile([
     [
         '模板管理',
         false,
-        'fa fa-file-text',
+        'fa fa-file-alt',
         [
             [
                 '生成控制器',
                 './home/controller',
-                'fa fa-gears'
+                'fa fa-cogs'
             ],
             [
                 '生成数据模型',
@@ -52,7 +52,7 @@ $this->registerCssFile([
             [
                 '生成CRUD',
                 './home/crud',
-                'fa fa-circle-o'
+                'fa fa-drum'
             ]
         ],
         true
@@ -93,12 +93,12 @@ $this->registerCssFile([
             [
                 '导出数据',
                 './home/export',
-                'fa fa-cloud-download'
+                'fa fa-cloud-download-alt'
             ],
             [
                 '导入数据',
                 './home/import',
-                'fa fa-cloud-upload'
+                'fa fa-cloud-upload-alt'
             ]
         ]
     ]
