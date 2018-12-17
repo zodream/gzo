@@ -14,7 +14,8 @@ echo '<?php';
 
 defined('APP_DIR') or exit();
 use Zodream\Html\Bootstrap\DetailWidget;
-/** @var $this \Zodream\Template\View */
+use Zodream\Template\View;
+/** @var $this View */
 $this->title = '';
 ?>
 

@@ -4,7 +4,8 @@ echo '<?php';
 ?>
 
 defined('APP_DIR') or exit();
-/** @var $this \Zodream\Template\View */
+use Zodream\Template\View;
+/** @var $this View */
 ?>
 <!DOCTYPE html>
 <html lang="<?='<?='?>$this->get('language', 'zh-CN')?>">

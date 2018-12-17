@@ -7,14 +7,14 @@ namespace Module\<?=$module?>;
 
 use Zodream\Route\Controller\Module as BaseModule;
 <?php if (isset($migration)):?>
-use Module\Finance\Domain\Migrations\<?=$migration?>;
+use Module\<?=$module?>\Domain\Migrations\<?=$migration === true ? sprintf('Create%sTables', $module) : $migration?>;
 <?php endif;?>
 
 class Module extends BaseModule {
 
 <?php if (isset($migration)):?>
     public function getMigration() {
-        return new <?=$migration?>();
+        return new <?=$migration === true ? sprintf('Create%sTables', $module) : $migration?>();
     }
 <?php endif;?>
 

@@ -85,16 +85,28 @@ class TemplateController extends Controller {
     }
 
     public function moduleAction($module, $table) {
-        $module = Str::firstReplace($module, 'Module\\');
+        if (strpos($module, 'Module\\') === 0) {
+            $module = substr($module, 7);
+        }
         $root = Factory::root()->addDirectory('Module')
             ->addDirectory($module);
-        $root->addFile('Module.php', ModuleGenerator::renderTemplate('Module', [
+        $domainRoot = $root->addDirectory('Domain');
+        $moduleConfigs = [
             'module' => $module
-        ]));
-        $modelRoot = $root->addDirectory('Domain')
-            ->addDirectory('Model');
+        ];
+        if (!empty($table)) {
+            $moduleConfigs['migration'] = true;
+            $this->createMigration($domainRoot->addDirectory('Migrations'),
+                $table, $module);
+        }
+        $root->addFile('Module.php', ModuleGenerator::renderTemplate('Module', $moduleConfigs));
+        $modelRoot = $domainRoot->addDirectory('Model');
         $controllerRoot = $root->addDirectory('Service');
         $viewRoot = $root->addDirectory('UserInterface');
+
+        $this->createController($controllerRoot, 'Home', $module, true);
+        $this->createView($viewRoot, 'Home', []);
+
         foreach ((array)$table as $item) {
             $columns = GenerateModel::schema()->table($item)->getAllColumn(true);
             $name = Str::studly($item);
@@ -134,8 +146,7 @@ class TemplateController extends Controller {
 
     protected function createMigration($root,
                                        $table,
-                                       $module,
-                                       array $columns = []) {
+                                       $module) {
         $template = $this->makeMigration($table, $module);
         if (!$root instanceof Directory) {
             return $template;
@@ -150,6 +161,9 @@ class TemplateController extends Controller {
         }
         $root = $root->addDirectory($name);
         $root->addFile('index.php', $this->viewIndex($name, $columns));
+        if (empty($columns)) {
+            return;
+        }
         $root->addFile('add.php', $this->viewEdit($name, $columns));
         $root->addFile('detail.php', $this->viewDetail($name, $columns));
     }

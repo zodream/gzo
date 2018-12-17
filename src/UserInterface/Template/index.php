@@ -4,7 +4,7 @@ echo '<?php';
 ?>
 
 defined('APP_DIR') or exit();
-use Zodream\Infrastructure\Html;
+use Zodream\Infrastructure\Support\Html;
 use Zodream\Template\View;
 use Zodream\Html\Bootstrap\TableWidget;
 /** @var $this View */

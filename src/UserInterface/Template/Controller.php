@@ -22,32 +22,25 @@ class <?=$name.config('app.controller')?> extends Controller {
 	);
 	
 	public function index<?=config('app.action')?>() {
-		$page = <?=$name.config('app.model')?>::findPage();
-		return $this->show(array(
-			'title' => '',
-			'page' => $page
-		));
+		$page = <?=$name.config('app.model')?>::page();
+		return $this->show(compact('page'));
 	}
 
     public function add<?=config('app.action')?>($id = null) {
         $model = <?=$name.config('app.model')?>::findOrNew($id);
         if ($model->load() && $model->save()) {
-            return $this->redirect(['<?=$name?>']);
+            return $this->redirect('./<?=strtolower($name)?>');
         }
-        return $this->show([
-            'model' => $model
-        ]);
+        return $this->show(compact('model'));
 	}
 
     public function delete<?=config('app.action')?>($id) {
-        <?=$name.config('app.model')?>::where(['id' => $id])->delete();
-        return $this->redirect(['<?=$name?>']);
+        <?=$name.config('app.model')?>::where('id', $id)->delete();
+        return $this->redirect('./<?=strtolower($name)?>');
 	}
 
     public function view<?=config('app.action')?>($id) {
 		$model = <?=$name.config('app.model')?>::find($id);
-        return $this->show([
-            'model' => $model
-        ]);
+        return $this->show(compact('model'));
 	}
 }
