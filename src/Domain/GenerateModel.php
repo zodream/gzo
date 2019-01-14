@@ -43,7 +43,7 @@ class GenerateModel extends Model {
             return $result;
         }
         $ext = !empty($match[2]) ? ':0,'.$match[2] : '';
-        if (!empty($match[2]) && in_array($match[1], ['int', 'tinyint'])) {
+        if (!empty($match[2]) && in_array($match[1], ['int', 'tinyint', 'smallint'])) {
             $ext = ':0,'.(pow(10, $match[2]) - 1);
         }
         switch ($match[1]) {
@@ -51,6 +51,7 @@ class GenerateModel extends Model {
                 $result .= '|int';
                 break;
             case 'tinyint':
+            case 'smallint':
                 $result .= '|int'.$ext;
                 break;
             case 'char':
