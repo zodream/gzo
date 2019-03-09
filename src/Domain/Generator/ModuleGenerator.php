@@ -7,6 +7,7 @@ use Zodream\Disk\FileObject;
 use Zodream\Debugger\Domain\Log;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
+use Zodream\Module\Gzo\Module;
 use Zodream\Service\Factory;
 
 /**
@@ -396,6 +397,13 @@ class ModuleGenerator {
         return [$data, $rules, $labels];
     }
 
+    public static function renderConfigs($name, array $data) {
+        Factory::root()->addDirectory('Service')
+            ->addDirectory('config')
+            ->addFile($name.'.php',
+                static::renderTemplate('config', compact('data')));
+    }
+
 
     /**
      * @param $name
@@ -405,7 +413,7 @@ class ModuleGenerator {
      * @throws \Zodream\Disk\FileException
      */
     public static function renderTemplate($name, $data = []) {
-        return Factory::view()
+        return Module::view()
             ->render('Template/'.$name, $data);
     }
 

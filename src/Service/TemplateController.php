@@ -37,9 +37,7 @@ class TemplateController extends Controller {
     }
 
     public function confAction($name, $data) {
-        Factory::root()->addDirectory('Service')
-            ->addDirectory('config')
-            ->addFile($name.'.php', $this->makeConfig($data));
+        ModuleGenerator::renderConfigs($name, $data);
         return $this->jsonSuccess();
     }
 
@@ -247,22 +245,13 @@ class TemplateController extends Controller {
         ]);
     }
 
-    /**
-     * 生成配置文件
-     * @param array $configs
-     * @return bool
-     * @throws \Exception
-     */
-    public function makeConfig(array $configs) {
-        return ModuleGenerator::renderTemplate('config', array('data' => $configs));
-    }
 
 
     /**
      * 生成主视图列表
      * @param string $name
      * @param array $columns
-     * @return bool
+     * @return string
      * @throws \Exception
      */
     protected function viewIndex($name, array $columns) {
