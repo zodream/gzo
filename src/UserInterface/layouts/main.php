@@ -2,6 +2,7 @@
 defined('APP_DIR') or exit();
 use Zodream\Template\View;
 use Zodream\Html\Dark\Layout;
+$this->content = $content;
 /** @var $this View */
 $this->registerCssFile([
     '@font-awesome.min.css',
