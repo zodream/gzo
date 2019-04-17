@@ -21,7 +21,7 @@ return [
 <?php else:?>
         '<?=$k?>' => [
 <?php foreach ($it as $k1 => $it1):?>
-                '<?=$k1?>' => '<?=is_array($it1) ? var_export($it1, true) : $it1 ?>',
+                '<?=$k1?>' => <?=var_export($it1, true) ?>,
 <?php endforeach;?>
         ],
 <?php endif;?>
