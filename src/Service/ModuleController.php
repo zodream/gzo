@@ -6,6 +6,7 @@ use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Json;
 use Zodream\Helpers\Str;
+use Zodream\Infrastructure\Http\Request;
 use Zodream\Infrastructure\Http\Response;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Service\Factory;
@@ -161,4 +162,13 @@ class ModuleController extends Controller {
         $file->write($content);
     }
 
+
+    public function generateAction($path = null) {
+        if (empty($path)) {
+            $path = app('request')->argv('arguments.1');
+        }
+        return $this->forward(TemplateController::class, 'module', [
+            'module' => $path
+        ]);
+    }
 }

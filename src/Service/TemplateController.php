@@ -82,13 +82,14 @@ class TemplateController extends Controller {
         return $this->jsonSuccess();
     }
 
-    public function moduleAction($module, $table) {
+    public function moduleAction($module, $table = null) {
         if (strpos($module, 'Module\\') === 0) {
             $module = substr($module, 7);
         }
         $root = Factory::root()->addDirectory('Module')
             ->addDirectory($module);
         $domainRoot = $root->addDirectory('Domain');
+        $module = str_replace('/', '\\', $module);
         $moduleConfigs = [
             'module' => $module
         ];
