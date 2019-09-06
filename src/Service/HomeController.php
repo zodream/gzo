@@ -52,13 +52,21 @@ class HomeController extends Controller {
 
     protected function getModuleList() {
         $data = [];
-        Factory::root()->directory('Module')
-            ->map(function ($file) use (&$data) {
-                if ($file instanceof Directory && $file->hasFile('Module.php')) {
-                    $data[] = $file->getName();
-                }
-            });
+        $this->getModulePath(Factory::root()->directory('Module'), $data);
         return $data;
+    }
+
+    private function getModulePath(Directory $folder, &$data, $prefix = null) {
+        $folder->map(function ($file) use (&$data, $prefix) {
+            if (!$file instanceof Directory) {
+                return;
+            }
+            if ($file->hasFile('Module.php')) {
+                $data[] = $prefix. $file->getName();
+                return;
+            }
+            $this->getModulePath($file, $data, $prefix . $file->getName() .'\\');
+        });
     }
 
     public function sqlAction($query = null, $schema = null, $table = null, $action = null) {
