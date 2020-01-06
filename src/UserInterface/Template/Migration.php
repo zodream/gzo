@@ -16,8 +16,8 @@ use Module\<?=$module?>\Domain\Model\<?=$item['name'].config('app.model')?>;
 class Create<?=$module?>Tables extends Migration {
 
     public function up() {
-<?php foreach ($data as $item):?>
-        Schema::createTable(<?=$item['name'].config('app.model')?>::tableName(), function(Table $table) {
+<?php foreach ($data as $i => $item):?>
+        <?= $i < 1 ? '$this' : '' ?>->append(<?=$item['name'].config('app.model')?>::tableName(), function(Table $table) {
 <?php if (isset($item['status']) && $item['status']):?>
             $table->setEngine('<?=$item['status']['Engine']?>')
                   ->setCharset('<?=$item['status']['Collation']?>')
@@ -26,13 +26,8 @@ class Create<?=$module?>Tables extends Migration {
 <?php foreach ($item['fields'] as $val):?>
             <?=$val?>;
 <?php endforeach;?>
-        });
-<?php endforeach;?>
+        })<?php endforeach;?>;
+        parent::up();
     }
 
-    public function down() {
-<?php foreach ($data as $item):?>
-        Schema::dropTable(<?=$item['name'].config('app.model')?>::tableName());
-<?php endforeach;?>
-    }
 }
