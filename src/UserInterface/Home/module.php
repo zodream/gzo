@@ -4,7 +4,6 @@ use Zodream\Template\View;
 
 $this->title = '模块管理';
 
-$url = $this->url('gzo/home/table');
 $modules = json_encode(array_map(function ($item) {
     return [
         'value' => 'Module\\'.$item,
@@ -12,16 +11,7 @@ $modules = json_encode(array_map(function ($item) {
     ];
 }, $modules));
 $js = <<<JS
-$.getJSON('{$url}', function (data) { 
-    if (data.code != 200) {
-        return;
-    }
-    var html = '<option value="">请选择</option>';
-    $.each(data.data, function(i, item) {
-        html += '<option value="'+item+'">'+item+'</option>';
-    });
-    $('#table1').html(html);
-});
+bindCurd();
 var nameEle = $("#name1");
 $("#module1").autocompleter({
     source: {$modules},

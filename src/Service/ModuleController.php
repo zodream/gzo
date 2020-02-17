@@ -1,6 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
@@ -170,5 +171,35 @@ class ModuleController extends Controller {
         return $this->forward(TemplateController::class, 'module', [
             'module' => $path
         ]);
+    }
+
+    public function allAction() {
+        $data = $this->getModuleList();
+        $data = array_map(function ($item) {
+            return [
+                'value' => 'Module\\'.$item,
+                'label' => $item,
+            ];
+        }, $data);
+        return $this->jsonSuccess($data);
+    }
+
+    public static function getModuleList() {
+        $data = [];
+        self::getModulePath(Factory::root()->directory('Module'), $data);
+        return $data;
+    }
+
+    private static function getModulePath(Directory $folder, &$data, $prefix = null) {
+        $folder->map(function ($file) use (&$data, $prefix) {
+            if (!$file instanceof Directory) {
+                return;
+            }
+            if ($file->hasFile('Module.php')) {
+                $data[] = $prefix. $file->getName();
+                return;
+            }
+            self::getModulePath($file, $data, $prefix . $file->getName() .'\\');
+        });
     }
 }

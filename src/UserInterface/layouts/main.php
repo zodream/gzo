@@ -20,7 +20,7 @@ $this->registerCssFile([
     '@jquery.upload.min.js',
     '@main.min.js',
     '@gzo.min.js'
-]);
+])->registerJs(sprintf('var BASE_URI = "%s";', $this->url('./', false)), View::HTML_HEAD);
 ?>
 
 <?= Layout::mainIfPjax($this, [
@@ -99,7 +99,12 @@ $this->registerCssFile([
                 '导入数据',
                 './home/import',
                 'fa fa-cloud-upload-alt'
-            ]
+            ],
+            [
+                '数据复制',
+                './home/copy',
+                'fa fa-copy'
+            ],
         ]
     ]
 ], $content, 'ZoDream Generator') ?>

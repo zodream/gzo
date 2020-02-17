@@ -4,20 +4,9 @@ use Zodream\Template\View;
 
 $this->title = '生成数据模型模型';
 
-$url = $this->url('gzo/home/table');
 $js = <<<JS
-$.getJSON('{$url}', function (data) { 
-    if (data.code != 200) {
-        return;
-    }
-    var html = '<option value="">请选择</option>';
-    $.each(data.data, function(i, item) {
-        html += '<option value="'+item+'">'+item+'</option>';
-    });
-    $('#table1').html(html);
-});
+bindCurd();
 JS;
-
 
 $this->registerJs($js, View::JQUERY_READY);
 ?>

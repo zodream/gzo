@@ -1,9 +1,11 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Database\Command;
 use Zodream\Disk\File;
 use Zodream\Disk\ZipStream;
 use Zodream\Helpers\Str;
+use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Service\Factory;
 use ReflectionClass;
@@ -41,5 +43,55 @@ class SqlController extends Controller {
         $zip_file = $root->file($schema.date('Y-m-d').'.zip');
         ZipStream::create($zip_file)->addFile($file)->close();
         return Factory::response()->file($zip_file);
+    }
+
+    public function copyAction($dist, $src, $column) {
+        $distColumn = [];
+        $srcColumn = [];
+        foreach ($column as $key => $item) {
+            $distColumn[] = $key;
+            $srcColumn[] = $item;
+        }
+        $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s', $dist,
+            implode(',', $distColumn), implode(',', $srcColumn), $src);
+        $count = Command::getInstance()->update($sql);
+        return $this->jsonSuccess($count, sprintf('复制成功 %s 行', $count));
+    }
+
+    public function tableAction($schema = null) {
+        if (!empty($schema)) {
+            $this->renewDB();
+        }
+        $tables = GenerateModel::schema($schema)->getAllTable();
+        return $this->jsonSuccess($tables);
+    }
+
+    public function schemaAction() {
+        $this->renewDB();
+        $data = Schema::getAllDatabaseName();
+        $data = array_filter($data, function ($item) {
+           return !in_array($item, ['information_schema', 'mysql', 'performance_schema', 'sys']);
+        });
+        return $this->jsonSuccess($data);
+    }
+
+    public function columnAction($table) {
+        $this->renewDB();
+        $schema = null;
+        if (strpos($table, '.') > 0) {
+            list($schema, $table) = explode('.', $table);
+        }
+        $data = GenerateModel::schema($schema)->table($table)->getAllColumn(true);
+        $data = array_map(function ($item) {
+            $i = strpos($item['Type'], '(');
+            if ($i > 0) {
+                $item['Type'] = substr($item['Type'], 0, $i);
+            }
+            return [
+                'value' => $item['Field'],
+                'label' => sprintf('%s(%s)', $item['Field'], $item['Type'])
+            ];
+        }, $data);
+        return $this->jsonSuccess($data);
     }
 }

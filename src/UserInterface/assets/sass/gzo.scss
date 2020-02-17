@@ -6,6 +6,51 @@
   }
 }
 
+.table-group {
+  display: inline-block;
+  select {
+    min-width: 60px;
+    height: 30px;
+  }
+}
+
+.column-item {
+  display: block;
+  width: auto;
+  height: 50px;
+  line-height: 50px;
+  span {
+    min-width: 30%;
+    display: inline-block;
+    text-align: center;
+  }
+}
+
+.dialog-select {
+  display: none;
+  position: fixed;
+  background-color: rgba($color: #000000, $alpha: .2);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .dialog-body {
+    position: absolute;
+    top: 40vh;
+    left: 50vw;
+    width: 300px;
+    margin-left: -150px;
+    background-color: white;
+    select,
+    button {
+      height: 50px;
+      min-width: 80px;
+      border: none;
+      outline: none;
+    }
+  }
+}
+
 
 @media (max-width: 767px){
   .zd-tab {

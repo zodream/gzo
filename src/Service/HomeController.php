@@ -24,20 +24,6 @@ class HomeController extends Controller {
         return $this->show();
     }
 
-    public function tableAction($schema = null) {
-        if (!empty($schema)) {
-            $this->renewDB();
-        }
-        $tables = GenerateModel::schema($schema)->getAllTable();
-        return $this->jsonSuccess($tables);
-    }
-
-    public function schemaAction() {
-        $this->renewDB();
-        $data = Schema::getAllDatabaseName();
-        return $this->jsonSuccess($data);
-    }
-
     public function crudAction() {
         return $this->show();
     }
@@ -47,27 +33,8 @@ class HomeController extends Controller {
     }
 
     public function moduleAction($status = 0) {
-        $modules = $this->getModuleList();
+        $modules = ModuleController::getModuleList();
         return $this->show(compact('status', 'modules'));
-    }
-
-    protected function getModuleList() {
-        $data = [];
-        $this->getModulePath(Factory::root()->directory('Module'), $data);
-        return $data;
-    }
-
-    private function getModulePath(Directory $folder, &$data, $prefix = null) {
-        $folder->map(function ($file) use (&$data, $prefix) {
-            if (!$file instanceof Directory) {
-                return;
-            }
-            if ($file->hasFile('Module.php')) {
-                $data[] = $prefix. $file->getName();
-                return;
-            }
-            $this->getModulePath($file, $data, $prefix . $file->getName() .'\\');
-        });
     }
 
     public function sqlAction($query = null, $schema = null, $table = null, $action = null, $type = null) {
@@ -95,6 +62,10 @@ class HomeController extends Controller {
     }
 
     public function importAction() {
+        return $this->show();
+    }
+
+    public function copyAction() {
         return $this->show();
     }
 
