@@ -20,21 +20,15 @@ $this->registerJs($js, View::JQUERY_READY);
     <span class="toggle"></span>
 </div>
 
-<form class="form-inline" data-type="ajax" action="<?=$this->url('./sql/copy')?>" method="post">
-    <div class="panel">
+<form class="form-inline" data-type="post" action="<?=$this->url('./sql/copy')?>" method="post">
+    <div class="panel copy-panel">
         <div class="panel-header">
-            目标表：<span data-action="table-select">请选择</span>
+            目标表：<span class="dist-item" data-action="table-select">请选择</span>
             &lt;-
             数据表：
             <span data-action="table-add" class="fa fa-plus"></span>
         </div>
         <div class="panel-body">
-            <div class="column-item">
-                <span>id</span>
-                &lt;-
-                <span data-action="column-select">请选择</span>
-                <i class="fa fa-times"></i>
-            </div>
         </div>
     </div>
 
@@ -45,6 +39,20 @@ $this->registerJs($js, View::JQUERY_READY);
     <div class="dialog-body">
         <select name="schame"></select>
         <select name="table"></select>
+        <button>确定</button>
+    </div>
+</div>
+
+<div class="dialog-column-select">
+    <div class="dialog-body">
+        <p>
+            <input type="radio" name="type" value="0" checked>
+            <input type="text" name="value" placeholder="请输入内容">
+        </p>
+        <p>
+            <input type="radio" name="type" value="1">
+            <select name="column"></select>
+        </p>
         <button>确定</button>
     </div>
 </div>

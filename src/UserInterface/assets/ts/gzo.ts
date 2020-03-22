@@ -43,34 +43,72 @@ function bindExport() {
 
 
 function bindCopy() {
-    let getSchame = function(cb: (data: string[]) => void) {
+    let _caches = {};
+    let clearCache = function() {
+        _caches = {};
+    },
+    getSchame = function(cb: (data: string[]) => void) {
+        const schames = Object.keys(_caches);
+        if (schames.length > 0) {
+            return cb(schames);
+        }
         $.getJSON(BASE_URI + 'sql/schema', function (data) { 
             if (data.code != 200) {
                 return;
             }
+            $.each(data.data, function() {
+                _caches[this] = {};
+            });
             cb(data.data);
         });
     },
     getTable = function(schame: string, cb: (data: string[]) => void) {
+        const tables = _caches.hasOwnProperty(schame) ? Object.keys(_caches[schame]) : [];
+        if (tables.length > 0) {
+            return cb(tables);
+        }
         $.getJSON(BASE_URI + 'sql/table?schema='+ schame, function (data) {
             if (data.code != 200) {
                 return;
             }
+            let obj = {};
+            $.each(data.data, function() {
+                obj[this] = [];
+            });
+            _caches[schame] = obj;
             cb(data.data);
         });
     },
     getColumn = function(table: string, cb: (data: any[]) => void) {
+        let [schame, tab] = table.split('.');
+        const columns = _caches.hasOwnProperty(schame) && _caches[schame].hasOwnProperty(tab) ? _caches[schame][tab] : [];
+        if (columns.length > 0) {
+            return cb(columns);
+        }
         $.getJSON(BASE_URI + 'sql/column?table='+ table, function (data) {
             if (data.code != 200) {
                 return;
             }
+            _caches[schame][tab] = data.data;
             cb(data.data);
         });
     },
     selectBox = $('.dialog-select'),
-    selectCb: (table: string) => void = undefined,
+    selectColumnBox = $('.dialog-column-select'),
+    selectCb: (table: any) => void = undefined,
     selectTable = function(cb: (table: string) => void) {
         selectBox.show();
+        selectCb = cb;
+    },
+    selectColumn = function(table: string, cb: (data: any) => void) {
+        getColumn(table, items => {
+            let html = '';
+            items.forEach(item => {
+                html += '<option value="'+item.label+'">'+item.label+'</option>';
+            });
+            selectColumnBox.find('select').html(html);
+        });
+        selectColumnBox.show();
         selectCb = cb;
     };
     getSchame(items => {
@@ -92,7 +130,22 @@ function bindCopy() {
         selectBox.hide();
         selectCb && selectCb(selectBox.find('select[name="schame"]').val() + '.'  + selectBox.find('select[name="table"]').val());
     });
+    selectColumnBox.on('click', 'button', function() {
+        selectColumnBox.hide();
+        let data = {
+            type: 0,
+            value: null
+        };
+        let input = selectColumnBox.find('[name="type"]:checked');
+        if (input.length < 1) {
+            return;
+        }
+        data.type = input.val();
+        data.value = input.next().val();
+        selectCb && selectCb(data);
+    });
     $(document).on('click', '*[data-action="table-select"]', function() {
+        clearCache();
         let $this = $(this);
         selectTable(table => {
             $this.text(table);
@@ -106,6 +159,10 @@ function bindCopy() {
         });
     }).on('click', '*[data-action="table-add"]', function() {
         let $this = $(this);
+        if ($this.closest('.panel-header').find('.dist-item').text().indexOf('请选择') >= 0) {
+            Dialog.tip('请先选择目标表');
+            return;
+        }
         selectTable(table => {
             $this.before('<span class="table-item">' + table + '<i class="fa fa-times"></i></span>');
             getColumn(table, items => {
@@ -119,10 +176,50 @@ function bindCopy() {
                 });
             });
         });
+    }).on('click', '*[data-action="column-select"]', function() {
+        let $this = $(this);
+        let panel = $this.closest('.panel');
+        let dist = panel.find('.dist-item').text();
+        let srcTables = panel.find('.table-item');
+        if (srcTables.length < 1) {
+            Dialog.tip('请先选择数据表');
+            return;
+        }
+        selectColumn(srcTables.eq(0).text(), data => {
+            $this.text(data.type < 1 ? ('"'+ data.value +'"') : data.value);
+        });
     }).on('click', '.table-item .fa-times', function() {
         $(this).closest('.table-item').remove();
     }).on('click', '.column-item .fa-times', function() {
         $(this).closest('.column-item').remove();
+    }).on('submit', 'form[data-type="post"]', function(e) {
+        let data = {
+            dist: '',
+            src: '',
+            column: {}
+        };
+        let panel = $(this);
+        data.dist = panel.find('.dist-item').text();
+        data.src = panel.find('.table-item').eq(0).text();
+        panel.find('.column-item').each(function() {
+            let dist = '', src = '';
+            $(this).find('span').each(function(this: HTMLSpanElement) {
+                if ($(this).data('action')) {
+                    src = this.innerText;
+                    return;
+                }
+                dist = this.innerText;
+            });
+            data.column[dist] = src;
+        });
+        postJson(panel.attr('action'), data, res => {
+            if (res.code != 200) {
+                parseAjax(res);
+                return;
+            }
+            Dialog.tip('复制成功');
+        });
+        return false;
     });
 }
 

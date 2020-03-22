@@ -1,63 +1,110 @@
 #table-box {
-  select {
-    height: auto;
-    display: block;
-    min-width: 200px;
-  }
+    select {
+        height: auto;
+        display: block;
+        min-width: 200px;
+    }
 }
 
 .table-group {
-  display: inline-block;
-  select {
-    min-width: 60px;
-    height: 30px;
-  }
+    display: inline-block;
+
+    select {
+        min-width: 60px;
+        height: 30px;
+    }
 }
 
 .column-item {
-  display: block;
-  width: auto;
-  height: 50px;
-  line-height: 50px;
-  span {
-    min-width: 30%;
-    display: inline-block;
-    text-align: center;
-  }
+    display: block;
+    width: auto;
+    height: 50px;
+    line-height: 50px;
+
+    span {
+        min-width: 30%;
+        display: inline-block;
+        text-align: center;
+    }
 }
 
-.dialog-select {
-  display: none;
-  position: fixed;
-  background-color: rgba($color: #000000, $alpha: .2);
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  .dialog-body {
-    position: absolute;
-    top: 40vh;
-    left: 50vw;
-    width: 300px;
-    margin-left: -150px;
-    background-color: white;
-    select,
-    button {
-      height: 50px;
-      min-width: 80px;
-      border: none;
-      outline: none;
+.copy-panel {
+    margin-top: 30px;
+    .panel-header {
+
+        .dist-item,
+        .table-item {
+            position: relative;
+            background-color: #fff;
+            line-height: 30px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+
+            .fa {
+                position: absolute;
+                right: -10px;
+                top: -8px;
+                background: #333;
+                color: #fff;
+                border-radius: 50%;
+                display: block;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                text-align: center;
+            }
+
+            &:hover {
+                background-color: red;
+                color: #fff;
+            }
+        }
+        .table-item {
+            margin-right: 20px;
+        }
     }
-  }
+    span[data-action="column-select"] {
+        cursor: pointer;
+    }
 }
 
 
-@media (max-width: 767px){
-  .zd-tab {
-    .zd-tab-head {
-      .zd-tab-item {
-        width: 32%;
-      }
+.dialog-select,
+.dialog-column-select {
+    display: none;
+    position: fixed;
+    background-color: rgba($color: #000000, $alpha: .2);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .dialog-body {
+        position: absolute;
+        top: 40vh;
+        left: 50vw;
+        width: 300px;
+        margin-left: -150px;
+        background-color: white;
+
+        select,
+        button {
+            height: 50px;
+            min-width: 80px;
+            border: none;
+            outline: none;
+        }
     }
-  }
+}
+
+
+@media (max-width: 767px) {
+    .zd-tab {
+        .zd-tab-head {
+            .zd-tab-item {
+                width: 32%;
+            }
+        }
+    }
 }

@@ -48,13 +48,24 @@ class SqlController extends Controller {
     public function copyAction($dist, $src, $column) {
         $distColumn = [];
         $srcColumn = [];
+        $parameters = [];
         foreach ($column as $key => $item) {
-            $distColumn[] = $key;
+            if (!preg_match('/^[a-zA-Z_]+/', $key, $match)) {
+                continue;
+            }
+            $distColumn[] = $match[0];
+            if (preg_match('/^"(.+)"$/', $item, $match)) {
+                $parameters[] = $match[1];
+                $item = '?';
+            } else {
+                preg_match('/^[a-zA-Z_]+/', $key, $match);
+                $item = $match[0];
+            }
             $srcColumn[] = $item;
         }
         $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s', $dist,
             implode(',', $distColumn), implode(',', $srcColumn), $src);
-        $count = Command::getInstance()->update($sql);
+        $count = Command::getInstance()->update($sql, $parameters);
         return $this->jsonSuccess($count, sprintf('复制成功 %s 行', $count));
     }
 
@@ -72,7 +83,7 @@ class SqlController extends Controller {
         $data = array_filter($data, function ($item) {
            return !in_array($item, ['information_schema', 'mysql', 'performance_schema', 'sys']);
         });
-        return $this->jsonSuccess($data);
+        return $this->jsonSuccess(array_values($data));
     }
 
     public function columnAction($table) {
