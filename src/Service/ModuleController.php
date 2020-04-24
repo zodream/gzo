@@ -184,6 +184,14 @@ class ModuleController extends Controller {
         return $this->jsonSuccess($data);
     }
 
+    public static function installModule(array $modules, array $methods) {
+        $instance = new static();
+        foreach ($modules as $module) {
+            $instance->invokeModuleMethod($module, $methods);
+        }
+        return true;
+    }
+
     public static function getModuleList() {
         $data = [];
         self::getModulePath(Factory::root()->directory('Module'), $data);
