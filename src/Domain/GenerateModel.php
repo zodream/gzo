@@ -113,7 +113,7 @@ class GenerateModel extends Model {
 
     protected static function parseFieldType($field) {
         if ($field['Field'] == 'id') {
-            return '$table->set(\'id\')->pk()->ai()';
+            return '$table->set(\'id\')->pk(true)';
         }
         if (in_array($field['Field'], ['updated_at', 'created_at', 'deleted_at'])) {
             return sprintf('$table->timestamp(\'%s\')', $field['Field']);
@@ -121,6 +121,12 @@ class GenerateModel extends Model {
         $type = strtolower($field['Type']);
         if (strpos($type, '(') === false) {
             $type .= '()';
+        } else {
+            $args = explode(')', $type, 2);
+            $type = $args[0].')';
+            if ($args > 1 && strpos($args[1], 'unsigned') !== false) {
+                $type .= '->unsigned()';
+            }
         }
         return sprintf('$table->set(\'%s\')->%s', $field['Field'], $type);
     }
