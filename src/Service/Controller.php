@@ -17,16 +17,16 @@ abstract class Controller extends BaseController {
         return $args;
     }
 
-    public function jsonFailure($message = '', $code = 400) {
+    public function renderFailure($message = '', $code = 400) {
         if (!app('request')->isCli()) {
-            return parent::jsonFailure($message, $code);
+            return parent::renderFailure($message, $code);
         }
         return $this->showContent($message);
     }
 
-    public function jsonSuccess($data = null, $message = null) {
+    public function renderData($data = null, $message = null) {
         if (!app('request')->isCli()) {
-            return parent::jsonSuccess($data, $message);
+            return parent::renderData($data, $message);
         }
         return $this->showContent(is_null($message) ? 'true' : $message);
     }

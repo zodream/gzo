@@ -75,7 +75,7 @@ class ModuleController extends Controller {
         if ($hasAssets) {
             $this->moveAssets($module);
         }
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function uninstallAction($name) {
@@ -88,7 +88,7 @@ class ModuleController extends Controller {
                 $this->saveConfig($file, $configs);
             }
         }
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     protected function getModule($module) {
@@ -181,7 +181,7 @@ class ModuleController extends Controller {
                 'label' => $item,
             ];
         }, $data);
-        return $this->jsonSuccess($data);
+        return $this->renderData($data);
     }
 
     public static function installModule(array $modules, array $methods) {

@@ -33,29 +33,29 @@ class TemplateController extends Controller {
                 ->addDirectory('UserInterface')
                 ->addDirectory($module), $name, $columns);
         }
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function confAction($name, $data) {
         ModuleGenerator::renderConfigs($name, $data);
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function modelAction($table, $module = null, $preview = null) {
         if (!empty($preview)) {
-            return $this->jsonSuccess([
+            return $this->renderData([
                 'code' => $this->createModel(null, $table, $module)
             ]);
         }
         $root = Factory::root()->addDirectory('Domain')
             ->addDirectory('Model')->addDirectory($module);
         $this->createModel($root, $table, $module);
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function migrationAction($table, $module, $preview = null) {
         if (!empty($preview)) {
-            return $this->jsonSuccess([
+            return $this->renderData([
                 'code' => $this->createMigration(null, $table, $module)
             ]);
         }
@@ -63,12 +63,12 @@ class TemplateController extends Controller {
             ->addDirectory($module)->addDirectory('Domain')
             ->addDirectory('Migrations');
         $this->createMigration($root, $table, $module);
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function controllerAction($module, $name = 'Home', $preview = null) {
         if (!empty($preview)) {
-            return $this->jsonSuccess([
+            return $this->renderData([
                 'code' => $this->createController(null, $name, $module)
             ]);
         }
@@ -79,7 +79,7 @@ class TemplateController extends Controller {
         }
         $name = Str::lastReplace($name, config('app.controller'));
         $this->createController($root, $name, $module);
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     public function moduleAction($module, $table = null) {
@@ -113,7 +113,7 @@ class TemplateController extends Controller {
             $this->createModel($modelRoot, $item, $module, $name, $columns, true);
             $this->createView($viewRoot, $name, $columns);
         }
-        return $this->jsonSuccess();
+        return $this->renderData();
     }
 
     protected function createController($root, $name, $module, $is_module = false) {

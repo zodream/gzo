@@ -16,7 +16,7 @@ class SqlController extends Controller {
         $this->renewDB();
         set_time_limit(0);
         GenerateModel::schema($schema)->import($_FILES['file']['tmp_name']);
-        return $this->jsonSuccess();
+        return $this->renderData(true);
     }
 
     public function exportAction($schema = null,
@@ -35,7 +35,7 @@ class SqlController extends Controller {
         if ((!$file->exist() || $file->modifyTime() < (time() - $expire * 60))
             && !GenerateModel::schema($schema)
                 ->export($file, $table, $has_schema, $sql_structure, $sql_data, $has_drop)) {
-            return $this->jsonFailure('导出失败！');
+            return $this->renderFailure('导出失败！');
         }
         if ($format != 'zip') {
             return Factory::response()->file($file);
@@ -66,7 +66,7 @@ class SqlController extends Controller {
         $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s', $dist,
             implode(',', $distColumn), implode(',', $srcColumn), $src);
         $count = Command::getInstance()->update($sql, $parameters);
-        return $this->jsonSuccess($count, sprintf('复制成功 %s 行', $count));
+        return $this->renderData($count, sprintf('复制成功 %s 行', $count));
     }
 
     public function tableAction($schema = null) {
@@ -74,7 +74,7 @@ class SqlController extends Controller {
             $this->renewDB();
         }
         $tables = GenerateModel::schema($schema)->getAllTable();
-        return $this->jsonSuccess($tables);
+        return $this->renderData($tables);
     }
 
     public function schemaAction() {
@@ -83,7 +83,7 @@ class SqlController extends Controller {
         $data = array_filter($data, function ($item) {
            return !in_array($item, ['information_schema', 'mysql', 'performance_schema', 'sys']);
         });
-        return $this->jsonSuccess(array_values($data));
+        return $this->renderData(array_values($data));
     }
 
     public function columnAction($table) {
@@ -103,6 +103,6 @@ class SqlController extends Controller {
                 'label' => sprintf('%s(%s)', $item['Field'], $item['Type'])
             ];
         }, $data);
-        return $this->jsonSuccess($data);
+        return $this->renderData($data);
     }
 }
