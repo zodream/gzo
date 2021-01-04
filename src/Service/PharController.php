@@ -2,7 +2,6 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\PharGenerator;
-use Zodream\Service\Factory;
 
 class PharController extends Controller {
 
@@ -14,7 +13,7 @@ class PharController extends Controller {
 
     public function indexAction($input) {
         $phar = new PharGenerator();
-        $phar->setInput(Factory::root()->directory($input));
+        $phar->setInput(app_path()->directory($input));
         $phar->loadComposer();
         $phar->create();
     }

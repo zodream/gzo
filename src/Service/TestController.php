@@ -3,7 +3,6 @@ namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\ClassGenerator;
 use Zodream\Module\Gzo\Domain\Generator\TestGenerator;
-use Zodream\Service\Factory;
 
 class TestController extends Controller {
 
@@ -16,7 +15,6 @@ class TestController extends Controller {
      * @param $escapedClassName
      * @param $escapedSourcePath
      * @param $generatedFilePath
-     * @return \Zodream\Infrastructure\Http\Response
      */
     public function fileAction($escapedClassName,
                                $escapedSourcePath,
@@ -32,7 +30,6 @@ class TestController extends Controller {
      * 目录生成
      * @param $source
      * @param $target
-     * @return \Zodream\Infrastructure\Http\Response
      */
     public function projectAction($source, $target) {
         $sourceDir      = realpath($source);
@@ -55,12 +52,12 @@ class TestController extends Controller {
                     substr($filePath, $sourcePathStrLength)
                 );
             if (file_exists($targetFilePath)) {
-                Factory::log()->info('Skip:     Test file for \'$filePath\' already exists');
+                logger()->info('Skip:     Test file for \'$filePath\' already exists');
                 continue;
             }
             $fullClassName = $this->extractFullClassNameFromFile($filePath);
             if ($fullClassName === false) {
-                Factory::log()->debug("Class name could not be extracted from '$filePath'");
+                logger()->debug("Class name could not be extracted from '$filePath'");
                 continue;
             }
             $targetFileName = basename($targetFilePath);
@@ -77,11 +74,11 @@ class TestController extends Controller {
                 $escapedClassName . 'Test', $generatedFilePath);
             $generator->write();
             if (!file_exists($generatedFilePath)) {
-                Factory::log()->debug("Failed to generate test file for '$fullClassName'");
+                logger()->debug("Failed to generate test file for '$fullClassName'");
                 continue;
             }
             rename($generatedFilePath, $targetFilePath);
-            Factory::log()->info("Test file successfully created for '$fullClassName'");
+            logger()->info("Test file successfully created for '$fullClassName'");
         }
         // 完成
         return $this->showContent('Done!');

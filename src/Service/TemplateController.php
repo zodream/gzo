@@ -6,7 +6,6 @@ use Zodream\Disk\Directory;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
-use Zodream\Service\Factory;
 
 class TemplateController extends Controller {
 
@@ -24,21 +23,21 @@ class TemplateController extends Controller {
             $this->controllerAction($module, $name);
         }
         if ($hasModel) {
-            $this->createModel(Factory::root()->addDirectory('Domain')
+            $this->createModel(app_path()->addDirectory('Domain')
                 ->addDirectory('Model')->addDirectory($module),
                 $table, $module, $name, $columns, true);
         }
         if ($hasView) {
-            $this->createView(Factory::root()
+            $this->createView(app_path()
                 ->addDirectory('UserInterface')
                 ->addDirectory($module), $name, $columns);
         }
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     public function confAction($name, $data) {
         ModuleGenerator::renderConfigs($name, $data);
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     public function modelAction($table, $module = null, $preview = null) {
@@ -47,10 +46,10 @@ class TemplateController extends Controller {
                 'code' => $this->createModel(null, $table, $module)
             ]);
         }
-        $root = Factory::root()->addDirectory('Domain')
+        $root = app_path()->addDirectory('Domain')
             ->addDirectory('Model')->addDirectory($module);
         $this->createModel($root, $table, $module);
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     public function migrationAction($table, $module, $preview = null) {
@@ -59,11 +58,11 @@ class TemplateController extends Controller {
                 'code' => $this->createMigration(null, $table, $module)
             ]);
         }
-        $root = Factory::root()->addDirectory('Module')
+        $root = app_path()->addDirectory('Module')
             ->addDirectory($module)->addDirectory('Domain')
             ->addDirectory('Migrations');
         $this->createMigration($root, $table, $module);
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     public function controllerAction($module, $name = 'Home', $preview = null) {
@@ -72,21 +71,21 @@ class TemplateController extends Controller {
                 'code' => $this->createController(null, $name, $module)
             ]);
         }
-        $root = Factory::root()->addDirectory('Service')
+        $root = app_path()->addDirectory('Service')
             ->addDirectory($module);
         if (!$root->hasFile('Controller.php')) {
             $root->addFile('Controller.php', $this->baseController($module));
         }
         $name = Str::lastReplace($name, config('app.controller'));
         $this->createController($root, $name, $module);
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     public function moduleAction($module, $table = null) {
-        if (strpos($module, 'Module\\') === 0) {
+        if (str_starts_with($module, 'Module\\')) {
             $module = substr($module, 7);
         }
-        $root = Factory::root()->addDirectory('Module')
+        $root = app_path()->addDirectory('Module')
             ->addDirectory($module);
         $domainRoot = $root->addDirectory('Domain');
         $module = str_replace('/', '\\', $module);
@@ -113,7 +112,7 @@ class TemplateController extends Controller {
             $this->createModel($modelRoot, $item, $module, $name, $columns, true);
             $this->createView($viewRoot, $name, $columns);
         }
-        return $this->renderData();
+        return $this->renderData(true);
     }
 
     protected function createController($root, $name, $module, $is_module = false) {

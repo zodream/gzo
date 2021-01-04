@@ -3,13 +3,12 @@ namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
-use Zodream\Service\Factory;
 
 class ComposerController extends Controller {
 
 
     public function initAction() {
-        $file = Factory::root()->file('Service/config/config.php');
+        $file = app_path()->file('Service/config/config.php');
         if ($file->exist()) {
             return;
         }

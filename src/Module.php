@@ -7,10 +7,18 @@ namespace Zodream\Module\Gzo;
  * Time: 19:22
  */
 use Zodream\Disk\Directory;
+use Zodream\Infrastructure\Error\NotFoundHttpException;
 use Zodream\Route\Controller\Module as BaseModule;
 use Zodream\Template\ViewFactory;
 
 class Module extends BaseModule {
+
+    public function boot()
+    {
+        if (!app()->isDebug()) {
+            throw new NotFoundHttpException('当前模块不允许');
+        }
+    }
 
     /**
      * @return ViewFactory

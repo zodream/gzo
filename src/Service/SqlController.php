@@ -2,13 +2,10 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Database\Command;
-use Zodream\Disk\File;
 use Zodream\Disk\ZipStream;
-use Zodream\Helpers\Str;
+use Zodream\Infrastructure\Contracts\Http\Output;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
-use Zodream\Service\Factory;
-use ReflectionClass;
 
 class SqlController extends Controller {
 
@@ -19,7 +16,7 @@ class SqlController extends Controller {
         return $this->renderData(true);
     }
 
-    public function exportAction($schema = null,
+    public function exportAction(Output $output, $schema = null,
                                  $sql_structure = false,
                                  $sql_data = false,
                                  $has_drop = false,
@@ -28,7 +25,7 @@ class SqlController extends Controller {
                                  $format = 'sql',
                                  $table = null) {
         $this->renewDB();
-        $root = Factory::root()->directory('data/sql');
+        $root = app_path()->directory('data/sql');
         $root->create();
         $file = $root->file($schema.date('Y-m-d').'.sql');
         set_time_limit(0);
@@ -38,11 +35,11 @@ class SqlController extends Controller {
             return $this->renderFailure('导出失败！');
         }
         if ($format != 'zip') {
-            return Factory::response()->file($file);
+            return $output->file($file);
         }
         $zip_file = $root->file($schema.date('Y-m-d').'.zip');
         ZipStream::create($zip_file)->addFile($file)->close();
-        return Factory::response()->file($zip_file);
+        return $output->file($zip_file);
     }
 
     public function copyAction($dist, $src, $column) {
@@ -65,7 +62,7 @@ class SqlController extends Controller {
         }
         $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s', $dist,
             implode(',', $distColumn), implode(',', $srcColumn), $src);
-        $count = Command::getInstance()->update($sql, $parameters);
+        $count = db()->update($sql, $parameters);
         return $this->renderData($count, sprintf('复制成功 %s 行', $count));
     }
 

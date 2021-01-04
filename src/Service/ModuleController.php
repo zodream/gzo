@@ -7,10 +7,7 @@ use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Json;
 use Zodream\Helpers\Str;
-use Zodream\Infrastructure\Http\Request;
-use Zodream\Infrastructure\Http\Response;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
-use Zodream\Service\Factory;
 use ReflectionClass;
 
 class ModuleController extends Controller {
@@ -26,10 +23,10 @@ class ModuleController extends Controller {
     public function indexAction($name = null, $input = null, $output = null, $configs = 'module.json') {
         $generator = new ModuleGenerator();
         if (!empty($input)) {
-            $input = Factory::root()->directory($input);
+            $input = app_path()->directory($input);
             $configs = $input->file($configs);
         } else {
-            $configs =  Factory::root()->file($configs);
+            $configs =  app_path()->file($configs);
         }
         $configs = Json::decode($configs->read());
         if (!empty($name)) {
@@ -53,7 +50,6 @@ class ModuleController extends Controller {
      * @param bool $hasSeed
      * @param bool $hasAssets
      * @param bool $isGlobal
-     * @return Response
      * @throws \Exception
      * @throws \Zodream\Disk\FileException
      */
@@ -75,7 +71,7 @@ class ModuleController extends Controller {
         if ($hasAssets) {
             $this->moveAssets($module);
         }
-        return $this->renderData();
+        return $this->renderData('');
     }
 
     public function uninstallAction($name) {
@@ -88,7 +84,7 @@ class ModuleController extends Controller {
                 $this->saveConfig($file, $configs);
             }
         }
-        return $this->renderData();
+        return $this->renderData('');
     }
 
     protected function getModule($module) {
@@ -119,14 +115,14 @@ class ModuleController extends Controller {
      * @throws FileException
      */
     protected function saveModuleConfigs($configs, $isGlobal = true) {
-        $file = $isGlobal ? Factory::config()->getDirectory()->file('config.php') : Factory::config()->getCurrentFile();
-        $data = Factory::config()->getConfigByFile($file);
+        $file = config()->configPath('route');
+        $data = config('route');
         $data = Arr::merge2D($data, $configs);
         $this->saveConfig($file, $data);
     }
 
     protected function removeConfigs(File $file, $configs) {
-        $data = Factory::config()->getConfigByFile($file);
+        $data = config('route');
         $data = Arr::unset2D($data, $configs);
         $this->saveConfig($file, $data);
     }
@@ -146,7 +142,7 @@ class ModuleController extends Controller {
         if (!$assetDir->exist()) {
             return;
         }
-        $assetDir->copy(Factory::public_path()->directory('assets'));
+        $assetDir->copy(public_path()->directory('assets'));
     }
 
     /**
@@ -156,7 +152,7 @@ class ModuleController extends Controller {
      * @throws \Exception
      */
     protected function saveConfig(File $file, array $configs) {
-        $content = Factory::view()
+        $content = view()
             ->render('Template/config', array(
                 'data' => $configs
             ));
@@ -166,7 +162,7 @@ class ModuleController extends Controller {
 
     public function generateAction($path = null) {
         if (empty($path)) {
-            $path = app('request')->argv('arguments.1');
+            $path = request()->request('arguments.1');
         }
         return $this->forward(TemplateController::class, 'module', [
             'module' => $path
@@ -194,7 +190,7 @@ class ModuleController extends Controller {
 
     public static function getModuleList() {
         $data = [];
-        self::getModulePath(Factory::root()->directory('Module'), $data);
+        self::getModulePath(app_path()->directory('Module'), $data);
         return $data;
     }
 

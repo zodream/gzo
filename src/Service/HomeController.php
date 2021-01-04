@@ -1,12 +1,10 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
-use Zodream\Disk\Directory;
 use Zodream\Helpers\Str;
 use Zodream\Html\Bootstrap\Html;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
-use Zodream\Service\Factory;
 
 class HomeController extends Controller {
 
