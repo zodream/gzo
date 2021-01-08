@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Database;
 
 use Zodream\Database\Schema\Schema as BaseSchema;
@@ -34,7 +35,7 @@ class Schema extends BaseSchema {
 
     public function setSchema($schema = null) {
         parent::setSchema($schema);
-        $this->command()->changedDatabase($this->schema);
+        $this->command()->changedSchema($this->schema);
         return $this;
     }
 
@@ -48,7 +49,7 @@ class Schema extends BaseSchema {
     }
 
     public function getRows($sql) {
-        return $this->command()->select($sql);
+        return $this->command()->fetch($sql);
     }
 
     /**
