@@ -75,14 +75,12 @@ class ModuleController extends Controller {
     }
 
     public function uninstallAction($name) {
-        $files = [config()->getCurrentFile(), config()->getDirectory()->file('config.php')];
-        foreach ($files as $file) {
-            $configs = config()->getConfigByFile($file);
-            if (isset($configs['modules'][$name])) {
-                $this->invokeModuleMethod($configs['modules'][$name], 'uninstall');
-                unset($configs['modules'][$name]);
-                $this->saveConfig($file, $configs);
-            }
+        $configs = config('route');
+        $file = config()->configPath('route');
+        if (isset($configs['modules'][$name])) {
+            $this->invokeModuleMethod($configs['modules'][$name], 'uninstall');
+            unset($configs['modules'][$name]);
+            $this->saveConfig($file, $configs);
         }
         return $this->renderData('');
     }
