@@ -13,7 +13,7 @@ class Table extends BaseTable {
      * @return integer
      */
     public function length() {
-        return $this->_data['Data_length'];
+        return $this->data['Data_length'];
     }
 
     /**
@@ -21,11 +21,11 @@ class Table extends BaseTable {
      * @return integer
      */
     public function avgRowLength() {
-        return $this->_data['Avg_row_length'];
+        return $this->data['Avg_row_length'];
     }
 
     public function maxLength() {
-        return $this->_data['Max_data_length'];
+        return $this->data['Max_data_length'];
     }
 
     /**
@@ -33,7 +33,7 @@ class Table extends BaseTable {
      * @return integer
      */
     public function dataFree() {
-        return $this->_data['Data_free'];
+        return $this->data['Data_free'];
     }
 
     /**
@@ -41,11 +41,11 @@ class Table extends BaseTable {
      * @return integer
      */
     public function rows() {
-        return $this->_data['Rows'];
+        return $this->data['Rows'];
     }
 
     public function version() {
-        return $this->_data['Version'];
+        return $this->data['Version'];
     }
 
     /**
@@ -53,7 +53,7 @@ class Table extends BaseTable {
      * @return string
      */
     public function collation() {
-        return $this->_data['Collation'];
+        return $this->data['Collation'];
     }
 
     /**

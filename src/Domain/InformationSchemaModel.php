@@ -13,7 +13,7 @@ class InformationSchemaModel extends Builder {
      * 查询关于数据库的信息
      * @return static
      */
-    public static function schema() {
+    public static function schemas() {
         return (new static())->from('SCHEMATA');
     }
 
@@ -21,7 +21,7 @@ class InformationSchemaModel extends Builder {
      * 查询关于数据库中的表的信息
      * @return static
      */
-    public static function table() {
+    public static function tables() {
         return (new static())->from('TABLES');
     }
 
@@ -29,7 +29,7 @@ class InformationSchemaModel extends Builder {
      * 查询表中的列信息
      * @return static
      */
-    public static function column() {
+    public static function columns() {
         return (new static())->from('COLUMNS');
     }
 }
