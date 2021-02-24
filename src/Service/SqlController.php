@@ -2,6 +2,7 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Database\Command;
+use Zodream\Database\DB;
 use Zodream\Disk\ZipStream;
 use Zodream\Infrastructure\Contracts\Http\Output;
 use Zodream\Module\Gzo\Domain\Database\Schema;
@@ -66,11 +67,11 @@ class SqlController extends Controller {
         return $this->renderData($count, sprintf('复制成功 %s 行', $count));
     }
 
-    public function tableAction($schema = null) {
+    public function tableAction(string $schema = '') {
         if (!empty($schema)) {
             $this->renewDB();
         }
-        $tables = GenerateModel::schema($schema)->getAllTable();
+        $tables = DB::information()->tableList($schema);
         return $this->renderData($tables);
     }
 

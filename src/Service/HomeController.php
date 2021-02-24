@@ -1,9 +1,9 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Database\DB;
 use Zodream\Helpers\Str;
 use Zodream\Html\Bootstrap\Html;
-use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 
 class HomeController extends Controller {
@@ -75,19 +75,22 @@ class HomeController extends Controller {
         ];
         if ($action === 'optimize') {
             $crumbs[] = '优化';
-            GenerateModel::schema($schema)->table($table)->optimize();
+            DB::db()->execute(DB::schemaGrammar()
+                ->compileTableOptimize(GenerateModel::schema($schema)->table($table)));
             $data = [['提示' => '优化成功！']];
             return [$crumbs, $data];
         }
         if ($action === 'truncate') {
             $crumbs[] = '清空数据';
-            GenerateModel::schema($schema)->table($table)->truncate();
+            DB::db()->execute(DB::schemaGrammar()
+                ->compileTableTruncate(GenerateModel::schema($schema)->table($table)));
             $data = [['提示' => '清空数据并初始化表！']];
             return [$crumbs, $data];
         }
         if ($action === 'clear') {
             $crumbs[] = '删除表数据';
-            GenerateModel::schema($schema)->table($table)->query()->delete();
+            DB::table(GenerateModel::schema($schema)->table($table))
+                ->delete();
             $data = [['提示' => '已删除表的所有数据！']];
             return [$crumbs, $data];
         }
@@ -103,7 +106,7 @@ class HomeController extends Controller {
             '表：'.$table
         ];
         if ($type === 'status') {
-            $data = GenerateModel::schema($schema)->table($table)->getAllColumn(true);
+            $data = DB::information()->columnList(GenerateModel::schema($schema)->table($table), true);
             $data = array_map(function ($item) {
                 $args = [
                     '列名' => $item['Field']
@@ -113,9 +116,10 @@ class HomeController extends Controller {
             }, $data);
             return [$crumbs, $data];
         }
-        $page = GenerateModel::schema($schema)->table($table)->query()->page();
+        $page = DB::table(GenerateModel::schema($schema)->table($table))->page();
         if ($page->isEmpty()) {
-            $data = GenerateModel::schema($schema)->table($table)->getAllColumn(false);
+            $data = DB::information()->columnList(
+                GenerateModel::schema($schema)->table($table));
             $items = [];
             foreach ($data as $item) {
                 $items[$item['Field']] = '';
@@ -137,7 +141,7 @@ class HomeController extends Controller {
             '数据库：'.$schema
         ];
         if ($type === 'status') {
-            $data = GenerateModel::schema($schema)->getAllTable(true);
+            $data = DB::information()->tableList($schema, true);
             $data = array_map(function ($item) {
                 $tip = '';
                 if ($item['Data_free'] > 0) {
@@ -152,7 +156,7 @@ class HomeController extends Controller {
             }, $data);
             return [$crumbs, $data];
         }
-        $data = GenerateModel::schema($schema)->getAllTable(false);
+        $data = DB::information()->tableList($schema);
         $data = array_map(function ($table) {
             return [
                 '数据表' =>
@@ -172,13 +176,13 @@ class HomeController extends Controller {
         $crumbs = [
             '服务器：localhost' => url('./home/sql')
         ];
-        $data = Schema::getAllDatabase();
+        $data = DB::information()->schemaList();
         $data = array_map(function ($item) {
             return [
-                '数据库' => Html::a($item['Database'], url(null, ['schema' => $item['Database']])),
+                '数据库' => Html::a($item, url(null, ['schema' => $item])),
                 '操作' => implode('', [
-                    Html::a('查看', url(null, ['schema' => $item['Database']])),
-                    Html::a('表状态', url(null, ['schema' => $item['Database'], 'type' => 'status'])),
+                    Html::a('查看', url(null, ['schema' => $item])),
+                    Html::a('表状态', url(null, ['schema' => $item, 'type' => 'status'])),
                 ])
             ];
         }, $data);

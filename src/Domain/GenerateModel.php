@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain;
 /**
  * Created by PhpStorm.
@@ -26,7 +27,7 @@ use Zodream\Module\Gzo\Domain\Database\Schema;
 
 class GenerateModel extends Model {
 
-    public static function schema($name = null) {
+    public static function schema(string $name = '') {
         return new Schema($name);
     }
 

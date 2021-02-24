@@ -1,6 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
+use Zodream\Database\DB;
 use Zodream\Database\Schema\Schema;
 use Zodream\Disk\Directory;
 use Zodream\Helpers\Str;
@@ -10,7 +11,7 @@ use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 class TemplateController extends Controller {
 
     public function indexAction($module,
-                                $table,
+                                string $table,
                                 $name = null,
                                 $hasController = true,
                                 $hasView = true,
@@ -18,7 +19,7 @@ class TemplateController extends Controller {
         if (!empty($name)) {
             $name = Str::studly($name);
         }
-        $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
+        $columns = DB::information()->columnList($table, true);
         if ($hasController) {
             $this->controllerAction($module, $name);
         }
@@ -106,7 +107,7 @@ class TemplateController extends Controller {
         $this->createView($viewRoot, 'Home', []);
 
         foreach ((array)$table as $item) {
-            $columns = GenerateModel::schema()->table($item)->getAllColumn(true);
+            $columns = DB::information()->columnList($item, true);
             $name = Str::studly($item);
             $this->createController($controllerRoot, $name, $module, true);
             $this->createModel($modelRoot, $item, $module, $name, $columns, true);
@@ -124,13 +125,13 @@ class TemplateController extends Controller {
     }
 
     protected function createModel($root,
-                                   $table,
+                                   string $table,
                                    $module,
                                    $name = null,
                                    array $columns = [],
                                    $is_module = false) {
         if (empty($columns)) {
-            $columns = GenerateModel::schema()->table($table)->getAllColumn(true);
+            $columns = DB::information()->columnList($table, true);
         }
         if (empty($name)) {
             $name = Str::studly($table);

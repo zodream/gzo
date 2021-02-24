@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Database;
 
+use Zodream\Database\Contracts\Schema as SchemaInterface;
+use Zodream\Database\DB;
 use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Disk\File;
 use Zodream\Disk\Stream;
@@ -12,17 +14,16 @@ class Schema extends BaseSchema {
 
     const LINE_MAX_LENGTH = 1048576;  // 一行读取的最大长度 1M
 
-    public static function getAllDatabaseName() {
-        $data = static::getAllDatabase();
-        return array_column($data, 'Database');
+    public static function getAllDatabaseName(): array {
+        return DB::information()->schemaList();
     }
 
     public function map(callable $func, callable $failure = null) {
-        $data = static::getAllTable(true);
+        $data = DB::information()->tableList($this, true);
         (new Collection($data))->each(function($item) use ($func, $failure) {
             $table = (new Table($item['Name'], $item))
-                ->setComment($item['Comment'])
-                ->setEngine($item['Engine'])
+                ->comment($item['Comment'])
+                ->engine($item['Engine'])
                 ->setSchema($this);
             try {
                 $func($table);
@@ -33,23 +34,14 @@ class Schema extends BaseSchema {
         });
     }
 
-    public function setSchema($schema = null) {
-        parent::setSchema($schema);
-        $this->command()->changedSchema($this->schema);
+    public function name(string $schema): SchemaInterface {
+        parent::name($schema);
+        Db::db()->changedSchema($this->name);
         return $this;
     }
 
-    /**
-     * @param string $name
-     * @return Table
-     */
-    public function table($name) {
-        return (new Table($name))
-            ->setSchema($this);
-    }
-
     public function getRows($sql) {
-        return $this->command()->fetch($sql);
+        return DB::db()->fetch($sql);
     }
 
     /**
@@ -72,7 +64,7 @@ class Schema extends BaseSchema {
             if (substr(trim($line), -1, 1) !== ';') {
                 continue;
             }
-            $this->command()->execute($content);
+            DB::db()->execute($content);
             $content = '';
         }
         $stream->close();
@@ -102,8 +94,8 @@ class Schema extends BaseSchema {
 
         if ($hasSchema) {
             $stream->writeLines([
-                'CREATE SCHEMA IF NOT EXISTS `'.$this->schema.'` DEFAULT CHARACTER SET utf8;',
-                'USE `'.$this->schema.'`;',
+                'CREATE SCHEMA IF NOT EXISTS `'.$this->name.'` DEFAULT CHARACTER SET utf8;',
+                'USE `'.$this->name.'`;',
             ]);
         }
 
@@ -116,20 +108,21 @@ class Schema extends BaseSchema {
                 ]);
                 return;
             }
+            $grammar = DB::schemaGrammar();
             $stream->writeLine('-- 创建表 '.$table->getName().' 开始');
             if ($hasDrop) {
-                $stream->writeLine($table->getDropSql());
+                $stream->writeLine($grammar->compileTableDelete($table));
             }
             if ($hasStructure) {
-                $stream->writeLine($table->getCreateTableSql());
+                $stream->writeLine(DB::information()->tableCreateSql($table));
             }
             $count = $table->rows();
             if ($hasData && $count > 0) {
                 $columnFields = $table->getFieldsType();
-                $stream->writeLine($table->getLockSql());
+                $stream->writeLine($grammar->compileTableLock($table));
                 $onlyMaxSize = max(20, floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
                 for ($i = 0; $i < $count; $i += $onlyMaxSize) {
-                    $data = $table->query()->limit($i, $onlyMaxSize)->all();
+                    $data = DB::table($table->getName())->limit($i, $onlyMaxSize)->all();
                     if (empty($data)) {
                         continue;
                     }
@@ -157,7 +150,7 @@ class Schema extends BaseSchema {
                         ])->write($column_sql);
                     }
                 }
-                $stream->writeLine($table->getUnLockSql());
+                $stream->writeLine($grammar->compileTableUnlock($table));
             }
             $stream->writeLines([
                 '',

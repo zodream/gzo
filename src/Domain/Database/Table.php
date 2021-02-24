@@ -1,12 +1,15 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Database;
 
+use Zodream\Database\DB;
 use Zodream\Database\Schema\Table as BaseTable;
 use Zodream\Disk\File;
 use Zodream\Infrastructure\Support\Collection;
 use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 
 class Table extends BaseTable {
+
+    protected array $data = [];
 
     /**
      * 总长度
@@ -52,7 +55,7 @@ class Table extends BaseTable {
      * 编码
      * @return string
      */
-    public function collation() {
+    public function getCollation(): string {
         return $this->data['Collation'];
     }
 
@@ -64,11 +67,12 @@ class Table extends BaseTable {
         if (empty($this->schema)) {
             $this->schema = new Schema();
         }
-        $data = InformationSchemaModel::column()
-            ->where(['TABLE_SCHEMA' => $this->schema->getSchema()])
-        ->where(['TABLE_NAME' => $this->getTableName()])->all();
+        $data = InformationSchemaModel::columns()
+            ->where(['TABLE_SCHEMA' => $this->schema->getName()])
+        ->where(['TABLE_NAME' => $this->getName()])->all();
         (new Collection($data))->each(function($item) use ($func) {
-            $func((new Column($this, $item['COLUMN_NAME']))
+            $func((new Column($item['COLUMN_NAME']))
+                ->setTable($this)
                 ->setData($item));
         });
     }
@@ -78,8 +82,8 @@ class Table extends BaseTable {
      * @param File|string $file
      * @throws \Exception
      */
-    public function importCsv($file) {
-        $this->command()->execute('
+    public function importCsv(string|File $file) {
+        Db::db()->execute('
             LOAD DATA LOCAL INFILE "'.(string)$file.'"
             INTO TABLE '.$this->getName().'
             FIELDS TERMINATED by \',\'
@@ -92,7 +96,7 @@ class Table extends BaseTable {
      * @return array
      */
     public function getFieldsType() {
-        $data = $this->getAllColumn();
+        $data = DB::information()->columnList($this);
         $args = [];
         foreach ($data as $field) {
             $args[$field['Field']] = $this->isNumeric($field['Type']);
@@ -113,12 +117,6 @@ class Table extends BaseTable {
      * @throws \Exception
      */
     public function getStatus() {
-        $sql = sprintf('SHOW TABLE STATUS WHERE `Name` = \'%s\'', $this->getTableName());
-        $data = $this->command()
-            ->getArray($sql);
-        if (empty($data)) {
-            return $data;
-        }
-        return reset($data);
+        return DB::db()->first(DB::schemaGrammar()->compileTableQuery($this));
     }
 }

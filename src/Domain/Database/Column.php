@@ -5,42 +5,42 @@ namespace Zodream\Module\Gzo\Domain\Database;
 use Zodream\Database\Schema\Column as BaseColumn;
 
 class Column extends BaseColumn {
-    private $_data = [];
+    protected array $data = [];
 
     public function setData(array $data) {
-        $this->_data = $data;
+        $this->data = $data;
         return $this;
     }
 
     public function type() {
-        return $this->_data['DATA_TYPE'];
+        return $this->data['DATA_TYPE'];
     }
 
     public function length() {
-        return $this->_data['NUMERIC_PRECISION'];
+        return $this->data['NUMERIC_PRECISION'];
     }
 
     public function maxLength() {
-        return $this->_data['CHARACTER_MAXIMUM_LENGTH'];
+        return $this->data['CHARACTER_MAXIMUM_LENGTH'];
     }
 
     public function getDefault() {
-        return $this->_data['COLUMN_DEFAULT'];
+        return $this->data['COLUMN_DEFAULT'];
     }
 
     public function isPK() {
-        return $this->_data['COLUMN_KEY'] == 'PRI';
+        return $this->data['COLUMN_KEY'] == 'PRI';
     }
 
     public function canNull() {
-        return $this->_data['IS_NULLABLE'] != 'NO';
+        return $this->data['IS_NULLABLE'] != 'NO';
     }
 
     public function isAuto() {
-        return $this->_data['EXTRA'] == 'auto_increment';
+        return $this->data['EXTRA'] == 'auto_increment';
     }
 
-    public function getComment() {
-        return $this->_data['COLUMN_COMMENT'];
+    public function getComment(): string {
+        return $this->data['COLUMN_COMMENT'];
     }
 }

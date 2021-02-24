@@ -7,15 +7,15 @@ use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 class Database {
 
     public static function map(callable $func) {
-        $data = InformationSchemaModel::schema()->all();
+        $data = InformationSchemaModel::schemas()->get();
         (new Collection($data))->each(function($item) use ($func) {
             $schema = $item['SCHEMA_NAME'];
             if (in_array($schema, ['mysql', 'performance_schema', 'information_schema'])) {
                 return;
             }
             $func((new Schema($schema))
-                ->setCharset($item['DEFAULT_CHARACTER_SET_NAME'])
-                ->setCollationName($item['DEFAULT_COLLATION_NAME']), $item);
+                ->charset($item['DEFAULT_CHARACTER_SET_NAME'])
+                ->collation($item['DEFAULT_COLLATION_NAME']), $item);
         });
     }
 }
