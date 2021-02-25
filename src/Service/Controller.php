@@ -8,9 +8,9 @@ use Zodream\Route\Controller\Controller as BaseController;
 
 abstract class Controller extends BaseController {
 
-    public function renderFailure(string|array $message, int $code = 400): Output {
+    public function renderFailure(string|array $message, int $code = 400, int $statusCode = 0): Output {
         if (!request()->isCli()) {
-            return parent::renderFailure($message, $code);
+            return parent::renderFailure($message, $code, $statusCode);
         }
         return $this->showContent($message);
     }

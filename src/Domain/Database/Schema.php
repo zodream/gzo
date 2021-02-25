@@ -21,7 +21,8 @@ class Schema extends BaseSchema {
     public function map(callable $func, callable $failure = null) {
         $data = DB::information()->tableList($this, true);
         (new Collection($data))->each(function($item) use ($func, $failure) {
-            $table = (new Table($item['Name'], $item))
+            $table = (new Table($item['Name']))
+                ->setData($item)
                 ->comment($item['Comment'])
                 ->engine($item['Engine'])
                 ->setSchema($this);
@@ -120,7 +121,7 @@ class Schema extends BaseSchema {
             if ($hasData && $count > 0) {
                 $columnFields = $table->getFieldsType();
                 $stream->writeLine($grammar->compileTableLock($table));
-                $onlyMaxSize = max(20, floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
+                $onlyMaxSize = max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
                 for ($i = 0; $i < $count; $i += $onlyMaxSize) {
                     $data = DB::table($table->getName())->limit($i, $onlyMaxSize)->all();
                     if (empty($data)) {

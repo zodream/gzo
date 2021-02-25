@@ -11,6 +11,11 @@ class Table extends BaseTable {
 
     protected array $data = [];
 
+    public function setData(array $data) {
+        $this->data = $data;
+        return $this;
+    }
+
     /**
      * 总长度
      * @return integer
