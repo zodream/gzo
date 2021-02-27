@@ -45,8 +45,8 @@ class <?=$name.config('app.model')?> extends Model {
 	}
 
 <?php foreach ($foreignKeys as $item):?>
-    public function get<?=ucfirst($item['table'])?>() {
-        return $this->hasOne('<?=$item['table']?>', '<?=$item['key']?>', '<?=$item['column']?>');
+    public function get<?=ucfirst($item['link_table'])?>() {
+        return $this->hasOne('<?=$item['link_table']?>', '<?=$item['link_column']?>', '<?=$item['column']?>');
     }
 
 <?php endforeach;?>

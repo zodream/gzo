@@ -47,22 +47,12 @@ class GenerateModel extends Model {
         if (!empty($match[2]) && in_array($match[1], ['int', 'smallint'])) {
             $ext = ':0,'.(pow(10, $match[2]) - 1);
         }
-        switch ($match[1]) {
-            case 'int':
-                $result .= '|int';
-                break;
-            case 'tinyint':
-                $result .= '|int:0,127';
-                break;
-            case 'smallint':
-                $result .= '|int'.$ext;
-                break;
-            case 'char':
-            case 'varchar':
-            default:
-                $result .= '|string'.$ext;
-                break;
-        }
+        $result .= match ($match[1]) {
+            'int' => '|int',
+            'tinyint' => '|int:0,127',
+            'smallint' => '|int' . $ext,
+            default => '|string' . $ext,
+        };
         return trim($result, '|');
     }
 
@@ -100,9 +90,9 @@ class GenerateModel extends Model {
         foreach ($columns as $value) {
             $item = self::parseFieldType($value);
             if (is_null($value['Default'])) {
-                $item .= sprintf('->defaultVal(\'%s\')', $value['Default']);
-            } elseif ($value['Null'] == 'NO') {
-                $item .= '->notNull()';
+                $item .= sprintf('->default(\'%s\')', $value['Default']);
+            } elseif ($value['Null'] == 'YES') {
+                $item .= '->nullable()';
             }
             if (!empty($value['COLUMN_COMMENT']) && $value['COLUMN_COMMENT'] != '') {
                 $item .= sprintf('->comment(\'%s\')', $value['COLUMN_COMMENT']);
@@ -114,42 +104,31 @@ class GenerateModel extends Model {
 
     protected static function parseFieldType($field) {
         if ($field['Field'] == 'id') {
-            return '$table->set(\'id\')->pk(true)';
+            return '$table->id()';
         }
         if (in_array($field['Field'], ['updated_at', 'created_at', 'deleted_at'])) {
             return sprintf('$table->timestamp(\'%s\')', $field['Field']);
         }
         $type = strtolower($field['Type']);
-        if (strpos($type, '(') === false) {
+        if (!str_contains($type, '(')) {
             $type .= '()';
         } else {
             $args = explode(')', $type, 2);
             $type = $args[0].')';
-            if ($args > 1 && strpos($args[1], 'unsigned') !== false) {
+            if ($args > 1 && str_contains($args[1], 'unsigned')) {
                 $type .= '->unsigned()';
             }
         }
-        return sprintf('$table->set(\'%s\')->%s', $field['Field'], $type);
+        return sprintf('$table->column(\'%s\')->%s', $field['Field'], $type);
     }
 
     protected static function converterType($type) {
         $type = explode('(', $type)[0];
-        switch (strtoupper(trim($type))) {
-            case 'INT':
-            case 'BOOL':
-            case 'TINYINT':
-            case 'SMALLINT':
-            case 'REAL':
-            case 'MEDIUMINT':
-            case 'BIGINT':
-                return 'integer';
-            case 'DOUBLE':
-                return 'double';
-            case 'FLOAT':
-            case 'DECIMAL':
-                return 'float';
-            default:
-                return 'string';
-        }
+        return match (strtoupper(trim($type))) {
+            'INT', 'BOOL', 'TINYINT', 'SMALLINT', 'REAL', 'MEDIUMINT', 'BIGINT' => 'integer',
+            'DOUBLE' => 'double',
+            'FLOAT', 'DECIMAL' => 'float',
+            default => 'string',
+        };
     }
 }

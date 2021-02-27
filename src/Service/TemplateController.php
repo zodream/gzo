@@ -207,11 +207,15 @@ class TemplateController extends Controller {
      */
     protected function makeModel($name, $table, array $columns, $module, $is_module = false) {
         $data = GenerateModel::getFill($columns);
-        $foreignKeys = (new Schema())->table($table)->getForeignKeys();
+        $foreignKeys = DB::information()->foreignKeys(
+            (new Schema(DB::engine()->config('database')))
+            ->table($table)
+        );
+        $prefix = DB::engine()->config('prefix');
         foreach ($foreignKeys as &$item) {
-            $item['table'] = Str::firstReplace('zd_', '', $item['REFERENCED_TABLE_NAME']);
-            $item['column'] = $item['COLUMN_NAME'];
-            $item['key'] = $item['REFERENCED_COLUMN_NAME'];
+            if (!empty($prefix)) {
+                $item['link_table'] = Str::firstReplace($prefix, '', $item['link_table']);
+            }
         }
         return ModuleGenerator::renderTemplate('Model', [
             'name' => $name,

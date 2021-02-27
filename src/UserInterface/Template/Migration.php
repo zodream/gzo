@@ -19,15 +19,14 @@ class Create<?=$module?>Tables extends Migration {
 <?php foreach ($data as $i => $item):?>
         <?= $i < 1 ? '$this' : '' ?>->append(<?=$item['name'].config('app.model')?>::tableName(), function(Table $table) {
 <?php if (isset($item['status']) && $item['status']):?>
-            $table->setEngine('<?=$item['status']['Engine']?>')
-                  ->setCharset('<?=$item['status']['Collation']?>')
-                  ->setComment('<?=$item['status']['Comment']?>');
+            $table->engine('<?=$item['status']['Engine']?>')
+                  ->charset('<?=$item['status']['Collation']?>')
+                  ->comment('<?=$item['status']['Comment']?>');
 <?php endif;?>
 <?php foreach ($item['fields'] as $val):?>
             <?=$val?>;
 <?php endforeach;?>
-        })<?php endforeach;?>;
-        parent::up();
+        })<?php endforeach;?>->autoUp();
     }
 
 }
