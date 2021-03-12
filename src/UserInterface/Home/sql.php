@@ -33,6 +33,6 @@ $this->title = '执行sql语句';
 
 <div class="content-box" style="overflow: auto">
     <?=TableWidget::show([
-            'data' => $data
+        'data' => $data
     ])?>
 </div>

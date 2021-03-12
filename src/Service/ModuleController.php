@@ -53,7 +53,10 @@ class ModuleController extends Controller {
      * @throws \Exception
      * @throws \Zodream\Disk\FileException
      */
-    public function installAction($name, $module, $hasTable = false, $hasSeed = false, $hasAssets = false, $isGlobal = false) {
+    public function installAction(
+        string $name, string $module,
+        bool $hasTable = false, bool $hasSeed = false,
+        bool $hasAssets = false, bool $isGlobal = false) {
         $methods = [];
         if ($hasTable) {
             $methods[] = 'install';
@@ -98,6 +101,7 @@ class ModuleController extends Controller {
             return;
         }
         $instance = new $module;
+        $instance->boot();
         foreach ((array)$methods as $method) {
             if (empty($method) || !method_exists($instance, $method)) {
                 continue;
