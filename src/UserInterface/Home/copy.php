@@ -33,14 +33,16 @@ $this->registerJs($js, View::JQUERY_READY);
     </div>
 
     <button class="btn">复制</button>
+    <a class="btn btn-danger" data-type="reset">清空</a>
 </form>
 
 <div class="dialog-select">
     <div class="dialog-body">
-        <select name="schame"></select>
-        <select name="table"></select>
+        <p><select name="schame"></select>
+        <select name="table"></select></p>
         <button>确定</button>
     </div>
+
 </div>
 
 <div class="dialog-column-select">

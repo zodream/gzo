@@ -52,11 +52,11 @@ class SqlController extends Controller {
                 continue;
             }
             $distColumn[] = $match[0];
-            if (preg_match('/^"(.+)"$/', $item, $match)) {
+            if (preg_match('/^"(.*)"$/', $item, $match)) {
                 $parameters[] = $match[1];
                 $item = '?';
             } else {
-                preg_match('/^[a-zA-Z_]+/', $key, $match);
+                preg_match('/^[a-zA-Z_]+/', $item, $match);
                 $item = $match[0];
             }
             $srcColumn[] = $item;
@@ -90,7 +90,7 @@ class SqlController extends Controller {
         if (strpos($table, '.') > 0) {
             list($schema, $table) = explode('.', $table);
         }
-        $data = GenerateModel::schema($schema)->table($table)->getAllColumn(true);
+        $data = DB::information()->columnList(GenerateModel::schema($schema)->table($table), true);
         $data = array_map(function ($item) {
             $i = strpos($item['Type'], '(');
             if ($i > 0) {

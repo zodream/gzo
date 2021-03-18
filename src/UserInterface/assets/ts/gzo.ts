@@ -119,10 +119,11 @@ function bindCopy() {
         selectBox.find('select[name="schame"]').html(html).trigger('change');
     });
     selectBox.on('change', 'select[name="schame"]', function() {
+        const oldTable = selectBox.find('select[name="table"]').val();
         getTable($(this).val() as string, items => {
             let html = '';
             $.each(items, function(i, item) {
-                html += '<option value="'+item+'">'+item+'</option>';
+                html += '<option value="'+item+'" '+  (oldTable === item ? 'selected' :'')  +'>' + item + '</option>';
             });
             selectBox.find('select[name="table"]').html(html).trigger('change');
         });
@@ -145,14 +146,13 @@ function bindCopy() {
         selectCb && selectCb(data);
     });
     $(document).on('click', '*[data-action="table-select"]', function() {
-        clearCache();
         let $this = $(this);
         selectTable(table => {
             $this.text(table);
             getColumn(table, items => {
                 let html = '';
                 items.forEach(item => {
-                    html += '<div class="column-item"><span>' + item.label + '</span>&lt;-<span data-action="column-select">请选择</span><i class="fa fa-times"></i></div>';
+                    html += '<div class="column-item"><span class="dist-column">' + item.label + '</span><i>&lt;-</i><span class="src-column" data-action="column-select">请选择</span><i class="fa fa-times"></i></div>';
                 });
                 $this.closest('.panel').find('.panel-body').html(html);
             });
@@ -163,16 +163,30 @@ function bindCopy() {
             Dialog.tip('请先选择目标表');
             return;
         }
+        const columnName = (val: string): string => {
+            return val.split('(')[0];
+        };
+        const columnFind = (i: number, name: string, items: any[]): any => {
+            for (const item of items) {
+                if (name === item.value) {
+                    item.is_used = true;
+                    return item;
+                }
+            }
+            return undefined;
+        };
         selectTable(table => {
             $this.before('<span class="table-item">' + table + '<i class="fa fa-times"></i></span>');
             getColumn(table, items => {
                 let panel = $this.closest('.panel');
                 panel.data('column', items);
                 panel.find('.panel-body .column-item').each((i, ele) => {
-                    if (items.length <= i) {
+                    const $ele = $(ele);
+                    const item = columnFind(i, columnName($ele.find('.dist-column').text()), items);
+                    if (!item) {
                         return;
                     }
-                    $(ele).find('[data-action="column-select"]').text(items[i].label);
+                    $ele.find('[data-action="column-select"]').text(item.label);
                 });
             });
         });
@@ -192,6 +206,11 @@ function bindCopy() {
         $(this).closest('.table-item').remove();
     }).on('click', '.column-item .fa-times', function() {
         $(this).closest('.column-item').remove();
+    }).on('click', '*[data-type="reset"]', function() {
+        let panel = $(this).closest('form');
+        panel.find('.dist-item').text('请选择');
+        panel.find('.table-item').remove();
+        panel.find('.panel-body').html('');
     }).on('submit', 'form[data-type="post"]', function(e) {
         let data = {
             dist: '',

@@ -8,7 +8,6 @@ use Zodream\Debugger\Domain\Log;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Module;
-use Zodream\Service\Factory;
 
 /**
  * 根据页面模板生成模块
@@ -75,10 +74,10 @@ class ModuleGenerator {
             $this->setName($configs['name']);
         }
         if (isset($configs['output']) && !empty($configs['output'])) {
-            $this->setInput(Factory::root()->directory($configs['output']));
+            $this->setInput(app_path()->directory($configs['output']));
         }
         if (isset($configs['input']) && !empty($configs['input'])) {
-            $this->setInput(Factory::root()->directory((string)$configs['input']));
+            $this->setInput(app_path()->directory((string)$configs['input']));
         }
         $this->configs = $configs;
         return $this;
@@ -317,13 +316,13 @@ class ModuleGenerator {
     }
 
     protected function getRealUri($uri) {
-        if (strpos($uri, '//') !== false) {
+        if (str_contains($uri, '//')) {
             return $uri;
         }
-        if (strpos($uri, 'javascript') === 0) {
+        if (str_starts_with($uri, 'javascript')) {
             return $uri;
         }
-        if (strpos($uri, './') === 0) {
+        if (str_starts_with($uri, './')) {
             $uri = substr($uri, 2);
         }
         return sprintf('<?=$this->url(\'./%s\')?>', $this->getRelativeUri($uri));
@@ -344,7 +343,7 @@ class ModuleGenerator {
                 }
                 continue;
             }
-            if (strpos($item, $uri) !== false) {
+            if (str_contains($item, $uri)) {
                 return $key;
             }
         }
@@ -398,7 +397,7 @@ class ModuleGenerator {
     }
 
     public static function renderConfigs($name, array $data) {
-        Factory::root()->addDirectory('Service')
+        app_path()->addDirectory('Service')
             ->addDirectory('config')
             ->addFile($name.'.php',
                 static::renderTemplate('config', compact('data')));
