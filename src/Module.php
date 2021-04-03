@@ -7,7 +7,7 @@ namespace Zodream\Module\Gzo;
  * Time: 19:22
  */
 use Zodream\Disk\Directory;
-use Zodream\Infrastructure\Error\NotFoundHttpException;
+use Zodream\Route\Exception\NotFoundHttpException;
 use Zodream\Route\Controller\Module as BaseModule;
 use Zodream\Template\ViewFactory;
 
