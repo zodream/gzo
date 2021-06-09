@@ -1,6 +1,7 @@
 <?php
 namespace Zodream\Module\Gzo\Domain\Database;
 
+use Zodream\Database\Contracts\SqlBuilder;
 use Zodream\Database\DB;
 use Zodream\Database\Schema\Table as BaseTable;
 use Zodream\Disk\File;
@@ -10,6 +11,14 @@ use Zodream\Module\Gzo\Domain\InformationSchemaModel;
 class Table extends BaseTable {
 
     protected array $data = [];
+
+    public function getName(): string
+    {
+        if (empty($this->schema)) {
+            return parent::getName();
+        }
+        return sprintf('`%s`.`%s`', $this->schema->getName(), $this->name);
+    }
 
     public function setData(array $data) {
         $this->data = $data;
@@ -123,5 +132,12 @@ class Table extends BaseTable {
      */
     public function getStatus() {
         return DB::db()->first(DB::schemaGrammar()->compileTableQuery($this));
+    }
+
+    /**
+     * @return SqlBuilder
+     */
+    public function query() {
+        return DB::table($this);
     }
 }

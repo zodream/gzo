@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace Zodream\Module\Gzo\Service;
+namespace Zodream\Module\Gzo\Service\Api;
 
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
 use Zodream\Module\Gzo\Domain\Repositories\TemplateRepository;
 
-class TemplateController extends Controller {
+final class TemplateController extends Controller {
 
     public function indexAction(string $module,
                                 string $table,
@@ -31,9 +31,7 @@ class TemplateController extends Controller {
         TemplateRepository::model($table, $module);
         $output = TemplateRepository::output();
         if ($output instanceof MemoryOutput) {
-            return $this->renderData([
-                'code' => $output->firstContent()
-            ]);
+            return $this->renderData($output->toArray());
         }
         return $this->renderData(true);
     }
@@ -42,9 +40,7 @@ class TemplateController extends Controller {
         TemplateRepository::migration($table, $module);
         $output = TemplateRepository::output();
         if ($output instanceof MemoryOutput) {
-            return $this->renderData([
-                'code' => $output->firstContent()
-            ]);
+            return $this->renderData($output->toArray());
         }
         return $this->renderData(true);
     }
@@ -53,9 +49,7 @@ class TemplateController extends Controller {
         TemplateRepository::controller($module, $name);
         $output = TemplateRepository::output();
         if ($output instanceof MemoryOutput) {
-            return $this->renderData([
-                'code' => $output->firstContent()
-            ]);
+            return $this->renderData($output->toArray());
         }
         return $this->renderData(true);
     }
@@ -68,5 +62,4 @@ class TemplateController extends Controller {
         }
         return $this->renderData(true);
     }
-
 }

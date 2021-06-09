@@ -1,49 +1,34 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
-use Zodream\Database\Command;
-use Zodream\Database\DB;
-use Zodream\Disk\ZipStream;
 use Zodream\Infrastructure\Contracts\Http\Output;
-use Zodream\Module\Gzo\Domain\Database\Schema;
-use Zodream\Module\Gzo\Domain\GenerateModel;
+use Zodream\Module\Gzo\Domain\Repositories\DatabaseRepository;
 
 class SqlController extends Controller {
 
-    public function importAction($schema = null) {
-        $this->renewDB();
-        set_time_limit(0);
-        GenerateModel::schema($schema)->import($_FILES['file']['tmp_name']);
+    public function importAction(string $schema = '') {
+        DatabaseRepository::import($_FILES['file']['tmp_name'], $schema);
         return $this->renderData(true);
     }
 
-    public function exportAction(Output $output, $schema = null,
-                                 $sql_structure = false,
-                                 $sql_data = false,
-                                 $has_drop = false,
-                                 $has_schema = false,
-                                 $expire = 10,
-                                 $format = 'sql',
-                                 $table = null) {
-        $this->renewDB();
-        $root = app_path()->directory('data/sql');
-        $root->create();
-        $file = $root->file($schema.date('Y-m-d').'.sql');
-        set_time_limit(0);
-        if ((!$file->exist() || $file->modifyTime() < (time() - $expire * 60))
-            && !GenerateModel::schema($schema)
-                ->export($file, $table, $has_schema, $sql_structure, $sql_data, $has_drop)) {
-            return $this->renderFailure('导出失败！');
+    public function exportAction(Output $output, string $schema = '',
+                                 bool $sql_structure = false,
+                                 bool $sql_data = false,
+                                 bool $has_drop = false,
+                                 bool $has_schema = false,
+                                 int $expire = 10,
+                                 string $format = 'sql',
+                                 array|string $table = []) {
+        try {
+            $file = DatabaseRepository::export($schema, $sql_structure, $sql_data, $has_drop, $has_schema, $expire, $format, $table);
+        } catch (\Exception $ex) {
+            return $this->renderFailure($ex->getMessage());
         }
-        if ($format != 'zip') {
-            return $output->file($file);
-        }
-        $zip_file = $root->file($schema.date('Y-m-d').'.zip');
-        ZipStream::create($zip_file)->addFile($file)->close();
-        return $output->file($zip_file);
+        return $output->file($file);
     }
 
-    public function copyAction($dist, $src, $column) {
+    public function copyAction($dist, $src, $column, bool $preview = false) {
         $distColumn = [];
         $srcColumn = [];
         $parameters = [];
@@ -63,44 +48,25 @@ class SqlController extends Controller {
         }
         $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s', $dist,
             implode(',', $distColumn), implode(',', $srcColumn), $src);
+        if ($preview) {
+            return $this->renderData([
+                'code' => $sql,
+                'parameters' => $parameters
+            ]);
+        }
         $count = db()->update($sql, $parameters);
         return $this->renderData($count, sprintf('复制成功 %s 行', $count));
     }
 
     public function tableAction(string $schema = '') {
-        if (!empty($schema)) {
-            $this->renewDB();
-        }
-        $tables = DB::information()->tableList($schema);
-        return $this->renderData($tables);
+        return $this->renderData(DatabaseRepository::tables($schema));
     }
 
     public function schemaAction() {
-        $this->renewDB();
-        $data = Schema::getAllDatabaseName();
-        $data = array_filter($data, function ($item) {
-           return !in_array($item, ['information_schema', 'mysql', 'performance_schema', 'sys']);
-        });
-        return $this->renderData(array_values($data));
+        return $this->renderData(DatabaseRepository::schemas());
     }
 
-    public function columnAction($table) {
-        $this->renewDB();
-        $schema = null;
-        if (strpos($table, '.') > 0) {
-            list($schema, $table) = explode('.', $table);
-        }
-        $data = DB::information()->columnList(GenerateModel::schema($schema)->table($table), true);
-        $data = array_map(function ($item) {
-            $i = strpos($item['Type'], '(');
-            if ($i > 0) {
-                $item['Type'] = substr($item['Type'], 0, $i);
-            }
-            return [
-                'value' => $item['Field'],
-                'label' => sprintf('%s(%s)', $item['Field'], $item['Type'])
-            ];
-        }, $data);
-        return $this->renderData($data);
+    public function columnAction(string $table) {
+        return $this->renderData(DatabaseRepository::columns($table));
     }
 }

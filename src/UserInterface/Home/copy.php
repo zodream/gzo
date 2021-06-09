@@ -33,6 +33,7 @@ $this->registerJs($js, View::JQUERY_READY);
     </div>
 
     <button class="btn">复制</button>
+    <button class="btn" data-action="preview" type="button">预览</button>
     <a class="btn btn-danger" data-type="reset">清空</a>
 </form>
 
@@ -42,7 +43,6 @@ $this->registerJs($js, View::JQUERY_READY);
         <select name="table"></select></p>
         <button>确定</button>
     </div>
-
 </div>
 
 <div class="dialog-column-select">

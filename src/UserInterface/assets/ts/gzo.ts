@@ -133,7 +133,7 @@ function bindCopy() {
     });
     selectColumnBox.on('click', 'button', function() {
         selectColumnBox.hide();
-        let data = {
+        let data: any = {
             type: 0,
             value: null
         };
@@ -145,6 +145,33 @@ function bindCopy() {
         data.value = input.next().val();
         selectCb && selectCb(data);
     });
+    const postCopyForm = (panel: JQuery, append: any = {}, success?: (res: any) => void) => {
+        let data: any = {
+            dist: '',
+            src: '',
+            column: {}
+        };
+        data.dist = panel.find('.dist-item').text();
+        data.src = panel.find('.table-item').eq(0).text();
+        panel.find('.column-item').each(function() {
+            let dist = '', src = '';
+            $(this).find('span').each(function(this: HTMLSpanElement) {
+                if ($(this).data('action')) {
+                    src = this.innerText;
+                    return;
+                }
+                dist = this.innerText;
+            });
+            data.column[dist] = src;
+        });
+        postJson(panel.attr('action'), Object.assign({}, data, append), res => {
+            if (res.code != 200) {
+                parseAjax(res);
+                return;
+            }
+            success(res);
+        });
+    };
     $(document).on('click', '*[data-action="table-select"]', function() {
         let $this = $(this);
         selectTable(table => {
@@ -212,37 +239,25 @@ function bindCopy() {
         panel.find('.table-item').remove();
         panel.find('.panel-body').html('');
     }).on('submit', 'form[data-type="post"]', function(e) {
-        let data = {
-            dist: '',
-            src: '',
-            column: {}
-        };
-        let panel = $(this);
-        data.dist = panel.find('.dist-item').text();
-        data.src = panel.find('.table-item').eq(0).text();
-        panel.find('.column-item').each(function() {
-            let dist = '', src = '';
-            $(this).find('span').each(function(this: HTMLSpanElement) {
-                if ($(this).data('action')) {
-                    src = this.innerText;
-                    return;
-                }
-                dist = this.innerText;
-            });
-            data.column[dist] = src;
-        });
-        postJson(panel.attr('action'), data, res => {
-            if (res.code != 200) {
-                parseAjax(res);
-                return;
-            }
+        postCopyForm($(this), {}, () => {
             Dialog.tip('复制成功');
+        });
+        return false;
+    }).on('click', "button[data-action=preview]", function(e) {
+        e.preventDefault();
+        postCopyForm($(this).parents('form'), {
+            preview: true
+        }, res => {
+            Dialog.box({
+                title: '预览',
+                content: `<p>${res.data.code}</p><p>${JSON.stringify(res.data.parameters)}</p>`
+            });
         });
         return false;
     });
 }
 
-$(document).ready(function() {
+$(function() {
     $(document).on('click', "button[data-type=preview]", function() {
         let $this = $(this).parents('form');
         postJson($this.attr('action')+ '?preview=true', $this.serialize(), function(data) {

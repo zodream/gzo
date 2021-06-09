@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Database;
 
 use Zodream\Database\Contracts\Schema as SchemaInterface;
+use Zodream\Database\Contracts\Table as TableInterface;
 use Zodream\Database\DB;
 use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Disk\File;
@@ -13,6 +14,21 @@ use Exception;
 class Schema extends BaseSchema {
 
     const LINE_MAX_LENGTH = 1048576;  // 一行读取的最大长度 1M
+
+    /**
+     * @param TableInterface|string $table
+     * @return Table
+     */
+    public function table(TableInterface|string $table): TableInterface {
+        if ($table instanceof TableInterface) {
+            $this->items[$table->getName()] = $table->setSchema($this);
+            return $table;
+        }
+        if (isset($this->items[$table])) {
+            return $this->items[$table];
+        }
+        return $this->items[$table] = (new Table($table))->setSchema($this);
+    }
 
     public static function getAllDatabaseName(): array {
         return DB::information()->schemaList();

@@ -7,6 +7,9 @@ namespace Zodream\Module\Gzo;
  * Time: 19:22
  */
 use Zodream\Disk\Directory;
+use Zodream\Module\Gzo\Domain\Output\FileOutput;
+use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
+use Zodream\Module\Gzo\Domain\Output\Writer;
 use Zodream\Route\Exception\NotFoundHttpException;
 use Zodream\Route\Controller\Module as BaseModule;
 use Zodream\Template\ViewFactory;
@@ -18,6 +21,8 @@ class Module extends BaseModule {
         if (!app()->isDebug()) {
             throw new NotFoundHttpException('当前模块不允许');
         }
+        app()->scoped(Writer::class,
+            !empty(request()->get('preview')) ? MemoryOutput::class : FileOutput::class);
     }
 
     /**
