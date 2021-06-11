@@ -25,7 +25,7 @@ class TemplateRepository {
         }
         $columns = DB::information()->columnList($table, true);
         if ($hasController) {
-            static::controllerAction($module, $name);
+            static::controller($module, $name);
         }
         if ($hasModel) {
             static::createModel(app_path()->childDirectory('Domain/Model/'.$module),

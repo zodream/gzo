@@ -17,10 +17,10 @@ class DatabaseRepository {
     }
 
     public static function export(string $schema = '',
-                                  bool $sql_structure = false,
-                                  bool $sql_data = false,
-                                  bool $has_drop = false,
-                                  bool $has_schema = false,
+                                  bool $hasStructure = false,
+                                  bool $hasData = false,
+                                  bool $hasDrop = false,
+                                  bool $hasSchema = false,
                                   int $expire = 10,
                                   string $format = 'sql',
                                   array|string $table = []) {
@@ -31,7 +31,7 @@ class DatabaseRepository {
         set_time_limit(0);
         if ((!$file->exist() || $file->modifyTime() < (time() - $expire * 60))
             && !GenerateModel::schema($schema)
-                ->export($file, $table, $has_schema, $sql_structure, $sql_data, $has_drop)) {
+                ->export($file, $table, $hasSchema, $hasStructure, $hasData, $hasDrop)) {
             throw new \Exception('导出失败！');
         }
         if ($format != 'zip') {
@@ -94,6 +94,64 @@ class DatabaseRepository {
         $page = new Page($total, $per_page);
         $page->setPage(DB::fetch($sql. ' limit '. $page->getLimit()));
         return $page;
+    }
+
+    public static function copySQL(array $dist, array $src, array $column): array {
+        $maps = [];
+        $from = '';
+        $join = [];
+        foreach ($src as $i => $item) {
+            $as = 't'.$i;
+            $maps[$item['schema']][$item['table']] = $as;
+        }
+        foreach ($src as $i => $item) {
+            $as = $maps[$item['schema']][$item['table']];
+            if ($i < 1) {
+                $from = self::renderTable($item, $as);
+                continue;
+            }
+            $join[] = sprintf('left join %s on %s.%s=%s.%s',
+                self::renderTable($item, $as), $as, $item['column'],
+                $maps[$item['foreignSchema']][$item['foreignTable']],
+                $item['foreignColumn'],
+            );
+        }
+        $select = [];
+        $field = [];
+        $parameters = [];
+        foreach ($column as $item) {
+            $field[] = $item['dist']['value'];
+            if (!isset($item['src']) || empty($item['src'])) {
+                $select[] = 'null';
+                continue;
+            }
+            $srcItem = $item['src'];
+            if ($srcItem['type'] < 1) {
+                $select[] = '?';
+                $parameters[] = $srcItem['valueType'] === 'number' ? floatval($srcItem['value']) : $srcItem['value'];
+                continue;
+            }
+            if ($srcItem['appendType'] === 'number') {
+                $srcItem['append'] = floatval($srcItem['append']);
+            }
+            $srcColumn = $srcItem['column'];
+            $s = sprintf('%s.%s', $maps[$srcColumn['schema']][$srcColumn['table']], $srcColumn['column']);
+            if (!empty($srcColumn['append'])) {
+                $select[] = sprintf('%s + ?', $s);
+                $parameters[] = $srcColumn['append'];
+                continue;
+            }
+            $select[] = $s;
+        }
+        $sql = sprintf('INSERT INTO %s (%s) SELECT %s FROM %s %s', self::renderTable($dist),
+            implode(',', $field), implode(',', $select), $from, implode(' ', $join));
+        return [$sql, $parameters];
+    }
+
+    private static function renderTable(array $data, string $as = '') {
+        $sql = empty($data['schema']) ? sprintf('`%s`', $data['table'])
+            : sprintf('`%s`.`%s`', $data['schema'], $data['table']);
+        return empty($as) ? $sql : sprintf('%s as %s', $sql, $as);
     }
 
     /**
