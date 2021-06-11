@@ -5,6 +5,7 @@ use Zodream\Database\DB;
 use Zodream\Helpers\Str;
 use Zodream\Html\Bootstrap\Html;
 use Zodream\Module\Gzo\Domain\GenerateModel;
+use Zodream\Module\Gzo\Domain\Repositories\ModuleRepository;
 
 class HomeController extends Controller {
 
@@ -31,7 +32,7 @@ class HomeController extends Controller {
     }
 
     public function moduleAction($status = 0) {
-        $modules = ModuleController::getModuleList();
+        $modules = ModuleRepository::moduleList();
         return $this->show(compact('status', 'modules'));
     }
 

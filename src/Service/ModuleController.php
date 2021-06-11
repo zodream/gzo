@@ -1,7 +1,6 @@
 <?php
 namespace Zodream\Module\Gzo\Service;
 
-use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
@@ -9,6 +8,7 @@ use Zodream\Helpers\Json;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use ReflectionClass;
+use Zodream\Module\Gzo\Domain\Repositories\ModuleRepository;
 
 class ModuleController extends Controller {
 
@@ -172,14 +172,7 @@ class ModuleController extends Controller {
     }
 
     public function allAction() {
-        $data = $this->getModuleList();
-        $data = array_map(function ($item) {
-            return [
-                'value' => 'Module\\'.$item,
-                'label' => $item,
-            ];
-        }, $data);
-        return $this->renderData($data);
+        return $this->renderData(ModuleRepository::all());
     }
 
     public static function installModule(array $modules, array $methods) {
@@ -188,24 +181,5 @@ class ModuleController extends Controller {
             $instance->invokeModuleMethod($module, $methods);
         }
         return true;
-    }
-
-    public static function getModuleList() {
-        $data = [];
-        self::getModulePath(app_path()->directory('Module'), $data);
-        return $data;
-    }
-
-    private static function getModulePath(Directory $folder, &$data, $prefix = null) {
-        $folder->map(function ($file) use (&$data, $prefix) {
-            if (!$file instanceof Directory) {
-                return;
-            }
-            if ($file->hasFile('Module.php')) {
-                $data[] = $prefix. $file->getName();
-                return;
-            }
-            self::getModulePath($file, $data, $prefix . $file->getName() .'\\');
-        });
     }
 }

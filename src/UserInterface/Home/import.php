@@ -2,7 +2,7 @@
 use Zodream\Template\View;
 /** @var $this View */
 
-$this->title = '生成数据模型模型';
+$this->title = '导入数据';
 
 $js = <<<JS
 bindImport();
@@ -14,7 +14,7 @@ $this->registerJs($js, View::JQUERY_READY);
 <div class="page-tip">
     <p class="blue">操作提示</p>
     <ul>
-        <li>生成数据模型模型</li>
+        <li>导入数据</li>
     </ul>
     <span class="toggle"></span>
 </div>

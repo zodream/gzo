@@ -4,6 +4,7 @@ namespace Zodream\Module\Gzo\Domain\Repositories;
 
 use Zodream\Database\DB;
 use Zodream\Disk\ZipStream;
+use Zodream\Html\Page;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 
@@ -41,14 +42,14 @@ class DatabaseRepository {
         return $zip_file;
     }
 
-    public static function tables(string $schema = ''): array {
+    public static function tables(string $schema = '', bool $full = false): array {
         if (!empty($schema)) {
             static::renewDB();
         }
-        return DB::information()->tableList($schema);
+        return DB::information()->tableList($schema, $full);
     }
 
-    public static function schemas(): array {
+    public static function schemas(bool $full = false): array {
         static::renewDB();
         $data = Schema::getAllDatabaseName();
         $data = array_filter($data, function ($item) {
@@ -57,13 +58,15 @@ class DatabaseRepository {
         return array_values($data);
     }
 
-    public static function columns(string $table) {
+    public static function columns(string $table, string $schema = '', bool $full = false) {
         static::renewDB();
-        $schema = '';
         if (strpos($table, '.') > 0) {
             list($schema, $table) = explode('.', $table);
         }
         $data = DB::information()->columnList(GenerateModel::schema($schema)->table($table), true);
+        if ($full) {
+            return $data;
+        }
         return array_map(function ($item) {
             $i = strpos($item['Type'], '(');
             if ($i > 0) {
@@ -74,6 +77,23 @@ class DatabaseRepository {
                 'label' => sprintf('%s(%s)', $item['Field'], $item['Type'])
             ];
         }, $data);
+    }
+
+    public static function query(string $sql, string $schema = '', int $page = 1, int $per_page = 20) {
+        if (!empty($schema)) {
+            DB::db()->changedSchema($schema);
+        }
+        if (stripos($sql, 'limit') > 0 || stripos($sql, 'offset') > 0) {
+            $data = DB::fetch($sql);
+            return new Page($data, count($data));
+        }
+        if (stripos($sql, 'select') === false) {
+            return new Page(0, $per_page);
+        }
+        $total = DB::db()->executeScalar(preg_replace('/select[\s\S]+from/i', 'select count(*) as count from', $sql));
+        $page = new Page($total, $per_page);
+        $page->setPage(DB::fetch($sql. ' limit '. $page->getLimit()));
+        return $page;
     }
 
     /**
