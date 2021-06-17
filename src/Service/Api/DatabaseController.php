@@ -7,6 +7,24 @@ use Zodream\Module\Gzo\Domain\Repositories\DatabaseRepository;
 
 final class DatabaseController extends Controller {
 
+    public function tableCreateAction() {
+        try {
+            DatabaseRepository::tableCreate();
+        } catch (\Exception $ex) {
+            return $this->renderFailure($ex->getMessage());
+        }
+        return $this->renderData(true);
+    }
+
+    public function schemaCreateAction(string $name, string $collation = '') {
+        try {
+            DatabaseRepository::schemaCreate($name, $collation);
+        } catch (\Exception $ex) {
+            return $this->renderFailure($ex->getMessage());
+        }
+        return $this->renderData(true);
+    }
+
 
     public function tableAction(string $schema = '', bool $full = false) {
         return $this->renderData(DatabaseRepository::tables($schema, $full));

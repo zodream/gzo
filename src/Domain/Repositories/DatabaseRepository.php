@@ -7,6 +7,7 @@ use Zodream\Disk\ZipStream;
 use Zodream\Html\Page;
 use Zodream\Module\Gzo\Domain\Database\Schema;
 use Zodream\Module\Gzo\Domain\GenerateModel;
+use Zodream\Database\Schema\Schema as BaseSchema;
 
 class DatabaseRepository {
 
@@ -94,6 +95,18 @@ class DatabaseRepository {
         $page = new Page($total, $per_page);
         $page->setPage(DB::fetch($sql. ' limit '. $page->getLimit()));
         return $page;
+    }
+
+    public static function tableCreate() {
+        //TODO
+    }
+
+    public static function schemaCreate(string $name, string $collation) {
+        $schema = new BaseSchema($name);
+        if (!empty($collation)) {
+            $schema->collation($collation);
+        }
+        DB::db()->execute(DB::schemaGrammar()->compileSchemaCreate($schema));
     }
 
     public static function copySQL(array $dist, array $src, array $column): array {
