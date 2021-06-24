@@ -36,17 +36,21 @@ class GenerateModel extends Model {
         if ($value['Null'] == 'NO' && is_null($value['Default'])) {
             $result = 'required';
         }
-        if ($value['Type'] == 'text') {
+        if ($value['Type'] === 'text') {
             return $result;
         }
-
         if(!preg_match('#(.+?)\(([0-9]+)\)#', $value['Type'], $match)) {
-            return $result;
+            $match = [
+                $value['Type'],
+                explode(' ', $value['Type'], 2)[0],
+                0
+            ];
         }
         $ext = !empty($match[2]) ? ':0,'.$match[2] : '';
         if (!empty($match[2]) && in_array($match[1], ['int', 'smallint'])) {
             $ext = ':0,'.(pow(10, $match[2]) - 1);
         }
+
         $result .= match ($match[1]) {
             'int' => '|int',
             'tinyint' => '|int:0,127',
@@ -64,7 +68,7 @@ class GenerateModel extends Model {
     public static function getFill(array $columns) {
         $pk = false;
         $rules = $labels = $property = [];
-        foreach ($columns as $key => $value) {
+        foreach ($columns as $value) {
             $labels[$value['Field']] = ucwords(str_replace('_', ' ', $value['Field']));
             $property[$value['Field']] = static::converterType($value['Type']);
             if ($value['Key'] == 'PRI'
@@ -123,7 +127,7 @@ class GenerateModel extends Model {
     }
 
     protected static function converterType($type) {
-        $type = explode('(', $type)[0];
+        $type = explode('(', explode(' ', $type, 2)[0], 2)[0];
         return match (strtoupper(trim($type))) {
             'INT', 'BOOL', 'TINYINT', 'SMALLINT', 'REAL', 'MEDIUMINT', 'BIGINT' => 'integer',
             'DOUBLE' => 'double',
