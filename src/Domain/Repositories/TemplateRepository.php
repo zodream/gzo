@@ -74,9 +74,9 @@ class TemplateRepository {
         }
 
         static::output()->write($root->childFile('Module.php'), ModuleGenerator::renderTemplate('Module', $moduleConfigs));
-        $modelRoot = $domainRoot->addDirectory('Model');
-        $controllerRoot = $root->addDirectory('Service');
-        $viewRoot = $root->addDirectory('UserInterface');
+        $modelRoot = static::output()->mkdir($domainRoot->childDirectory('Model'));
+        $controllerRoot = static::output()->mkdir($root->childDirectory('Service'));
+        $viewRoot = static::output()->mkdir($root->childDirectory('UserInterface'));
 
         static::createController($controllerRoot, 'Home', $module, true);
         static::createView($viewRoot, 'Home', []);
@@ -123,7 +123,7 @@ class TemplateRepository {
             static::output()->write($root->childFile('layouts/main.php'),
                 ModuleGenerator::renderTemplate('layout'));
         }
-        $root = $root->addDirectory($name);
+        $root = static::output()->mkdir($root->childDirectory($name));
         static::output()->write($root->childFile('index.php'),
             static::viewIndex($name, $columns));
         if (empty($columns)) {

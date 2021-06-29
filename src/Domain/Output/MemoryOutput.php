@@ -2,12 +2,17 @@
 declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Output;
 
+use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Infrastructure\Contracts\ArrayAble;
 
 class MemoryOutput implements Writer, ArrayAble {
 
     protected array $items = [];
+
+    public function mkdir(Directory $file): Directory {
+        return $file;
+    }
 
     public function write(string|File $file, string $content) {
         $root = (string)app_path();

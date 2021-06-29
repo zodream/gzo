@@ -21,4 +21,13 @@ final class ModuleController extends Controller {
     public function allAction() {
         return $this->renderData(ModuleRepository::all());
     }
+
+    public function routeAction() {
+        $data = config('route.modules', []);
+        $items = [];
+        foreach ($data as $name => $value) {
+            $items[] = compact('name', 'value');
+        }
+        return $this->renderData($items);
+    }
 }
