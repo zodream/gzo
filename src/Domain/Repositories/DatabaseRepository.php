@@ -101,7 +101,7 @@ class DatabaseRepository {
         //TODO
     }
 
-    public static function schemaCreate(string $name, string $collation) {
+    public static function schemaCreate(string $name, string $collation = '') {
         $schema = new BaseSchema($name);
         if (!empty($collation)) {
             $schema->collation($collation);
