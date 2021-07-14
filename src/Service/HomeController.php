@@ -2,6 +2,7 @@
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Database\DB;
+use Zodream\Disk\File;
 use Zodream\Helpers\Str;
 use Zodream\Html\Bootstrap\Html;
 use Zodream\Module\Gzo\Domain\GenerateModel;
@@ -9,7 +10,7 @@ use Zodream\Module\Gzo\Domain\Repositories\ModuleRepository;
 
 class HomeController extends Controller {
 
-    public $layout = 'main';
+    public string|File $layout = 'main';
 
     public function indexAction() {
         return $this->show();
