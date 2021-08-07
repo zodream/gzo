@@ -14,10 +14,18 @@ class Table extends BaseTable {
 
     public function getName(): string
     {
+        return $this->fullName();
+    }
+
+    public function fullName(): string {
         if (empty($this->schema)) {
-            return parent::getName();
+            return $this->name;
         }
         return sprintf('`%s`.`%s`', $this->schema->getName(), $this->name);
+    }
+
+    public function justName(): string {
+        return $this->name;
     }
 
     public function setData(array $data) {

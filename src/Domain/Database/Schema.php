@@ -117,34 +117,36 @@ class Schema extends BaseSchema {
         }
 
         $this->map(function (Table $table) use ($stream, $tables, $hasStructure, $hasData, $hasDrop) {
-            if (!empty($tables) && !in_array($table->getName(), (array)$tables)) {
+            $tableName = $table->justName();
+            if (!empty($tables) && !in_array($tableName, (array)$tables)) {
                 $stream->writeLines([
-                    '-- 跳过表 '.$table->getName(),
+                    '-- 跳过表 '.$tableName,
                     '',
                     ''
                 ]);
                 return;
             }
             $grammar = DB::schemaGrammar();
-            $stream->writeLine('-- 创建表 '.$table->getName().' 开始');
+            $stream->writeLine('-- 创建表 '.$tableName.' 开始');
             if ($hasDrop) {
                 $stream->writeLine($grammar->compileTableDelete($table));
             }
             if ($hasStructure) {
                 $stream->writeLine(DB::information()->tableCreateSql($table));
             }
-            $count = $table->rows();
+            $count = DB::table($table->getName())->count();
             if ($hasData && $count > 0) {
                 $columnFields = $table->getFieldsType();
                 $stream->writeLine($grammar->compileTableLock($table));
-                $onlyMaxSize = max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
+                $onlyMaxSize = empty($table->avgRowLength()) ? 20
+                    : max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
                 for ($i = 0; $i < $count; $i += $onlyMaxSize) {
                     $data = DB::table($table->getName())->limit($i, $onlyMaxSize)->all();
                     if (empty($data)) {
                         continue;
                     }
                     $column_sql = sprintf('INSERT INTO `%s` (`%s`) VALUES ',
-                        $table->getName(),
+                        $tableName,
                         implode('`,`', array_keys($data[0])));
                     $stream->write($column_sql);
                     $length = count($data);
@@ -206,10 +208,7 @@ class Schema extends BaseSchema {
                 $args[] = $item;
                 continue;
             }
-            $args[] = sprintf('\'%s\'',
-                str_replace(
-                    ["\r\n", "\r", "\n", '\\\'', '\''],
-                    ["\n", '\r\n', '\r\n', '\'', '\\\''], $item));
+            $args[] = DB::engine()->escapeString($item);
         }
         return implode(',',$args);
     }
