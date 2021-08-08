@@ -129,7 +129,7 @@ class Schema extends BaseSchema {
             $grammar = DB::schemaGrammar();
             $stream->writeLine('-- 创建表 '.$tableName.' 开始');
             if ($hasDrop) {
-                $stream->writeLine($grammar->compileTableDelete($table));
+                $stream->writeLine($grammar->compileTableDelete($tableName));
             }
             if ($hasStructure) {
                 $stream->writeLine(DB::information()->tableCreateSql($table));
@@ -137,7 +137,7 @@ class Schema extends BaseSchema {
             $count = DB::table($table->getName())->count();
             if ($hasData && $count > 0) {
                 $columnFields = $table->getFieldsType();
-                $stream->writeLine($grammar->compileTableLock($table));
+                $stream->writeLine($grammar->compileTableLock($tableName));
                 $onlyMaxSize = empty($table->avgRowLength()) ? 20
                     : max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
                 for ($i = 0; $i < $count; $i += $onlyMaxSize) {
@@ -169,7 +169,7 @@ class Schema extends BaseSchema {
                         ])->write($column_sql);
                     }
                 }
-                $stream->writeLine($grammar->compileTableUnlock($table));
+                $stream->writeLine($grammar->compileTableUnlock($tableName));
             }
             $stream->writeLines([
                 '',
