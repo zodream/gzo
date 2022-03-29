@@ -15,7 +15,7 @@ abstract class Controller extends BaseController {
         return $this->showContent($message);
     }
 
-    public function renderData($data, string $message = ''): Output {
+    public function renderData(mixed $data, string $message = ''): Output {
         if (!$this->httpContext('request')->isCli()) {
             return parent::renderData($data, $message);
         }

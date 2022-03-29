@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Generator;
 
 use Zodream\Disk\Directory;
 use Phar;
 use Zodream\Disk\File;
-use Zodream\Domain\Debug\Log;
 use Zodream\Helpers\Json;
 
 class PharGenerator {
@@ -31,8 +31,8 @@ class PharGenerator {
     /**
      * @param File|string $output
      */
-    public function setOutput($output) {
-        if ($output instanceof File) {
+    public function setOutput(File|string $output) {
+        if (!($output instanceof File)) {
             $output = $this->input->getFile($output);
         }
         $this->output = $output;
@@ -74,12 +74,12 @@ class PharGenerator {
 
 
     public function create() {
-        Log::info('start ...');
+        logger()->info('start ...');
         $phar = new Phar((string)$this->output);
         $phar->buildFromDirectory((string)$this->input, $this->regex);
         $phar->setDefaultStub((string)$this->entryPoint);
         $phar->compress($this->compression);
-        Log::info('end! file: '. $this->output);
+        logger()->info('end! file: '. $this->output);
     }
 
 

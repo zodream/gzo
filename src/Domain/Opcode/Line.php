@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 class Line {
@@ -24,7 +25,7 @@ class Line {
     public $operands;
 
     /**
-     * @var 解码之后的代码
+     * @var string 解码之后的代码
      */
     public $code;
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\PharGenerator;

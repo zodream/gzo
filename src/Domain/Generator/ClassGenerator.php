@@ -1,7 +1,6 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Generator;
-
-use Zodream\Service\Factory;
 
 /**
  * Generator for class skeletons from test classes.
@@ -62,13 +61,13 @@ class ClassGenerator extends AbstractGenerator
     public function generate() {
         $methods = '';
         foreach ($this->findTestedMethods() as $method) {
-            $methods .= Factory::view()
+            $methods .= view()
                 ->render('Test/Method', array(
                     'methodName' => $method
                 ));
         }
 
-        return Factory::view()
+        return view()
             ->render('Test/Class', array(
                 'className' => $this->outClassName['fullyQualifiedClassName'],
                 'methods'   => $methods
@@ -290,7 +289,7 @@ class ClassGenerator extends AbstractGenerator
                         $block = false;
                     }
 
-                    array_push($blocks, $block);
+                    $blocks[] = $block;
 
                     $currentBlock = false;
                 } elseif ($tokens[$i] == '}') {
@@ -352,12 +351,12 @@ class ClassGenerator extends AbstractGenerator
 
                 case T_CURLY_OPEN:
                     $currentBlock = T_CURLY_OPEN;
-                    array_push($blocks, $currentBlock);
+                    $blocks[] = $currentBlock;
                     break;
 
                 case T_DOLLAR_OPEN_CURLY_BRACES:
                     $currentBlock = T_DOLLAR_OPEN_CURLY_BRACES;
-                    array_push($blocks, $currentBlock);
+                    $blocks[] = $currentBlock;
                     break;
 
                 case T_CLASS:

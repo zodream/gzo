@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\ClassGenerator;
@@ -42,7 +43,7 @@ class TestController extends Controller {
             // @var SplFileInfo $fileInfo
             if (
                 $fileInfo->isDir() ||
-                substr($filePath, -13) === 'Interface.php'
+                str_ends_with($filePath, 'Interface.php')
             ) {
                 continue;
             }

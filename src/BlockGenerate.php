@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo;
 
 /**
@@ -7,33 +8,36 @@ namespace Zodream\Module\Gzo;
  * Date: 2016/10/25
  * Time: 20:19
  */
+
+use ArrayIterator;
+use Traversable;
 use Zodream\Helpers\Str;
 
 class BlockGenerate implements \IteratorAggregate  {
 
-    protected $prefix = "    ";
+    protected string $prefix = "    ";
 
-    protected $blockTag = [
+    protected array $blockTag = [
         '{' => '}',
         '(' => ')',
         '[' => ']',
     ];
 
-    protected $unEndBlock = [];
+    protected array $unEndBlock = [];
 
-    protected $lines = [];
+    protected array $lines = [];
 
-    public function addLine($line) {
+    public function addLine(string $line) {
         $this->lines[] = empty($line) ? '' :
             (str_repeat($this->prefix, count($this->unEndBlock)).$line);
         return $this;
     }
 
-    public function addLineEnd($line) {
+    public function addLineEnd(string $line) {
         return $this->addLine($line.';');
     }
 
-    public function space($name) {
+    public function space(string $name) {
         if (count($this->lines) == 0) {
             $this->lines = ['<?php'];
         }
@@ -50,45 +54,45 @@ class BlockGenerate implements \IteratorAggregate  {
         return $this;
     }
 
-    public function className($name) {
+    public function className(string $name) {
         return $this->startBlock('class '.$name);
     }
 
-    public function readOnly($name) {
+    public function readOnly(string $name) {
         return $this->addLineEnd('const '.$name);
     }
 
-    public function privateValue($name) {
+    public function privateValue(string $name) {
         return $this->addLineEnd('private $'.$name);
     }
 
-    public function publicValue($name) {
+    public function publicValue(string $name) {
         return $this->addLineEnd('public $'.$name);
     }
 
-    public function protectedValue($name) {
+    public function protectedValue(string $name) {
         return $this->addLineEnd('protected $'.$name);
     }
 
-    public function privateMethod($name, $args = null) {
+    public function privateMethod(string $name, mixed $args = null) {
         return $this->startBlock('private function '.
             $name.'('.
             $this->getMethodParam($args).')');
     }
 
-    public function publicMethod($name, $args = null) {
+    public function publicMethod(string $name, mixed $args = null) {
         return $this->startBlock('public function '.
             $name.'('.
             $this->getMethodParam($args).')');
     }
 
-    public function protectedMethod($name, $args = null) {
+    public function protectedMethod(string $name, mixed $args = null) {
         return $this->startBlock('protected function '.
             $name.'('.
             $this->getMethodParam($args).')');
     }
 
-    protected function getMethodParam($args = null) {
+    protected function getMethodParam(mixed $args = null) {
         if (empty($args)) {
             return '';
         }
@@ -105,7 +109,7 @@ class BlockGenerate implements \IteratorAggregate  {
         return implode(', ', $arg);
     }
 
-    public function addBlock($arg) {
+    public function addBlock(string $arg) {
         $args = explode("\n", $arg);
         foreach ($args as $item) {
             $item = trim($item);
@@ -114,7 +118,7 @@ class BlockGenerate implements \IteratorAggregate  {
                     $this->startBlock(trim($item, $key));
                     continue 2;
                 }
-                if (strpos($item, $tag) === 0) {
+                if (str_starts_with($item, $tag)) {
                     $this->endBlock();
                     continue 2;
                 }
@@ -124,7 +128,7 @@ class BlockGenerate implements \IteratorAggregate  {
         return $this;
     }
 
-    public function startBlock($name, $tag = '{') {
+    public function startBlock(string $name, string $tag = '{') {
         $this->unEndBlock[] = $tag;
         return $this->addLine(trim($name).' '.$tag);
     }
@@ -136,14 +140,14 @@ class BlockGenerate implements \IteratorAggregate  {
         return $this->addLine($this->getUnEndBlock());
     }
 
-    protected function getEndBlockTag($tag) {
+    protected function getEndBlockTag(string $tag): string {
         if (array_key_exists($tag, $this->blockTag)) {
             return $this->blockTag[$tag];
         }
         return $tag;
     }
 
-    protected function getUnEndBlock() {
+    protected function getUnEndBlock(): string|false {
         if (count($this->unEndBlock) == 0) {
             return false;
         }
@@ -171,7 +175,7 @@ class BlockGenerate implements \IteratorAggregate  {
      * <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator() {
-        return new \ArrayIterator($this->getLines());
+    public function getIterator(): Traversable {
+        return new ArrayIterator($this->getLines());
     }
 }

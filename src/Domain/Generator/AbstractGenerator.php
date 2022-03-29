@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Generator;
 
 /**
@@ -102,7 +103,7 @@ abstract class AbstractGenerator {
             'fullyQualifiedClassName' => $className
         );
 
-        if (strpos($className, '\\') !== false) {
+        if (str_contains($className, '\\')) {
             $tmp                 = explode('\\', $className);
             $result['className'] = $tmp[count($tmp)-1];
             $result['namespace'] = $this->arrayToName($tmp);

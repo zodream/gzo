@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Database;
 
 use Zodream\Database\Contracts\SqlBuilder;
@@ -37,39 +38,39 @@ class Table extends BaseTable {
      * 总长度
      * @return integer
      */
-    public function length() {
-        return $this->data['Data_length'];
+    public function length(): int {
+        return intval($this->data['Data_length']);
     }
 
     /**
      * 平均每行的长度
      * @return integer
      */
-    public function avgRowLength() {
-        return $this->data['Avg_row_length'];
+    public function avgRowLength(): int {
+        return intval($this->data['Avg_row_length']);
     }
 
-    public function maxLength() {
-        return $this->data['Max_data_length'];
+    public function maxLength(): int {
+        return intval($this->data['Max_data_length']);
     }
 
     /**
      * 空间碎片大小，可以进行碎片整理优化
      * @return integer
      */
-    public function dataFree() {
-        return $this->data['Data_free'];
+    public function dataFree(): int {
+        return intval($this->data['Data_free']);
     }
 
     /**
      * 行数
      * @return integer
      */
-    public function rows() {
-        return $this->data['Rows'];
+    public function rows(): int {
+        return intval($this->data['Rows']);
     }
 
-    public function version() {
+    public function version(): string {
         return $this->data['Version'];
     }
 
@@ -117,7 +118,7 @@ class Table extends BaseTable {
      * 获取列是不是数值
      * @return array
      */
-    public function getFieldsType() {
+    public function getFieldsType(): array {
         $data = DB::information()->columnList($this);
         $args = [];
         foreach ($data as $field) {
@@ -126,7 +127,7 @@ class Table extends BaseTable {
         return $args;
     }
 
-    protected function isNumeric($type) {
+    protected function isNumeric(string $type): bool {
         $type = strtoupper(trim(explode('(', $type)[0]));
         return in_array($type, [
             'SMALLINT', 'BIGINT', 'FLOAT',
@@ -138,7 +139,7 @@ class Table extends BaseTable {
      * @return array|mixed
      * @throws \Exception
      */
-    public function getStatus() {
+    public function getStatus(): array|null {
         return DB::db()->first(DB::schemaGrammar()->compileTableQuery($this));
     }
 

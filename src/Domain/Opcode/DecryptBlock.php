@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 class DecryptBlock {
@@ -99,13 +100,13 @@ class DecryptBlock {
 
     protected function setDefault(array $lines) {
         foreach ($lines as $line) {
-            if (strpos($line, 'compiled vars:') !== false) {
+            if (str_contains($line, 'compiled vars:')) {
                 break;
             }
         }
         $args = explode(',', substr($line, 14));
         foreach ($args as $arg) {
-            if (empty($arg) || strpos($arg, '=') === false) {
+            if (empty($arg) || !str_contains($arg, '=')) {
                 continue;
             }
             list($k, $v) = explode('=', $arg);
@@ -128,11 +129,11 @@ class DecryptBlock {
     }
 
     protected function setName(array $lines) {
-        if (strpos($lines[0], 'Function') === 0) {
+        if (str_starts_with($lines[0], 'Function')) {
             $this->setFuncName(substr($lines[0], 8, strpos($lines[0], ':') - 8));
             return;
         }
-        if (strpos($lines[0], 'Class') === 0) {
+        if (str_starts_with($lines[0], 'Class')) {
             $this->setFuncName(substr($lines[0], 5, strpos($lines[0], ':') - 5));
             return;
         }
@@ -179,7 +180,7 @@ class DecryptBlock {
         $args = [];
         $i = 0;
         foreach ($lines as $line) {
-            if (strpos($line, 'line') === 0) {
+            if (str_starts_with($line, 'line')) {
                 $index = [
                     0,
                     strpos($line, '#*'),
@@ -197,7 +198,7 @@ class DecryptBlock {
             if (empty($index)) {
                 continue;
             }
-            if (strpos($line, '---') === 0) {
+            if (str_starts_with($line, '---')) {
                 continue;
             }
             if (empty(trim($line))) {

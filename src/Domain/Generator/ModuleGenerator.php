@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Generator;
 
 use Zodream\Disk\Directory;
@@ -201,10 +202,10 @@ class ModuleGenerator {
         if ($file instanceof Directory) {
             return $file;
         }
-        if (strpos($file, '@input') === 0) {
+        if (str_starts_with($file, '@input')) {
             return $this->input->directory(substr($file, 6));
         }
-        if (strpos($file, './') === 0) {
+        if (str_starts_with($file, './')) {
             return $this->input->directory(substr($file, 2));
         }
         return $this->input->directory($file);
@@ -214,10 +215,10 @@ class ModuleGenerator {
         if ($file instanceof File) {
             return $file;
         }
-        if (strpos($file, '@input') === 0) {
+        if (str_starts_with($file, '@input')) {
             return $this->input->file(substr($file, 6));
         }
-        if (strpos($file, './') === 0) {
+        if (str_starts_with($file, './')) {
             return $this->input->file(substr($file, 2));
         }
         return $this->input->file($file);

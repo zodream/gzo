@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 use Zodream\Disk\File;
 use Zodream\Infrastructure\Support\Process;
-use Zodream\Service\Factory;
 
 class DecryptFile {
     /**
@@ -42,7 +42,7 @@ class DecryptFile {
      * @return bool|string
      */
     public function getContent() {
-        $cmd = Factory::config('php_path', 'php').' -dvld.active=1 '.$this->srcFile;  // 替换为你要执行的shell脚本
+        $cmd = config('php_path', 'php').' -dvld.active=1 '.$this->srcFile;  // 替换为你要执行的shell脚本
         $process = Process::factory($cmd);
         $status = $process->start()->join()->stop();
         extract($process->getOutput());

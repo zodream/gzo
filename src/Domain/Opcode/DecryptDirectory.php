@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Opcode;
 
 use Zodream\Disk\Directory;
 use Zodream\Disk\File;
-use Zodream\Service\Factory;
 
 class DecryptDirectory {
 
@@ -45,7 +45,7 @@ class DecryptDirectory {
      */
     public function getTempDirectory() {
         if (!$this->tempDirectory instanceof Directory) {
-            $this->tempDirectory = new Directory(Factory::config('temp_dir', Factory::root()->addDirectory('data/temp')));
+            $this->tempDirectory = new Directory(config('temp_dir', app_path()->addDirectory('data/temp')));
         }
         return $this->tempDirectory;
     }

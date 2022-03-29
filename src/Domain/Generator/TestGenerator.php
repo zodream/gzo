@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Generator;
 
-use Zodream\Service\Factory;
 /**
  * Generator for test class skeletons from classes.
  *
@@ -15,7 +15,7 @@ class TestGenerator extends AbstractGenerator {
     /**
      * @var array
      */
-    protected $methodNameCounter = array();
+    protected array $methodNameCounter = [];
 
     /**
      * Constructor.
@@ -210,7 +210,7 @@ class TestGenerator extends AbstractGenerator {
                                 $methodName .= $this->methodNameCounter[$methodName];
                             }
 
-                            $methods .= Factory::view()
+                            $methods .= view()
                                 ->render('Test/'.$template, array(
                                     'annotation'     => trim($annotation),
                                     'arguments'      => $matches[1],
@@ -228,7 +228,7 @@ class TestGenerator extends AbstractGenerator {
 
                 if (!$assertAnnotationFound) {
 
-                    $incompleteMethods .= Factory::view()
+                    $incompleteMethods .= view()
                         ->render('Test/IncompleteTestMethod', array(
                             'className'      => $this->inClassName['fullyQualifiedClassName'],
                             'methodName'     => ucfirst($method->getName()),
@@ -245,7 +245,7 @@ class TestGenerator extends AbstractGenerator {
             $namespace = '';
         }
 
-        return Factory::view()
+        return view()
             ->render('Test/TestClass', array(
                 'namespace'          => $namespace,
                 'namespaceSeparator' => !empty($namespace) ? '\\' : '',

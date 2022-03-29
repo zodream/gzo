@@ -74,11 +74,11 @@ class Schema extends BaseSchema {
         }
         $content = '';
         while ($line = $stream->readLine(self::LINE_MAX_LENGTH)) {
-            if (substr($line, 0, 2) == '--' || $line == '') {
+            if (str_starts_with($line, '--') || $line == '') {
                 continue;
             }
             $content .= $line;
-            if (substr(trim($line), -1, 1) !== ';') {
+            if (!str_ends_with(trim($line), ';')) {
                 continue;
             }
             DB::db()->execute($content);
@@ -90,15 +90,16 @@ class Schema extends BaseSchema {
 
     /**
      * 导出
-     * @param $file
-     * @param null $tables
+     * @param File|string $file
+     * @param array|string|null $tables
      * @param bool $hasSchema
      * @param bool $hasStructure
      * @param bool $hasData
      * @param bool $hasDrop
      * @return bool
      */
-    public function export($file, $tables = null, $hasSchema = true, $hasStructure = true, $hasData = true, $hasDrop = true) {
+    public function export(File|string $file, array|string|null $tables = null,
+                           bool $hasSchema = true, bool $hasStructure = true, bool $hasData = true, bool $hasDrop = true) {
         $stream = new Stream($file);
         if (!$stream->open('w')
             ->isResource()) {
@@ -193,11 +194,11 @@ class Schema extends BaseSchema {
 
     /**
      * 获取插入数据
-     * @param $data
-     * @param $columnFields
+     * @param array $data
+     * @param array $columnFields
      * @return string
      */
-    protected function getRowSql($data, $columnFields) {
+    protected function getRowSql(array $data, array $columnFields): string {
         $args = [];
         foreach ($data as $key => $item) {
             if (is_null($item)) {
