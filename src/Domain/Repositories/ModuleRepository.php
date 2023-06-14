@@ -8,6 +8,7 @@ use Zodream\Disk\File;
 use Zodream\Disk\FileException;
 use Zodream\Helpers\Arr;
 use Zodream\Helpers\Str;
+use Zodream\Module\Gzo\Module;
 
 class ModuleRepository {
 
@@ -113,13 +114,11 @@ class ModuleRepository {
     }
 
     /**
-     * @param $file
-     * @param $configs
-     * @throws FileException
-     * @throws \Exception
+     * @param File $file
+     * @param array $configs
      */
     protected static function saveConfig(File $file, array $configs) {
-        $content = view()
+        $content = Module::view()
             ->render('Template/config', array(
                 'data' => $configs
             ));

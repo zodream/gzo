@@ -406,13 +406,11 @@ class ModuleGenerator {
 
 
     /**
-     * @param $name
+     * @param string $name
      * @param array $data
      * @return string
-     * @throws \Exception
-     * @throws \Zodream\Disk\FileException
      */
-    public static function renderTemplate($name, $data = []) {
+    public static function renderTemplate(string $name, array $data = []) {
         return Module::view()
             ->render('Template/'.$name, $data);
     }

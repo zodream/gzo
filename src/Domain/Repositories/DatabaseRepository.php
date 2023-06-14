@@ -171,9 +171,9 @@ class DatabaseRepository {
      * 重置默认数据库
      */
     protected static function renewDB() {
-        $configs = config('db');
-        $configs['database'] = 'information_schema';
-        config()->set('db', $configs);
+        $configs = config('database');
+        $configs['connections']['database'] = 'information_schema';
+        config()->set('database', $configs);
         unset($configs);
     }
 }
