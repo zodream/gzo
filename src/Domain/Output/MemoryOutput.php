@@ -23,7 +23,7 @@ class MemoryOutput implements Writer, ArrayAble {
         $this->items[$path] = compact('path', 'content');
     }
 
-    public function toArray() {
+    public function toArray(): array {
         return array_values($this->items);
     }
 

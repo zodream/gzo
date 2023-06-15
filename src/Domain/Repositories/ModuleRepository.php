@@ -78,18 +78,16 @@ class ModuleRepository {
     }
 
     /**
-     * @param $configs
-     * @throws \Exception
-     * @throws FileException
+     * @param array $configs
      */
-    protected static function saveModuleConfigs($configs) {
+    protected static function saveModuleConfigs(array $configs) {
         $file = config()->configPath('route');
         $data = config('route');
         $data = Arr::merge2D($data, $configs);
         static::saveConfig($file, $data);
     }
 
-    protected static function removeConfigs(File $file, $configs) {
+    protected static function removeConfigs(File $file, array $configs) {
         $data = config('route');
         $data = Arr::unset2D($data, $configs);
         static::saveConfig($file, $data);
