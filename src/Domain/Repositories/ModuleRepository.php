@@ -12,7 +12,7 @@ use Zodream\Module\Gzo\Module;
 
 class ModuleRepository {
 
-    public static function all() {
+    public static function all(): array {
         $data = static::moduleList();
         return array_map(function ($item) {
             return [
@@ -22,10 +22,20 @@ class ModuleRepository {
         }, $data);
     }
 
+    /**
+     * 安装模块
+     * @param string|array $name 为数组表示批量 [name => module]
+     * @param string $module 当name 为 字符串才起作用
+     * @param bool $hasTable
+     * @param bool $hasSeed
+     * @param bool $hasAssets
+     * @return void
+     * @throws \Exception
+     */
     public static  function install(
-        string $name, string $module,
+        string|array $name, string $module = '',
         bool $hasTable = false, bool $hasSeed = false,
-        bool $hasAssets = false) {
+        bool $hasAssets = false): void {
         $methods = [];
         if ($hasTable) {
             $methods[] = 'install';
@@ -33,36 +43,59 @@ class ModuleRepository {
         if ($hasSeed) {
             $methods[] = 'seeder';
         }
-        $module = trim($module);
-        static::invokeModuleMethod($module, $methods);
+        $items = is_array($name) ? $name : [
+            $name => trim($module)
+        ];
+        $instanceItems = [];
+        foreach ($items as $moduleName) {
+            $moduleName = static::getModule($moduleName);
+            if (!class_exists($moduleName)) {
+                continue;
+            }
+            $instance = new $moduleName;
+            $instance->boot();
+            $instanceItems[] = $instance;
+        }
+
+        foreach ($methods as $method) {
+            foreach ($instanceItems as $instance) {
+                if (empty($method) || !method_exists($instance, $method)) {
+                    continue;
+                }
+                call_user_func([$instance, $method]);
+            }
+        }
         static::saveModuleConfigs([
-            'modules' => [
-                $name => $module
-            ]
+            'modules' => $items
         ]);
         if ($hasAssets) {
             static::moveAssets($module);
         }
     }
 
-    public static function uninstall(string $name) {
+    /**
+     * 卸载模块
+     * @param string|array $name
+     * @return void
+     */
+    public static function uninstall(string|array $name): void {
         $configs = config('route');
         $file = config()->configPath('route');
-        if (isset($configs['modules'][$name])) {
-            static::invokeModuleMethod($configs['modules'][$name], 'uninstall');
-            unset($configs['modules'][$name]);
-            static::saveConfig($file, $configs);
+        foreach ((array)$name as $path) {
+            static::invokeModuleMethod($configs['modules'][$path], 'uninstall');
+            unset($configs['modules'][$path]);
         }
+        static::saveConfig($file, $configs);
     }
 
-    protected static function getModule(string $module) {
+    protected static function getModule(string $module): string {
         if (Str::endWith($module, 'Module')) {
             return $module;
         }
         return $module.'\\Module';
     }
 
-    protected static function invokeModuleMethod(string $module, array|string $methods) {
+    protected static function invokeModuleMethod(string $module, array|string $methods): void {
         $module = static::getModule($module);
         if (!class_exists($module)) {
             return;
@@ -80,14 +113,14 @@ class ModuleRepository {
     /**
      * @param array $configs
      */
-    protected static function saveModuleConfigs(array $configs) {
+    protected static function saveModuleConfigs(array $configs): void {
         $file = config()->configPath('route');
         $data = config('route');
         $data = Arr::merge2D($data, $configs);
         static::saveConfig($file, $data);
     }
 
-    protected static function removeConfigs(File $file, array $configs) {
+    protected static function removeConfigs(File $file, array $configs): void {
         $data = config('route');
         $data = Arr::unset2D($data, $configs);
         static::saveConfig($file, $data);
@@ -95,9 +128,10 @@ class ModuleRepository {
 
     /**
      * 复制资源文件到公共目录
-     * @param $module
+     * @param string $module
+     * @throws \Exception
      */
-    protected static function moveAssets($module) {
+    protected static function moveAssets(string $module): void {
         $module = static::getModule($module);
         if (!class_exists($module)) {
             return;
@@ -115,7 +149,7 @@ class ModuleRepository {
      * @param File $file
      * @param array $configs
      */
-    protected static function saveConfig(File $file, array $configs) {
+    protected static function saveConfig(File $file, array $configs): void {
         $content = Module::view()
             ->render('Template/config', array(
                 'data' => $configs
@@ -124,13 +158,13 @@ class ModuleRepository {
     }
 
 
-    public static function moduleList() {
+    public static function moduleList(): array {
         $data = [];
         self::getModulePath(app_path()->directory('Module'), $data);
         return $data;
     }
 
-    private static function getModulePath(Directory $folder, &$data, $prefix = null) {
+    private static function getModulePath(Directory $folder, array &$data, string $prefix = ''): void {
         $folder->map(function ($file) use (&$data, $prefix) {
             if (!$file instanceof Directory) {
                 return;
