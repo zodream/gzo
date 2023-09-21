@@ -27,20 +27,20 @@ JS;
 $this->registerJs($js, View::JQUERY_READY);
 ?>
 
-<div class="zd-tab">
-    <div class="zd-tab-head">
-        <div class="zd-tab-item <?= $status == 0 ? 'active' : ''?>">
+<div class="tab-box">
+    <div class="tab-header">
+        <div class="tab-item <?= $status == 0 ? 'active' : ''?>">
             安装模块
         </div>
-        <div class="zd-tab-item <?= $status == 1 ? 'active' : ''?>">
+        <div class="tab-item <?= $status == 1 ? 'active' : ''?>">
             卸载模块
         </div>
-        <div class="zd-tab-item <?= $status == 2 ? 'active' : ''?>">
+        <div class="tab-item <?= $status == 2 ? 'active' : ''?>">
             生成模块
         </div>
     </div>
-    <div class="zd-tab-body">
-        <div class="zd-tab-item <?= $status == 0 ? 'active' : ''?>">
+    <div class="tab-body">
+        <div class="tab-item <?= $status == 0 ? 'active' : ''?>">
 
             <div class="page-tip">
                 <p class="blue">操作提示</p>
@@ -81,7 +81,7 @@ $this->registerJs($js, View::JQUERY_READY);
                 <button class="btn">安装</button>
             </form>
         </div>
-        <div class="zd-tab-item <?= $status == 1 ? 'active' : ''?>">
+        <div class="tab-item <?= $status == 1 ? 'active' : ''?>">
             <div class="page-tip">
                 <p class="blue">操作提示</p>
                 <ul>
@@ -97,7 +97,7 @@ $this->registerJs($js, View::JQUERY_READY);
                 <button class="btn">卸载</button>
             </form>
         </div>
-        <div class="zd-tab-item <?= $status == 2 ? 'active' : ''?>">
+        <div class="tab-item <?= $status == 2 ? 'active' : ''?>">
             <div class="page-tip">
                 <p class="blue">操作提示</p>
                 <ul>
