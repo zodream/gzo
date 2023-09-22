@@ -2,17 +2,18 @@
 declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
+use Throwable;
 use Zodream\Infrastructure\Contracts\Http\Input;
 use Zodream\Infrastructure\Contracts\Http\Output;
 use Zodream\Route\Controller\Controller as BaseController;
 
 abstract class Controller extends BaseController {
 
-    public function renderFailure(string|array $message, int $code = 400, int $statusCode = 0): Output {
+    public function renderFailure(string|array|Throwable $message, int $code = 400, int $statusCode = 0): Output {
         if (!request()->isCli()) {
             return parent::renderFailure($message, $code, $statusCode);
         }
-        return $this->showContent($message);
+        return $this->showContent($message->getMessage());
     }
 
     public function renderData(mixed $data, string $message = ''): Output {

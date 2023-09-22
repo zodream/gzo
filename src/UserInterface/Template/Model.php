@@ -2,7 +2,7 @@
 defined('APP_DIR') or exit();
 echo '<?php';
 ?>
-
+declare(strict_types=1);
 <?php if (isset($is_module) && $is_module):?>
 namespace Module\<?=$module?>\Domain\Model;
 <?php else:?>
@@ -21,14 +21,14 @@ use Domain\Model\Model;
 class <?=$name.config('app.model')?> extends Model {
 
 <?php if (isset($pk) && $pk != 'id'):?>
-    protected $primaryKey = '<?=$pk?>';
+    protected string $primaryKey = '<?=$pk?>';
 <?php endif;?>
 
-	public static function tableName() {
+	public static function tableName(): string {
         return '<?=$table?>';
     }
 
-	protected function rules() {
+	protected function rules(): array {
 		return [
 <?php foreach ($rules as $key => $item):?>
             '<?=$key?>' => '<?=$item?>',
@@ -36,7 +36,7 @@ class <?=$name.config('app.model')?> extends Model {
         ];
 	}
 
-	protected function labels() {
+	protected function labels(): array {
 		return [
 <?php foreach ($labels as $key => $item):?>
             '<?=$key?>' => '<?=$item?>',

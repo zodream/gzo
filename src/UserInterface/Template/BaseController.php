@@ -5,10 +5,11 @@ echo '<?php';
 
 namespace Service\<?=$module?>;
 
-use Zodream\Domain\Controller\Controller as BaseController;
+use Module\ModuleController as BaseController;
+use Zodream\Disk\File;
 
 abstract class Controller extends BaseController {
 
-    public $layout = 'main';
+    public string|File $layout = 'main';
 
 }
