@@ -19,6 +19,7 @@ $this->registerCssFile([
     '@jquery.dialog.min.js',
     '@jquery.upload.min.js',
     '@main.min.js',
+    '@admin.min.js',
     '@gzo.min.js'
 ])->registerJs(sprintf('var BASE_URI = "%s";', $this->url('./', false)), View::HTML_HEAD);
 ?>
