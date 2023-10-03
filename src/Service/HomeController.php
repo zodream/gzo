@@ -11,7 +11,7 @@ use Zodream\Module\Gzo\Domain\Repositories\ModuleRepository;
 
 class HomeController extends Controller {
 
-    public string|File $layout = 'main';
+    protected string|File $layout = 'main';
 
     public function indexAction() {
         return $this->show();
