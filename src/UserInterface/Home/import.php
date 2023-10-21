@@ -30,5 +30,5 @@ $this->registerJs($js, View::JQUERY_READY);
         <label for="name1">sql文件</label>
         <input id="name1" type="file" name="file" required>
     </div>
-    <button class="btn">执行</button>
+    <button class="btn btn-primary">执行</button>
 </form>

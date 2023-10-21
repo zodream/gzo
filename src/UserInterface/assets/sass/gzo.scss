@@ -1,8 +1,11 @@
+.mt-30 {
+    margin-top: 2rem;
+}
 #table-box {
     select {
         height: auto;
         display: block;
-        min-width: 200px;
+        min-width: 12.5rem;
     }
 }
 
@@ -10,16 +13,16 @@
     display: inline-block;
 
     select {
-        min-width: 60px;
-        height: 30px;
+        min-width: 3.75rem;
+        height: 1.875rem;
     }
 }
 
 .column-item {
     display: block;
     width: auto;
-    height: 50px;
-    line-height: 50px;
+    height: 3.125rem;
+    line-height: 3.125rem;
 
     span {
         min-width: 30%;
@@ -29,29 +32,29 @@
 }
 
 .copy-panel {
-    margin-top: 30px;
+    margin-top: 1.875rem;
     .panel-header {
 
         .dist-item,
         .table-item {
             position: relative;
             background-color: #fff;
-            line-height: 30px;
-            padding: 5px 10px;
-            border-radius: 3px;
+            line-height: 1.875rem;
+            padding: 0.3125rem 0.625rem;
+            border-radius: 0.1875rem;
             cursor: pointer;
 
             .fa {
                 position: absolute;
-                right: -10px;
-                top: -8px;
+                right: -0.625rem;
+                top: -0.5rem;
                 background: #333;
                 color: #fff;
                 border-radius: 50%;
                 display: block;
-                width: 20px;
-                height: 20px;
-                line-height: 20px;
+                width: 1.25rem;
+                height: 1.25rem;
+                line-height: 1.25rem;
                 text-align: center;
             }
 
@@ -61,7 +64,7 @@
             }
         }
         .table-item {
-            margin-right: 20px;
+            margin-right: 1.25rem;
         }
     }
     span[data-action="column-select"] {
@@ -71,7 +74,7 @@
         display: flex;
         i {
             font-style: normal;
-            line-height: 50px;
+            line-height: 3.125rem;
         }
     }
     .src-column,
@@ -96,14 +99,14 @@
         position: absolute;
         top: 40vh;
         left: 50vw;
-        width: 300px;
-        margin-left: -150px;
+        width: 18.75rem;
+        margin-left: -9.375rem;
         background-color: white;
 
         select,
         button {
-            height: 50px;
-            min-width: 80px;
+            height: 3.125rem;
+            min-width: 5rem;
             border: none;
             outline: none;
         }
@@ -111,7 +114,7 @@
 }
 
 
-@media (max-width: 767px) {
+@media (max-width: 47.9375rem) {
     .tab-box {
         .tab-header {
             .tab-item {

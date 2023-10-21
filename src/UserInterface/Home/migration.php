@@ -30,6 +30,8 @@ $this->registerJs($js, View::JQUERY_READY);
         <label for="module1">模块名</label>
         <input type="text" id="module1" name="module" value="Test" placeholder="示例：Home" required>
     </div>
-    <button class="btn">生成</button>
-    <button type="button" data-type="preview" class="btn">预览</button>
+    <div class="btn-group mt-30">
+        <button class="btn btn-primary">生成</button>
+        <button type="button" data-type="preview" class="btn btn-info">预览</button>
+    </div>
 </form>

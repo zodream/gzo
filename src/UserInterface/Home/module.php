@@ -116,7 +116,7 @@ $this->registerJs($js, View::JQUERY_READY);
                         <option value="">请选择</option>
                     </select>
                 </div>
-                <button class="btn">生成</button>
+                <button class="btn btn-primary">生成</button>
             </form>
         </div>
     </div>

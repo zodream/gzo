@@ -59,5 +59,5 @@ $this->registerJs($js, View::JQUERY_READY);
         <input id="expire1" type="number" name="expire" placeholder="示例：10" value="10" size="10">
     </div>
 
-    <button class="btn">执行</button>
+    <button class="btn btn-primary">执行</button>
 </form>

@@ -2,6 +2,7 @@
 defined('APP_DIR') or exit();
 echo '<?php';
 ?>
+
 declare(strict_types=1);
 <?php if (isset($is_module) && $is_module):?>
 namespace Module\<?=$module?>\Domain\Model;

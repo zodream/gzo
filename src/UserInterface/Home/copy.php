@@ -32,9 +32,11 @@ $this->registerJs($js, View::JQUERY_READY);
         </div>
     </div>
 
-    <button class="btn">复制</button>
-    <button class="btn" data-action="preview" type="button">预览</button>
-    <a class="btn btn-danger" data-type="reset">清空</a>
+    <div class="btn-group mt-30">
+        <button class="btn btn-primary">复制</button>
+        <button class="btn btn-info" data-action="preview" type="button">预览</button>
+        <a class="btn btn-danger" data-type="reset">清空</a>
+    </div>
 </form>
 
 <div class="dialog-select">

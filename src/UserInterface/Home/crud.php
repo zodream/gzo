@@ -46,5 +46,5 @@ $this->registerJs($js, View::JQUERY_READY);
         <input id="hasView1" type="checkbox" checked name="hasView" value="1">
         <label for="hasView1">生成视图</label>
     </div>
-    <button class="btn">生成</button>
+    <button class="btn btn-primary">生成</button>
 </form>
