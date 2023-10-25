@@ -22,13 +22,13 @@ $this->registerJs($js, View::JQUERY_READY);
 <form class="form-inline" data-type="ajax" action="<?=$this->url('./template/model')?>" method="get">
     <div class="input-group">
         <label for="table1">数据表</label>
-        <select name="table" id="table1" required>
+        <select name="table" id="table1"  class="form-control" required>
             <option value="">请选择</option>
         </select>
     </div>
     <div class="input-group">
         <label for="module1">模块名</label>
-        <input type="text" id="module1" name="module" placeholder="示例：Home">
+        <input type="text" id="module1" name="module" class="form-control"  placeholder="示例：Home">
     </div>
     <div class="btn-group mt-30">
         <button class="btn btn-primary">生成</button>

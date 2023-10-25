@@ -18,11 +18,11 @@ $this->title = '生成控制器';
 
     <div class="input-group">
         <label for="module1">模块名</label>
-        <input type="text" id="module1" name="module" placeholder="示例：Home" required >
+        <input type="text" id="module1" name="module" class="form-control" placeholder="示例：Home" required >
     </div>
     <div class="input-group">
         <label for="name1">文件名</label>
-        <input id="name1" type="text" name="name" value="Home" placeholder="示例：Home">
+        <input id="name1" type="text" name="name" value="Home"  class="form-control" placeholder="示例：Home">
     </div>
     
     <div class="btn-group mt-30">

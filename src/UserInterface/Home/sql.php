@@ -24,7 +24,7 @@ $this->title = '执行sql语句';
 <form class="form-default" action="<?=$this->url('./home/sql')?>" method="post">
     <div class="input-group">
         <label for="query1">sql语句</label>
-        <textarea name="query" id="query1" rows="5" placeholder="sql语句"><?=$query?></textarea>
+        <textarea name="query" id="query1" rows="5" class="form-control" placeholder="sql语句"><?=$query?></textarea>
     </div>
     <button class="btn">执行</button>
     <input type="hidden" name="schema" value="<?=$schema?>">

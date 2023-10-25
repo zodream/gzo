@@ -41,8 +41,8 @@ $this->registerJs($js, View::JQUERY_READY);
 
 <div class="dialog-select">
     <div class="dialog-body">
-        <p><select name="schame"></select>
-        <select name="table"></select></p>
+        <p><select name="schame" class="form-control"></select>
+        <select name="table" class="form-control"></select></p>
         <button>确定</button>
     </div>
 </div>
@@ -51,11 +51,11 @@ $this->registerJs($js, View::JQUERY_READY);
     <div class="dialog-body">
         <p>
             <input type="radio" name="type" value="0" checked>
-            <input type="text" name="value" placeholder="请输入内容">
+            <input type="text" name="value" class="form-control" placeholder="请输入内容">
         </p>
         <p>
             <input type="radio" name="type" value="1">
-            <select name="column"></select>
+            <select name="column" class="form-control"></select>
         </p>
         <button>确定</button>
     </div>

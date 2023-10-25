@@ -22,7 +22,7 @@ $this->registerJs($js, View::JQUERY_READY);
 <form class="form-inline" action="<?=$this->url('./sql/import')?>" enctype="multipart/form-data" method="post">
     <div class="input-group">
         <label for="schema1">数据库</label>
-        <select name="schema" id="schema1">
+        <select name="schema" id="schema1" class="form-control">
             <option value="">请选择</option>
         </select>
     </div>

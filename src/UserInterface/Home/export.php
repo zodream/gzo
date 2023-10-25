@@ -22,13 +22,13 @@ $this->registerJs($js, View::JQUERY_READY);
 <form class="form-inline" action="<?=$this->url('./sql/export')?>" target="_blank" method="get">
     <div class="input-group">
         <label for="schema1">数据库</label>
-        <select name="schema" id="schema1" required>
+        <select name="schema" id="schema1" class="form-control" required>
             <option value="">请选择</option>
         </select>
     </div>
     <div id="table-box" class="input-group" style="display: none">
         <label for="table1">数据表</label>
-        <select name="table[]" id="table1" multiple size="10">
+        <select name="table[]" id="table1" class="form-control" multiple size="10">
         </select>
     </div>
     <div class="input-group">
@@ -49,14 +49,14 @@ $this->registerJs($js, View::JQUERY_READY);
     </div>
     <div class="input-group">
         <label for="schema1">导出格式</label>
-        <select name="format" id="format">
+        <select name="format" id="format" class="form-control">
             <option value="sql">SQL 文件</option>
             <option value="zip">ZIP 文件</option>
         </select>
     </div>
     <div class="input-group">
         <label for="expire1">有效期（分钟）</label>
-        <input id="expire1" type="number" name="expire" placeholder="示例：10" value="10" size="10">
+        <input id="expire1" type="number" name="expire" class="form-control" placeholder="示例：10" value="10" size="10">
     </div>
 
     <button class="btn btn-primary">执行</button>
