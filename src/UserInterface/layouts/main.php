@@ -108,4 +108,4 @@ $this->registerCssFile([
             ],
         ]
     ]
-], $content, 'ZoDream Generator') ?>
+], $this->contents(), 'ZoDream Generator') ?>
