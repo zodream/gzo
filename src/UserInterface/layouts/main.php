@@ -12,6 +12,7 @@ $this->registerCssFile([
     '@dialog.css',
     '@gzo.css'
 ])->registerJsFile([
+    '@js.cookie.min.js',
     '@jquery.min.js',
     '@jquery.pjax.min.js',
     '@prism.js',
