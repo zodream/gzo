@@ -42,13 +42,13 @@ $this->registerJs($js, View::JQUERY_READY);
     <div class="tab-body">
         <div class="tab-item <?= $status == 0 ? 'active' : ''?>">
 
-            <div class="page-tip">
-                <p class="blue">操作提示</p>
+            <div class="page-tooltip-bar">
+                <p class="tooltip-header">操作提示</p>
                 <ul>
                     <li>安装模块，模块内部是一个整体，包含控制器、模型、视图</li>
                     <li>安装模块的同时会自动创建必要的数据表、同时可能有相关填充数据</li>
                 </ul>
-                <span class="toggle"></span>
+                <span class="tooltip-toggle"></span>
             </div>
 
             <form class="form-inline" data-type="ajax" action="<?=$this->url('./module/install')?>" method="get">
@@ -82,12 +82,12 @@ $this->registerJs($js, View::JQUERY_READY);
             </form>
         </div>
         <div class="tab-item <?= $status == 1 ? 'active' : ''?>">
-            <div class="page-tip">
-                <p class="blue">操作提示</p>
+            <div class="page-tooltip-bar">
+                <p class="tooltip-header">操作提示</p>
                 <ul>
                     <li>卸载模块，同时会删除数据表</li>
                 </ul>
-                <span class="toggle"></span>
+                <span class="tooltip-toggle"></span>
             </div>
             <form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/module/uninstall')?>" method="get">
                 <div class="input-group">
@@ -98,12 +98,12 @@ $this->registerJs($js, View::JQUERY_READY);
             </form>
         </div>
         <div class="tab-item <?= $status == 2 ? 'active' : ''?>">
-            <div class="page-tip">
-                <p class="blue">操作提示</p>
+            <div class="page-tooltip-bar">
+                <p class="tooltip-header">操作提示</p>
                 <ul>
                     <li>生成模块代码，此功能需要一定的编写代码能力</li>
                 </ul>
-                <span class="toggle"></span>
+                <span class="tooltip-toggle"></span>
             </div>
             <form class="form-inline" data-type="ajax" action="<?=$this->url('gzo/template/module')?>" method="get">
                 <div class="input-group">

@@ -10,13 +10,13 @@ JS;
 $this->registerJs($js, View::JQUERY_READY);
 ?>
 
-<div class="page-tip">
-    <p class="blue">操作提示</p>
+<div class="page-tooltip-bar">
+    <p class="tooltip-header">操作提示</p>
     <ul>
         <li>生成CRUD 数据库增查改删</li>
         <li>控制器、模型、视图至少选择一个，不然无法生成</li>
     </ul>
-    <span class="toggle"></span>
+    <span class="tooltip-toggle"></span>
 </div>
 
 <form class="form-inline" data-type="ajax" action="<?=$this->url('./template')?>" method="get">

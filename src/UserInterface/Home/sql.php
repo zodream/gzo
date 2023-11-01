@@ -11,13 +11,13 @@ $this->title = '执行sql语句';
         'links' => $crumbs
 ])?>
 
-<div class="page-tip">
-    <p class="blue">操作提示</p>
+<div class="page-tooltip-bar">
+    <p class="tooltip-header">操作提示</p>
     <ul>
         <li>执行sql语句</li>
         <li>默认显示所有数据库名、点击数据库显示此数据库下的所有数据表、点击数据表显示所有列信息</li>
     </ul>
-    <span class="toggle"></span>
+    <span class="tooltip-toggle"></span>
 </div>
 
 
