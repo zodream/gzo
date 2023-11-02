@@ -21,7 +21,7 @@ $this->title = '';
 
 
 <div class="panel panel-default">
-	<div class="panel-heading">
+	<div class="panel-header">
 		<h3 class="panel-title"><?='<?='?>$data['id']?></h3>
 	</div>
 	<div class="panel-body">

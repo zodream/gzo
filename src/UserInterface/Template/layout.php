@@ -12,13 +12,14 @@ use Zodream\Template\View;
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="keywords" content="zodream,梦想开源" />
-    <title><?='<?='?>$this->title?>-ZoDream 梦想开源</title>
+    <title><?='<?='?>$this->text($this->title)?>-<?='<?='?>__('site title')?></title>
+    <meta name="Keywords" content="<?='<?='?>$this->text($this->get('keywords'))?>" />
+    <meta name="Description" content="<?='<?='?>$this->text($this->get('description'))?>" />
     <?='<?='?>$this->header()?>
 </head>
 <body>
 
-    <?='<?='?>$content?>
+    <?='<?='?>$this->contents()?>
 
 <?='<?='?>$this->footer()?>
 </body>
