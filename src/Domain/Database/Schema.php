@@ -7,6 +7,8 @@ use Zodream\Database\Contracts\Table as TableInterface;
 use Zodream\Database\DB;
 use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Disk\File;
+use Zodream\Disk\IStreamReader;
+use Zodream\Disk\IStreamWriter;
 use Zodream\Disk\Stream;
 use Zodream\Infrastructure\Support\Collection;
 use Exception;
@@ -34,7 +36,7 @@ class Schema extends BaseSchema {
         return DB::information()->schemaList();
     }
 
-    public function map(callable $func, callable $failure = null) {
+    public function map(callable $func, callable $failure = null): void {
         $data = DB::information()->tableList($this, true);
         (new Collection($data))->each(function($item) use ($func, $failure) {
             $table = (new Table($item['Name']))
@@ -46,13 +48,16 @@ class Schema extends BaseSchema {
                 $func($table);
             } catch (Exception $ex) {
                 logger($ex->getMessage());
-                if ($failure) return $failure($table, $ex);
+                if ($failure) {
+                    return $failure($table, $ex);
+                }
             }
+            return null;
         });
     }
 
-    public function name(string $schema): SchemaInterface {
-        parent::name($schema);
+    public function name(string $name): SchemaInterface {
+        parent::name($name);
         Db::db()->changedSchema($this->name);
         return $this;
     }
@@ -63,14 +68,18 @@ class Schema extends BaseSchema {
 
     /**
      * 导入文件，导入一行的文件过大可能会报错
-     * @param File|string $file
+     * @param File|string|IStreamReader $file
      * @return bool
-     * @throws Exception
      */
-    public function import($file) {
-        $stream = new Stream($file);
-        if (!$stream->openRead()->isResource()) {
-            return false;
+    public function import(File|string|IStreamReader $file): bool {
+        $autoClose = $file instanceof IStreamReader;
+        if (!$autoClose) {
+            $stream = new Stream($file);
+            if (!$stream->openRead()->isResource()) {
+                return false;
+            }
+        } else {
+            $stream = $file;
         }
         $content = '';
         while ($line = $stream->readLine(self::LINE_MAX_LENGTH)) {
@@ -84,13 +93,15 @@ class Schema extends BaseSchema {
             DB::db()->execute($content);
             $content = '';
         }
-        $stream->close();
+        if ($autoClose) {
+            $stream->close();
+        }
         return true;
     }
 
     /**
      * 导出
-     * @param File|string $file
+     * @param File|string|IStreamWriter $file
      * @param array|string|null $tables
      * @param bool $hasSchema
      * @param bool $hasStructure
@@ -98,12 +109,18 @@ class Schema extends BaseSchema {
      * @param bool $hasDrop
      * @return bool
      */
-    public function export(File|string $file, array|string|null $tables = null,
-                           bool $hasSchema = true, bool $hasStructure = true, bool $hasData = true, bool $hasDrop = true) {
-        $stream = new Stream($file);
-        if (!$stream->open('w')
-            ->isResource()) {
-            return false;
+    public function export(File|string|IStreamWriter $file, array|string|null $tables = null,
+                           bool $hasSchema = true, bool $hasStructure = true,
+                           bool $hasData = true, bool $hasDrop = true): bool {
+        $autoClose = $file instanceof IStreamWriter;
+        if (!$autoClose) {
+            $stream = new Stream($file);
+            if (!$stream->open('w')
+                ->isResource()) {
+                return false;
+            }
+        } else {
+            $stream = $file;
         }
         $stream->writeLines([
             '-- 备份开始',
@@ -188,7 +205,10 @@ class Schema extends BaseSchema {
         $stream->writeLines([
             '-- 创建数据库结束',
             '-- 备份结束'
-        ])->close();
+        ]);
+        if ($autoClose) {
+            $stream->close();
+        }
         return true;
     }
 
