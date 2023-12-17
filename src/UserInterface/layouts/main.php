@@ -7,10 +7,10 @@ $this->registerCssFile([
     '@font-awesome.min.css',
     '@jquery.autocompleter.css',
     '@prism.css',
-    '@zodream.css',
-    '@zodream-admin.css',
-    '@dialog.css',
-    '@gzo.css'
+    '@zodream.min.css',
+    '@zodream-admin.min.css',
+    '@dialog.min.css',
+    '@gzo.min.css'
 ])->registerJsFile([
     '@js.cookie.min.js',
     '@jquery.min.js',
