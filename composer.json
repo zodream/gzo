@@ -13,8 +13,8 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
-        "zodream/zodream": "dev-master"
+        "php": ">=8.2",
+        "zodream/zodream": "^5.3"
     },
     "autoload": {
         "psr-4": {
