@@ -27,11 +27,11 @@ use Zodream\Module\Gzo\Domain\Database\Schema;
 
 class GenerateModel extends Model {
 
-    public static function schema(string $name = '') {
+    public static function schema(string $name = ''): string {
         return new Schema($name);
     }
 
-    public static function getValidate($value) {
+    public static function getValidate(array $value): string {
         $result = '';
         if ($value['Null'] == 'NO' && is_null($value['Default'])) {
             $result = 'required';
@@ -42,17 +42,17 @@ class GenerateModel extends Model {
         if(!preg_match('#(.+?)\(([0-9]+)\)#', $value['Type'], $match)) {
             $match = [
                 $value['Type'],
-                explode(' ', $value['Type'], 2)[0],
-                0
+                explode(str_contains($value['Type'], '(') ? '(' : ' ', $value['Type'], 2)[0],
+                ''
             ];
         }
         $ext = !empty($match[2]) ? ':0,'.$match[2] : '';
         if (!empty($match[2]) && in_array($match[1], ['int', 'smallint'])) {
             $ext = ':0,'.(pow(10, $match[2]) - 1);
         }
-
         $result .= match ($match[1]) {
             'int' => '|int',
+            'float', 'decimal' => '|numeric',
             'tinyint' => '|int:0,127',
             'smallint' => '|int' . $ext,
             default => '|string' . $ext,
@@ -65,7 +65,7 @@ class GenerateModel extends Model {
      * @param array $columns
      * @return array
      */
-    public static function getFill(array $columns) {
+    public static function getFill(array $columns): array {
         $pk = false;
         $rules = $labels = $property = [];
         foreach ($columns as $value) {
@@ -89,7 +89,7 @@ class GenerateModel extends Model {
         ];
     }
 
-    public static function getFields(array $columns) {
+    public static function getFields(array $columns): array {
         $data = [];
         foreach ($columns as $value) {
             $item = self::parseFieldType($value);
@@ -106,7 +106,7 @@ class GenerateModel extends Model {
         return $data;
     }
 
-    protected static function parseFieldType($field) {
+    protected static function parseFieldType(array $field): string {
         if ($field['Field'] == 'id') {
             return '$table->id()';
         }
@@ -126,7 +126,7 @@ class GenerateModel extends Model {
         return sprintf('$table->column(\'%s\')->%s', $field['Field'], $type);
     }
 
-    protected static function converterType($type) {
+    protected static function converterType(string $type): string {
         $type = explode('(', explode(' ', $type, 2)[0], 2)[0];
         return match (strtoupper(trim($type))) {
             'INT', 'BOOL', 'TINYINT', 'SMALLINT', 'REAL', 'MEDIUMINT', 'BIGINT' => 'integer',
