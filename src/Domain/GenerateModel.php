@@ -27,7 +27,7 @@ use Zodream\Module\Gzo\Domain\Database\Schema;
 
 class GenerateModel extends Model {
 
-    public static function schema(string $name = ''): string {
+    public static function schema(string $name = ''): Schema {
         return new Schema($name);
     }
 
