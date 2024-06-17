@@ -1,4 +1,5 @@
 <?php
+defined('APP_DIR') or exit();
 use Zodream\Template\View;
 use Zodream\Html\Bootstrap\TableWidget;
 use Zodream\Html\Bootstrap\BreadcrumbWidget;

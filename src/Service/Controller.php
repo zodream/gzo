@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
 use Throwable;
-use Zodream\Infrastructure\Contracts\Http\Input;
 use Zodream\Infrastructure\Contracts\Http\Output;
 use Zodream\Route\Controller\Controller as BaseController;
 

@@ -108,5 +108,10 @@ $this->registerCssFile([
                 'fa fa-copy'
             ],
         ]
+    ],
+    [
+        '代码装好',
+        './home/exchange',
+        'fa fa-code',
     ]
 ], $this->contents(), 'ZoDream Generator') ?>

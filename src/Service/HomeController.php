@@ -33,6 +33,10 @@ class HomeController extends Controller {
         return $this->show();
     }
 
+    public function exchangeAction() {
+        return $this->show();
+    }
+
     public function moduleAction($status = 0) {
         $modules = ModuleRepository::moduleList();
         return $this->show(compact('status', 'modules'));

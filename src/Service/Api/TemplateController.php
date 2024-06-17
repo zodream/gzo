@@ -5,6 +5,7 @@ namespace Zodream\Module\Gzo\Service\Api;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
 use Zodream\Module\Gzo\Domain\Repositories\TemplateRepository;
+use Zodream\Module\Gzo\Domain\Repositories\CodeRepository;
 
 final class TemplateController extends Controller {
 
@@ -61,5 +62,9 @@ final class TemplateController extends Controller {
             return $this->renderData($output->toArray());
         }
         return $this->renderData(true);
+    }
+
+    public function exchangeAction(string $content, string $source = '', string $target = '') {
+        return $this->renderData(CodeRepository::exchange($content, $source, $target)->toArray());
     }
 }

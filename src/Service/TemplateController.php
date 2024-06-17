@@ -5,6 +5,7 @@ namespace Zodream\Module\Gzo\Service;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
 use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
 use Zodream\Module\Gzo\Domain\Repositories\TemplateRepository;
+use Zodream\Module\Gzo\Domain\Repositories\CodeRepository;
 
 class TemplateController extends Controller {
 
@@ -69,4 +70,7 @@ class TemplateController extends Controller {
         return $this->renderData(true);
     }
 
+    public function exchangeAction(string $content, string $source = '', string $target = '') {
+        return $this->renderData(CodeRepository::exchange($content, $source, $target)->toArray());
+    }
 }

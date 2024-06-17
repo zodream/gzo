@@ -267,7 +267,7 @@ $(function() {
             }
             Dialog.box({
                 title: '预览',
-                content: '<pre><code class="language-php">'+ Prism.highlight(data.data.code, Prism.languages.php) +'</code></pre>'
+                content: '<pre><code class="language-php">'+ Prism.highlight(data.data instanceof Array ? data.data[0].content : data.data.code, Prism.languages.php) +'</code></pre>'
             });
         });
         return false;
