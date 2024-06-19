@@ -21,13 +21,13 @@ $this->title = '代码转换';
         <div class="col-md-6">
             <div class="input-group">
                 <label for="source">源语言</label>
-                <input type="text" id="source" name="source" class="form-control" placeholder="源代码语言">
+                <input type="text" id="source" name="source" class="form-control" value="php" placeholder="源代码语言">
             </div>
         </div>
         <div class="col-md-6">
             <div class="input-group">
                 <label for="target">转换语言</label>
-                <input type="text" id="target" name="target" class="form-control" placeholder="转换代码语言" required>
+                <input type="text" id="target" name="target" class="form-control" value="c#" placeholder="转换代码语言" required>
             </div>
         </div>
     </div>
