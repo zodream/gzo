@@ -3,12 +3,12 @@ declare(strict_types=1);
 namespace Zodream\Module\Gzo\Domain\Repositories;
 
 use Zodream\Helpers\Str;
-use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
+use Zodream\Module\Gzo\Domain\Readers\MemoryWriter;
 
 class CodeRepository {
 
-    public static function exchange(string $content, string $source = 'php', string $target = 'c#'): MemoryOutput {
-        $output = new MemoryOutput();
+    public static function exchange(string $content, string $source = 'php', string $target = 'c#'): MemoryWriter {
+        $output = new MemoryWriter();
         $fuc = 'static::' . lcfirst(Str::studly(sprintf('%s_to_%s', self::formatLanguage($source), self::formatLanguage($target))));
         if (is_callable($fuc)) {
             $output->write($target, call_user_func($fuc, $content));

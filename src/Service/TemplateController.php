@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace Zodream\Module\Gzo\Service;
 
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
-use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
+use Zodream\Module\Gzo\Domain\Readers\MemoryWriter;
 use Zodream\Module\Gzo\Domain\Repositories\TemplateRepository;
 use Zodream\Module\Gzo\Domain\Repositories\CodeRepository;
 
@@ -17,7 +17,7 @@ class TemplateController extends Controller {
                                 bool $hasModel = true) {
         TemplateRepository::crud($module, $table, $name, $hasController, $hasView, $hasModel);
         $output = TemplateRepository::output();
-        if ($output instanceof MemoryOutput) {
+        if ($output instanceof MemoryWriter) {
             return $this->renderData($output->toArray());
         }
         return $this->renderData(true);
@@ -31,7 +31,7 @@ class TemplateController extends Controller {
     public function modelAction(string $table, string $module = '') {
         TemplateRepository::model($table, $module);
         $output = TemplateRepository::output();
-        if ($output instanceof MemoryOutput) {
+        if ($output instanceof MemoryWriter) {
             return $this->renderData([
                 'code' => $output->firstContent()
             ]);
@@ -42,7 +42,7 @@ class TemplateController extends Controller {
     public function migrationAction(array|string $table, string $module) {
         TemplateRepository::migration($table, $module);
         $output = TemplateRepository::output();
-        if ($output instanceof MemoryOutput) {
+        if ($output instanceof MemoryWriter) {
             return $this->renderData([
                 'code' => $output->firstContent()
             ]);
@@ -53,7 +53,7 @@ class TemplateController extends Controller {
     public function controllerAction(string $module, string $name = 'Home') {
         TemplateRepository::controller($module, $name);
         $output = TemplateRepository::output();
-        if ($output instanceof MemoryOutput) {
+        if ($output instanceof MemoryWriter) {
             return $this->renderData([
                 'code' => $output->firstContent()
             ]);
@@ -64,7 +64,7 @@ class TemplateController extends Controller {
     public function moduleAction(string $module, array|string $table = []) {
         TemplateRepository::module($module, $table);
         $output = TemplateRepository::output();
-        if ($output instanceof MemoryOutput) {
+        if ($output instanceof MemoryWriter) {
             return $this->renderData($output->toArray());
         }
         return $this->renderData(true);

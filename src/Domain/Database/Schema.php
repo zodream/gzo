@@ -9,9 +9,12 @@ use Zodream\Database\Schema\Schema as BaseSchema;
 use Zodream\Disk\File;
 use Zodream\Disk\IStreamReader;
 use Zodream\Disk\IStreamWriter;
-use Zodream\Disk\Stream;
 use Zodream\Infrastructure\Support\Collection;
 use Exception;
+use Zodream\Module\Gzo\Domain\Readers\IDatabaseReader;
+use Zodream\Module\Gzo\Domain\Readers\IDatabaseWriter;
+use Zodream\Module\Gzo\Domain\Readers\SqlFileReader;
+use Zodream\Module\Gzo\Domain\Readers\SqlFileWriter;
 
 class Schema extends BaseSchema {
 
@@ -68,31 +71,14 @@ class Schema extends BaseSchema {
 
     /**
      * 导入文件，导入一行的文件过大可能会报错
-     * @param File|string|IStreamReader $file
+     * @param File|string|IStreamReader|IDatabaseReader $file
      * @return bool
+     * @throws Exception
      */
-    public function import(File|string|IStreamReader $file): bool {
-        $autoClose = $file instanceof IStreamReader;
-        if (!$autoClose) {
-            $stream = new Stream($file);
-            if (!$stream->openRead()->isResource()) {
-                return false;
-            }
-        } else {
-            $stream = $file;
-        }
-        $content = '';
-        while ($line = $stream->readLine(self::LINE_MAX_LENGTH)) {
-            if (str_starts_with($line, '--') || $line == '') {
-                continue;
-            }
-            $content .= $line;
-            if (!str_ends_with(trim($line), ';')) {
-                continue;
-            }
-            DB::db()->execute($content);
-            $content = '';
-        }
+    public function import(File|string|IStreamReader|IDatabaseReader $file): bool {
+        $autoClose = $file instanceof IStreamReader || $file instanceof IDatabaseReader;
+        $stream = $file instanceof IDatabaseReader ? $file : new SqlFileReader($file);
+        $stream->import();
         if ($autoClose) {
             $stream->close();
         }
@@ -101,136 +87,55 @@ class Schema extends BaseSchema {
 
     /**
      * 导出
-     * @param File|string|IStreamWriter $file
+     * @param File|string|IStreamWriter|IDatabaseWriter $file
      * @param array|string|null $tables
      * @param bool $hasSchema
      * @param bool $hasStructure
      * @param bool $hasData
      * @param bool $hasDrop
      * @return bool
+     * @throws Exception
      */
-    public function export(File|string|IStreamWriter $file, array|string|null $tables = null,
+    public function export(File|string|IStreamWriter|IDatabaseWriter $file, array|string|null $tables = null,
                            bool $hasSchema = true, bool $hasStructure = true,
                            bool $hasData = true, bool $hasDrop = true): bool {
-        $autoClose = $file instanceof IStreamWriter;
-        if (!$autoClose) {
-            $stream = new Stream($file);
-            if (!$stream->open('w')
-                ->isResource()) {
-                return false;
-            }
-        } else {
-            $stream = $file;
-        }
-        $stream->writeLines([
-            '-- 备份开始',
-            '-- 创建数据库开始'
-        ]);
-
+        $autoClose = $file instanceof IStreamWriter || $file instanceof IDatabaseWriter;
+        $stream = $file instanceof IDatabaseWriter ? $file : new SqlFileWriter($file);
+        $stream->writeComment('备份开始');
+        $stream->writeComment('创建数据库开始');
         if ($hasSchema) {
-            $stream->writeLines([
-                'CREATE SCHEMA IF NOT EXISTS `'.$this->name.'` DEFAULT CHARACTER SET utf8;',
-                'USE `'.$this->name.'`;',
-            ]);
+            $stream->writeSchema($this);
         }
 
         $this->map(function (Table $table) use ($stream, $tables, $hasStructure, $hasData, $hasDrop) {
             $tableName = $table->justName();
             if (!empty($tables) && !in_array($tableName, (array)$tables)) {
-                $stream->writeLines([
-                    '-- 跳过表 '.$tableName,
-                    '',
-                    ''
-                ]);
+                $stream->writeComment('跳过表 '.$tableName);
                 return;
             }
-            $grammar = DB::schemaGrammar();
-            $stream->writeLine('-- 创建表 '.$tableName.' 开始');
-            if ($hasDrop) {
-                $stream->writeLine($grammar->compileTableDelete($tableName));
-            }
+
+            $stream->writeComment('创建表 '.$tableName.' 开始');
             if ($hasStructure) {
-                $stream->writeLine(DB::information()->tableCreateSql($table));
+                $stream->writeTable($table, $hasDrop);
             }
-            $count = DB::table($table->getName())->count();
-            if ($hasData && $count > 0) {
-                $columnFields = $table->getFieldsType();
-                $stream->writeLine($grammar->compileTableLock($tableName));
-                $onlyMaxSize = empty($table->avgRowLength()) ? 20
-                    : max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
-                for ($i = 0; $i < $count; $i += $onlyMaxSize) {
-                    $data = DB::table($table->getName())->limit($i, $onlyMaxSize)->all();
-                    if (empty($data)) {
-                        continue;
-                    }
-                    $column_sql = sprintf('INSERT INTO `%s` (`%s`) VALUES ',
-                        $tableName,
-                        implode('`,`', array_keys($data[0])));
-                    $stream->write($column_sql);
-                    $length = count($data);
-                    $size = 0;
-                    for ($j = 0; $j < $length; $j ++) {
-                        $sql = sprintf('(%s)', $this->getRowSql($data[$j], $columnFields));
-                        $size += strlen($sql);
-                        // 计算字符长度， 进行再分行
-                        if ($size < self::LINE_MAX_LENGTH && $j < $length - 1) {
-                            $stream->write($sql.',');
-                            continue;
-                        }
-                        $size = 0;
-                        if ($j >= $length - 1) {
-                            $stream->writeLine($sql.';');
-                            break;
-                        }
-                        $stream->writeLines([
-                            $sql.';'
-                        ])->write($column_sql);
-                    }
-                }
-                $stream->writeLine($grammar->compileTableUnlock($tableName));
+            if ($hasData) {
+                $stream->writeTableData($table);
             }
             $stream->writeLines([
                 '',
                 ''
             ]);
         }, function (Table $table, Exception $ex) use ($stream) {
-            $stream->writeLines([
-                '-- 跳过表 '.$table->getName(),
-                '-- 导出数据出现错误 '.$ex->getMessage(),
-                '',
-                ''
-            ]);
+            $stream->writeComment('跳过表 '.$table->getName());
+            $stream->writeComment('导出数据出现错误 '.$ex->getMessage());
         });
-
-        $stream->writeLines([
-            '-- 创建数据库结束',
-            '-- 备份结束'
-        ]);
+        $stream->writeComment('创建数据库结束');
+        $stream->writeComment('备份结束');
         if ($autoClose) {
             $stream->close();
         }
         return true;
     }
 
-    /**
-     * 获取插入数据
-     * @param array $data
-     * @param array $columnFields
-     * @return string
-     */
-    protected function getRowSql(array $data, array $columnFields): string {
-        $args = [];
-        foreach ($data as $key => $item) {
-            if (is_null($item)) {
-                $args[] = 'NULL';
-                continue;
-            }
-            if (array_key_exists($key, $columnFields) && $columnFields[$key]) {
-                $args[] = $item;
-                continue;
-            }
-            $args[] = DB::engine()->escapeString($item);
-        }
-        return implode(',',$args);
-    }
+
 }

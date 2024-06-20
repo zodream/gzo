@@ -8,9 +8,9 @@ use Zodream\Disk\Directory;
 use Zodream\Helpers\Str;
 use Zodream\Module\Gzo\Domain\GenerateModel;
 use Zodream\Module\Gzo\Domain\Generator\ModuleGenerator;
-use Zodream\Module\Gzo\Domain\Output\FileOutput;
-use Zodream\Module\Gzo\Domain\Output\MemoryOutput;
-use Zodream\Module\Gzo\Domain\Output\Writer;
+use Zodream\Module\Gzo\Domain\Readers\FileWriter;
+use Zodream\Module\Gzo\Domain\Readers\MemoryWriter;
+use Zodream\Module\Gzo\Domain\Readers\IFileWriter;
 
 class TemplateRepository {
 
@@ -299,10 +299,10 @@ class TemplateRepository {
     }
 
     /**
-     * @return Writer|FileOutput|MemoryOutput
+     * @return IFileWriter|FileWriter|MemoryWriter
      * @throws \Exception
      */
     public static function output() {
-        return app(Writer::class);
+        return app(IFileWriter::class);
     }
 }

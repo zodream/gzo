@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace Zodream\Module\Gzo\Domain\Output;
+namespace Zodream\Module\Gzo\Domain\Readers;
 
 use Zodream\Disk\Directory;
 use Zodream\Disk\File;
 use Zodream\Infrastructure\Contracts\ArrayAble;
 
-class MemoryOutput implements Writer, ArrayAble {
+class MemoryWriter implements IFileWriter, ArrayAble {
 
     protected array $items = [];
 
@@ -14,7 +14,7 @@ class MemoryOutput implements Writer, ArrayAble {
         return $file;
     }
 
-    public function write(string|File $file, string $content) {
+    public function write(string|File $file, string $content): void {
         $root = (string)app_path();
         $path = (string)$file;
         if (str_starts_with($path, $root)) {
