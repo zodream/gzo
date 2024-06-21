@@ -33,7 +33,7 @@ $this->title = '代码转换';
     </div>
     <div class="input-group">
         <label for="content">代码</label>
-        <textarea name="content" id="content" rows="5" class="form-control" placeholder="代码"></textarea>
+        <textarea name="content" id="content" rows="20" class="form-control" placeholder="代码"></textarea>
     </div>
     <button class="btn" type="button" data-type="preview">预览转换</button>
 </form>

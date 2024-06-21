@@ -46,7 +46,7 @@ class CodeRepository {
             }
             $returnType = 'void';
             if (!empty($match[3])) {
-                $returnType = trim(str_replace(':', '', $match[3]));
+                $returnType = trim(str_replace([':', '?'], '', $match[3]));
             }
             $func = static::studly($match[1]);
             if ($returnType === 'void' && ($func === 'Up' || $func === 'Seed'))
@@ -57,7 +57,7 @@ class CodeRepository {
             return sprintf('%s %s(%s) {', $returnType, $func, $parameters);
         }, $content);
         $content = preg_replace_callback('/(->|::)([^\(\)\s]+)/', function ($match) {
-            return '.'.$match[2];
+            return '.'.static::studly($match[2]);
         }, $content);
 
         $content = str_replace(
