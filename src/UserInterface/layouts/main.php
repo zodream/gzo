@@ -110,7 +110,7 @@ $this->registerCssFile([
         ]
     ],
     [
-        '代码装好',
+        '代码转换',
         './home/exchange',
         'fa fa-code',
     ]
