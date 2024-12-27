@@ -1,4 +1,4 @@
-@import 'theme';
+@use 'theme';
 .mt-30 {
     margin-top: 2rem;
 }
@@ -39,7 +39,7 @@
         .dist-item,
         .table-item {
             position: relative;
-            background-color: var(--#{$prefix}-panel);
+            background-color: var(--#{theme.$prefix}-panel);
             line-height: 1.875rem;
             padding: 0.3125rem 0.625rem;
             border-radius: 0.1875rem;
@@ -49,8 +49,8 @@
                 position: absolute;
                 right: -0.625rem;
                 top: -0.5rem;
-                background-color: var(--#{$prefix}-panel-color);
-                color: var(--#{$prefix}-panel);
+                background-color: var(--#{theme.$prefix}-panel-color);
+                color: var(--#{theme.$prefix}-panel);
                 border-radius: 50%;
                 display: block;
                 width: 1.25rem;
@@ -60,8 +60,8 @@
             }
 
             &:hover {
-                background-color: var(--#{$prefix}-primary);
-                color: var(--#{$prefix}-primary-text);
+                background-color: var(--#{theme.$prefix}-primary);
+                color: var(--#{theme.$prefix}-primary-text);
             }
         }
         .table-item {
@@ -90,7 +90,7 @@
 .dialog-column-select {
     display: none;
     position: fixed;
-    background-color: rgba(var(--#{$prefix}-body-text-rgb), .2);
+    background-color: rgba(var(--#{theme.$prefix}-body-text-rgb), .2);
     top: 0;
     bottom: 0;
     left: 0;
@@ -102,7 +102,7 @@
         left: 50vw;
         width: 18.75rem;
         margin-left: -9.375rem;
-        background-color: var(--#{$prefix}-panel);
+        background-color: var(--#{theme.$prefix}-panel);
 
         select,
         button {
