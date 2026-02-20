@@ -64,6 +64,9 @@ class DatabaseRepository {
         if (strpos($table, '.') > 0) {
             list($schema, $table) = explode('.', $table);
         }
+        if (empty($table)) {
+            return [];
+        }
         $data = DB::information()->columnList(GenerateModel::schema($schema)->table($table), true);
         if ($full) {
             return $data;
