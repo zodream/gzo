@@ -26,7 +26,7 @@ class <?=$name.config('app.controller')?> extends Controller {
 		return $this->show(compact('page'));
 	}
 
-    public function add<?=config('app.action')?>($id = null) {
+    public function add<?=config('app.action')?>(int $id = 0) {
         $model = <?=$name.config('app.model')?>::findOrNew($id);
         if ($model->load() && $model->save()) {
             return $this->redirect('./<?=strtolower($name)?>');
@@ -34,12 +34,12 @@ class <?=$name.config('app.controller')?> extends Controller {
         return $this->show(compact('model'));
 	}
 
-    public function delete<?=config('app.action')?>($id) {
+    public function delete<?=config('app.action')?>(int $id) {
         <?=$name.config('app.model')?>::where('id', $id)->delete();
         return $this->redirect('./<?=strtolower($name)?>');
 	}
 
-    public function view<?=config('app.action')?>($id) {
+    public function view<?=config('app.action')?>(int $id) {
 		$model = <?=$name.config('app.model')?>::find($id);
         return $this->show(compact('model'));
 	}
