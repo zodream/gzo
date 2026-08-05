@@ -5,7 +5,6 @@ use Zodream\Html\Dark\Layout;
 /** @var $this View */
 $this->registerCssFile([
     '@font-awesome.min.css',
-    '@jquery.autocompleter.css',
     '@prism.min.css',
     '@zodream.min.css',
     '@zodream-admin.min.css',
@@ -16,7 +15,7 @@ $this->registerCssFile([
     '@jquery.min.js',
     '@jquery.pjax.min.js',
     '@prism.min.js',
-    '@jquery.autocompleter.min.js',
+    '@jquery.autocomplete.min.js',
     '@jquery.dialog.min.js',
     '@jquery.upload.min.js',
     '@main.min.js',

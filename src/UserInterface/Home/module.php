@@ -14,7 +14,7 @@ $modules = json_encode(array_map(function ($item) {
 $js = <<<JS
 bindCurd();
 var nameEle = $("#name1");
-$("#module1").autocompleter({
+$("#module1").autocomplete({
     source: {$modules},
     callback: function(value, index, item) {
         if (!nameEle.val()) {
