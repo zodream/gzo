@@ -46,7 +46,7 @@ class BlockGenerate implements \IteratorAggregate  {
 
     public function useSpace(array $args) {
         foreach ($args as $key => $item) {
-            if (!is_integer($key)) {
+            if (!is_int($key)) {
                 $item .= ' as '.$key;
             }
             $this->addLineEnd('use '.$item);
@@ -101,7 +101,7 @@ class BlockGenerate implements \IteratorAggregate  {
         }
         $arg = [];
         foreach ($args as $key => $item) {
-            if (!is_integer($key)) {
+            if (!is_int($key)) {
                 $item = $key.' = '.$item;
             }
             $arg[] = '$'.trim($item, '$');

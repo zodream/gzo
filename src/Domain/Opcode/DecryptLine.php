@@ -106,7 +106,7 @@ class DecryptLine {
 
     public function map(callable $callback, $ops = null, $is_forward = false) {
         $i = $is_forward ? $this->count() - 1 : 0;
-        if (is_integer($ops)) {
+        if (is_int($ops)) {
             $i = $ops;
         }
         if ($is_forward) {
