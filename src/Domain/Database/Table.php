@@ -91,8 +91,8 @@ class Table extends BaseTable {
             $this->schema = new Schema();
         }
         $data = InformationSchemaModel::columns()
-            ->where(['TABLE_SCHEMA' => $this->schema->getName()])
-        ->where(['TABLE_NAME' => $this->getName()])->all();
+            ->where('TABLE_SCHEMA', $this->schema->getName())
+            ->where('TABLE_NAME', $this->getName())->get();
         (new Collection($data))->each(function($item) use ($func) {
             $func((new Column($item['COLUMN_NAME']))
                 ->setTable($this)

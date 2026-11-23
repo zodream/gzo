@@ -23,12 +23,15 @@ class TemplateController extends Controller {
         return $this->renderData(true);
     }
 
-    public function confAction($name, $data) {
+    public function confAction(string $name, array $data) {
         ModuleGenerator::renderConfigs($name, $data);
         return $this->renderData(true);
     }
 
     public function modelAction(string $table, string $module = '') {
+        if (empty($table)) {
+            return $this->renderFailure('table is null');
+        }
         TemplateRepository::model($table, $module);
         $output = TemplateRepository::output();
         if ($output instanceof MemoryWriter) {
@@ -40,6 +43,9 @@ class TemplateController extends Controller {
     }
 
     public function migrationAction(array|string $table, string $module) {
+        if (empty($table)) {
+            return $this->renderFailure('table is null');
+        }
         TemplateRepository::migration($table, $module);
         $output = TemplateRepository::output();
         if ($output instanceof MemoryWriter) {

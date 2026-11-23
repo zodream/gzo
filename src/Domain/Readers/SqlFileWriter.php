@@ -74,7 +74,7 @@ class SqlFileWriter implements IDatabaseWriter {
         $onlyMaxSize = empty($table->avgRowLength()) ? 20
             : max(20, (int)floor(self::LINE_MAX_LENGTH / $table->avgRowLength() / 8)); // 每次取的的最大行数 根据平均行大小取值；
         for ($i = 0; $i < $count; $i += $onlyMaxSize) {
-            $data = DB::table($table->getName())->limit($i, $onlyMaxSize)->get();
+            $data = DB::table($table->getName())->skip($i)->take($onlyMaxSize)->get();
             if (empty($data)) {
                 continue;
             }

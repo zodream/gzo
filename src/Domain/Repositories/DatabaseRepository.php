@@ -96,7 +96,7 @@ class DatabaseRepository {
         }
         $total = DB::db()->executeScalar(preg_replace('/select[\s\S]+from/i', 'select count(*) as count from', $sql));
         $page = new Page($total, $per_page);
-        $page->setPage(DB::fetch($sql. ' limit '. $page->getLimit()));
+        $page->setItems(DB::fetch(sprintf('%s limit %d,%d', $sql, $page->getItemsOffset(), $page->getPerPage())));
         return $page;
     }
 
