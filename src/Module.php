@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Module\Gzo;
 /**
  * Created by PhpStorm.
@@ -14,7 +15,7 @@ use Zodream\Route\Exception\NotFoundHttpException;
 use Zodream\Route\Controller\Module as BaseModule;
 use Zodream\Template\ViewFactory;
 
-class Module extends BaseModule {
+final class Module extends BaseModule {
 
     public function boot()
     {

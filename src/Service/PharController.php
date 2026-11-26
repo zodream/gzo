@@ -12,7 +12,7 @@ class PharController extends Controller {
         ];
     }
 
-    public function indexAction($input) {
+    public function indexAction(string $input) {
         $phar = new PharGenerator();
         $phar->setInput(app_path()->directory($input));
         $phar->loadComposer();

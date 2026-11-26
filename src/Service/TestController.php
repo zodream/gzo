@@ -17,9 +17,9 @@ class TestController extends Controller {
      * @param $escapedSourcePath
      * @param $generatedFilePath
      */
-    public function fileAction($escapedClassName,
-                               $escapedSourcePath,
-                               $generatedFilePath) {
+    public function fileAction(string $escapedClassName,
+                               string $escapedSourcePath,
+                               string $generatedFilePath) {
         $generator = new ClassGenerator($escapedClassName,
             $escapedSourcePath,
             $escapedClassName . 'Test', $generatedFilePath);
@@ -32,7 +32,7 @@ class TestController extends Controller {
      * @param $source
      * @param $target
      */
-    public function projectAction($source, $target) {
+    public function projectAction(string $source, string $target) {
         $sourceDir      = realpath($source);
         $targetDir      = realpath($target);
         $dirIterator    = new \RecursiveIteratorIterator(
@@ -85,7 +85,7 @@ class TestController extends Controller {
         return $this->showContent('Done!');
     }
 
-    protected function extractFullClassNameFromFile($filePath) {
+    protected function extractFullClassNameFromFile(string $filePath) {
         if (!file_exists($filePath)) {
             return false;
         }

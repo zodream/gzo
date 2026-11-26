@@ -23,7 +23,7 @@ final class TemplateController extends Controller {
         return $this->renderData(true);
     }
 
-    public function confAction($name, $data) {
+    public function confAction(string $name, array $data) {
         ModuleGenerator::renderConfigs($name, $data);
         return $this->renderData(true);
     }

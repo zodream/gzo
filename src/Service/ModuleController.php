@@ -16,7 +16,7 @@ class ModuleController extends Controller {
      * @param string $configs
      * @return void
      */
-    public function indexAction($name = null, $input = null, $output = null, string $configs = 'module.json') {
+    public function indexAction(string|null $name = null, string|null $input = null, string|null $output = null, string $configs = 'module.json') {
         $generator = new ModuleGenerator();
         if (!empty($input)) {
             $input = app_path()->directory($input);

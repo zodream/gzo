@@ -42,7 +42,7 @@ class HomeController extends Controller {
         return $this->show(compact('status', 'modules'));
     }
 
-    public function sqlAction($query = null, $schema = null, $table = null, $action = null, $type = null) {
+    public function sqlAction(string|null $query = null, string|null $schema = null, string|null $table = null, string|null $action = null, string|null $type = null) {
         if (!empty($action) && !empty($table)) {
             list($crumbs, $data) = $this->getTableAction($schema, $table, $action);
         } elseif (!empty($query)) {
@@ -74,7 +74,7 @@ class HomeController extends Controller {
         return $this->show();
     }
 
-    private function getTableAction($schema, $table, $action) {
+    private function getTableAction(string $schema, string $table, string $action) {
         $crumbs = [
             '服务器：localhost' => url('./home/sql'),
             '数据库：'.$schema => url('./home/sql', compact('schema')),
@@ -106,7 +106,7 @@ class HomeController extends Controller {
         return [$crumbs, $data];
     }
 
-    private function getColumnTable($schema, $table, $type = null) {
+    private function getColumnTable(string $schema, string $table, string|null $type = null) {
         $crumbs = [
             '服务器：localhost' => url('./home/sql'),
             '数据库：'.$schema => url('./home/sql', compact('schema')),
@@ -142,7 +142,7 @@ class HomeController extends Controller {
         return [$crumbs, $page];
     }
 
-    private function getTableTable($schema, $type = null) {
+    private function getTableTable(string $schema, string|null $type = null) {
         $crumbs = [
             '服务器：localhost' => url('./home/sql'),
             '数据库：'.$schema

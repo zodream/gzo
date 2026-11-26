@@ -10,7 +10,7 @@ use Zodream\Route\Controller\Module as BaseModule;
 use Module\<?=$module?>\Domain\Migrations\<?=$migration === true ? sprintf('Create%sTables', $module) : $migration?>;
 <?php endif;?>
 
-class Module extends BaseModule {
+final class Module extends BaseModule {
 
 <?php if (isset($migration)):?>
     public function getMigration() {

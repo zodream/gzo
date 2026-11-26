@@ -397,7 +397,7 @@ class ModuleGenerator {
         return [$data, $rules, $labels];
     }
 
-    public static function renderConfigs($name, array $data) {
+    public static function renderConfigs(string $name, array $data) {
         app_path()->addDirectory('Service')
             ->addDirectory('config')
             ->addFile($name.'.php',
